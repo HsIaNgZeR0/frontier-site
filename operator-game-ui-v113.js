@@ -269,7 +269,10 @@ window.FrontierOperatorUIV113=(()=>{
    const art=figure?.querySelector('.enemy-art');
    art?.removeAttribute('data-inspect-actor');
    const artId=FrontierEnemyData.units[enemy.species]?.image,paths133=window.FrontierEnemyIdleAssets?.[enemy.species]||window.FrontierEnemyIdleAssets?.[artId];
-   if(figure&&paths133){
+   /* 優先用 Spine 小模型（原地待機）；同一隻已在播放就不重建，失敗退回 webp。 */
+   const spineId=window.FrontierEnemySpine?.has(enemy.species)?enemy.species:window.FrontierEnemySpine?.has(artId)?artId:null;
+   if(figure&&spineId&&FrontierEnemySpine.mount(figure,spineId,enemy.id)){figure.dataset.spine=spineId;figure.addEventListener('spine-failed',()=>{delete figure.dataset.spine;figure.dataset.spineFailed='1'},{once:true})}
+   else if(figure&&paths133&&!figure.querySelector('canvas')){
     const paths=paths133,sprite=document.createElement('img');
     sprite.className='enemy-art enemy-idle-model';sprite.alt='';sprite.draggable=false;
     sprite.src=matchMedia('(prefers-reduced-motion: reduce)').matches?paths.still:paths.idle;
