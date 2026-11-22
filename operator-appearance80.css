@@ -1,0 +1,11 @@
+.appearance80-picker{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0 14px}.appearance80-picker button{display:flex;align-items:center;justify-content:center;gap:8px;padding:8px;min-height:48px;font-size:12px;border:1px solid #52707f;background:#142832}.appearance80-picker button[aria-pressed=true]{border-color:#c9e67d;background:#30433b;color:#e6f6b1}.appearance80-picker img{width:34px;height:34px;object-fit:cover;pointer-events:none}.appearance80-single{display:block;color:#94acb8;font-size:11px}
+
+.outfit-tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:0 0 12px}
+.outfit-tabs button{min-height:44px}.outfit-tabs button[aria-pressed=true]{border-color:#bdde81;color:#e5f89f;background:#263d39}
+.outfit-shop-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:0 0 8px}.outfit-shop-head h2{margin:0;font-size:1.15rem}
+.outfit-shop label{display:grid;gap:4px;margin-bottom:10px;font-size:.85rem}.contextual-shell .outfit-shop select{display:block!important;min-height:44px;width:100%;font-size:16px}
+.outfit-stock{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.outfit-card{display:grid;grid-template-rows:1fr auto;min-width:0;border:1px solid #45606d;background:#152932;border-radius:6px;overflow:hidden}
+.outfit-card>img{display:block;width:100%;height:clamp(100px,34vw,230px);object-fit:contain;background:radial-gradient(ellipse at center,#294651,#11232c)}
+.outfit-card>div{display:grid;gap:4px;padding:7px;min-width:0}.outfit-card b{overflow-wrap:anywhere;font-size:.86rem}.outfit-card small{color:#9fb5be}.outfit-card button{font-size:.76rem;min-height:44px;padding:4px}
+.appearance80-picker button span{min-width:0;overflow-wrap:anywhere}.appearance80-picker img{flex:none;border-radius:50%}

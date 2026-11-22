@@ -1,0 +1,72 @@
+'use strict';
+// Stable, run-only design catalogue. Nothing here registers a warehouse item or activates an effect.
+globalThis.FrontierCurioData=(()=>{
+ const categories=['追擊與破綻','抽牌與棄牌','阻擋與反擊','源石與異常','治療與續航','探索與撤離'];
+ const rows=[
+ ['窺隙之瞳','每場首次成功破解敵方蓄力後，下一張攻擊牌總傷害 +20%。'],
+ ['鷹眼準星','每回合首次傷到帶有標記（含瞄準、鎖定、共鳴等）的敵人時，額外造成 3 點傷害。'],
+ ['獵後餘音','擊敗帶有負面狀態的敵人後抽 1 張牌，每回合一次。'],
+ ['斷層測片','每場首次對有 DEF 的敵人造成物理傷害後，使其 DEF -2，持續 2 回合。'],
+ ['雙線交匯','同回合由兩名不同幹員攻擊同一敵人，第二次攻擊額外造成 4 傷害，每回合一次。'],
+ ['最後一公里','每回合首次攻擊 HP 低於 40% 的敵人時，該張卡總傷害 +15%。'],
+ ['戰前密電','精英戰開始時揭露精英第一個特殊行動，首次對其造成傷害 +10%。'],
+ ['斷甲刻度','每場首次成功破甲時，對目標額外造成 6 點物理傷害。'],
+ ['破陣指令','成功打斷首領技能後，下回合首次攻擊該首領的卡牌傷害 +25%。'],
+ ['終局演算','每場首次成功破韌後，下一張至少消耗 2 AP 的攻擊牌追加一次原始傷害 30% 的追擊；追加傷害不能再次觸發此效果。'],
+ ['七號頻道','每回合首次連續使用三名不同幹員的卡牌後抽 1 張。'],
+ ['廢棄指令板','每回合首次主動棄牌時，選擇一名隊友獲得 4 點護盾。'],
+ ['回聲記憶','每場首次將棄牌堆洗回抽牌堆時抽 1 張。'],
+ ['零號備令','每場首次打出 0 費卡牌後，下一張 1 費卡牌的傷害或護盾效果 +10%。'],
+ ['先行草案','每回合首次使用能回復 AP 的先鋒卡後，可指定一張手牌保留至下回合。'],
+ ['錯誤回執','每回合首次主動棄牌時，對隨機敵人造成 4 點法術傷害。'],
+ ['空白檔案','每場首次使用至少 2 AP 的卡牌後，抽 1 張。'],
+ ['昨日備忘','每回合可以額外保留一張普通手牌；仍計入下一回合抽牌數。'],
+ ['再循環','每場首次於同一回合打出三張相同費用卡牌後，抽 2 張、棄 1 張。'],
+ ['失序命令','每回合首次完成主動棄牌後，生成一張本回合有效的 0 費臨時戰術卡，可選造成 3 傷害或獲得 3 護盾；生成牌不得再次觸發生成鏈。'],
+ ['鏽蝕屏障','每場首次受到敵人直接攻擊前，目標獲得 5 點護盾。'],
+ ['前線榮譽','成功替隊友阻擋攻擊後，阻擋者獲得 3 點護盾，每回合一次。'],
+ ['合圍陣列','每回合首次使用防禦卡後，下一張其他幹員攻擊牌傷害 +10%。'],
+ ['第二層甲','每場首次受到單次至少 15 點原始傷害時，實際傷害降低 5 點。'],
+ ['反向脈衝','每回合首次成功阻擋攻擊後，對攻擊者造成 5 點物理傷害。'],
+ ['最後掩護','每場首次有幹員 HP 低於 35% 時，使其獲得 8 點護盾。'],
+ ['鐵壁裂痕','對已被破甲的敵人反擊時，額外造成 4 點傷害。'],
+ ['灰色緩衝','每回合首次受到異常傷害時，降低該次傷害 25%，最多減免 6 點。'],
+ ['同袍之盾','同回合兩名不同幹員提供護盾後，HP 最低的隊友額外獲得 4 點護盾，每回合一次。'],
+ ['不退之誓','每場首次成功阻擋精英或首領特殊攻擊後，令攻擊者下一次特殊攻擊傷害 -20%，並造成 8 點反擊傷害。'],
+ ['靜默源石','每場首次觸發地區負面狀態時，降低該次不利效果 25%。'],
+ ['餘燼標本','每回合首次對有異常狀態的敵人造成法術傷害時，額外造成 3 點法術傷害。'],
+ ['侵蝕脈絡','每場首次使敵人獲得持續傷害狀態時，使其 DEF -2，持續 2 回合。'],
+ ['施術共鳴','同回合兩名不同幹員對敵人造成法術傷害後，第二名攻擊者額外造成 4 點法術傷害，每回合一次。'],
+ ['凍結的脈搏','每場首次成功施加控制狀態時，使目標下一次攻擊傷害 -10%。'],
+ ['餘熱','每回合首次使敵人承受持續傷害時，該次持續傷害額外 +2。'],
+ ['失真的警訊','每場首次受到會附加異常的敵人直接攻擊時，該次傷害降低 4 點。'],
+ ['神經殘響','每場首次解除敵方增益或成功破韌時，對該敵人造成 5 點法術傷害。'],
+ ['臨界反應','每回合首次對具有兩種不同負面狀態的敵人造成傷害時，該張卡總傷害 +15%。'],
+ ['失控核心','每場首次成功打斷敵人特殊行動時抽 2 張牌；取得時增加一次當前地區合法的環境負擔，不能繞過環境上限。'],
+ ['最後一針','每場首次有幹員 HP 低於 30% 時，使其獲得 6 點護盾。'],
+ ['微光餘溫','每回合首次直接治療一名幹員時，額外恢復 2 HP。'],
+ ['心跳記錄','每場首次受到敵人直接攻擊時，該次傷害降低 3 點。'],
+ ['澄清液','每場首次成功淨化負面狀態後，目標額外恢復 4 HP。'],
+ ['倖存者手記','戰鬥勝利且全隊無人倒下時，當前 HP 最低者恢復 5 HP。'],
+ ['止血的結','每場首次受到持續傷害後，移除該效果一層並恢復 3 HP。'],
+ ['多餘的慈悲','每回合首次出現溢出治療時，將最多 5 點溢出量轉為護盾。'],
+ ['雙人值班表','同回合兩名不同幹員提供治療或防護時，第二次效果 +10%。'],
+ ['熱湯配給','使用營地恢復 HP 時，額外恢復全隊最大 HP 的 3%；不觸發其他治療收藏品。'],
+ ['不落之燈','每場首次有幹員受到可防護的致命攻擊時，改為保留 1 HP 並獲得 5 點護盾；全隊每場最多觸發一次同類保命效果。'],
+ ['歸路手札','在可以撤離的樓層揭露撤離條件，並額外揭露同層一個未探索節點。'],
+ ['破角地圖','每次進入新樓層，額外揭露一個未探索節點的類型。'],
+ ['回聲探針','每層首次進入有固定內容的封存箱時，揭露是否存在一項高價值物品，不直接取得物品。'],
+ ['識別鏡片','每層一次，拾取前可查看一件未鑑定物品的完整資料。'],
+ ['邊境小冊','每場首次完成特殊情報事件時，額外揭露一項下一層路線資訊。'],
+ ['摺疊行囊','本局額外獲得 1×2 的臨時物資空間，只可攜帶一般戰利品；依原本撤離規則結算，不能當成保險箱。'],
+ ['風暴緩衝','每層首次因移動路線增加地區環境負擔時，減少此次增加量 1；不影響固定劇情代價。'],
+ ['行商暗記','每次遇到局內商人時，額外揭露一項合法的替代交易，不免費取得商品。'],
+ ['灰色契約','後續精英戰普通戰利品的預期價值 +10%，但精英特殊攻擊傷害 +10%；不提高紅階掉落率。'],
+ ['黎明指北針','本局首次達成普通或特殊撤離條件後，可預覽撤離風險與收益；若放棄撤離並繼續深入，下一個完成的情報事件額外提供一次戰術收藏品候選選擇。']
+ ];
+ const iconAssets={"R001":{"path":"assets/curios/R001.png","source":"official_game_asset","sourceTitle":"无瑕宝玉"},"R002":{"path":"assets/curios/R002.png","source":"official_game_asset","sourceTitle":"Scout的狙击镜"},"R003":{"path":"assets/curios/R003.png","source":"official_game_asset","sourceTitle":"食腐者手杖"},"R004":{"path":"assets/curios/R004.png","source":"official_game_asset","sourceTitle":"设计师量尺"},"R005":{"path":"assets/curios/R005.png","source":"official_game_asset","sourceTitle":"残弩-交叉火力"},"R006":{"path":"assets/curios/R006.png","source":"official_game_asset","sourceTitle":"赶车夫的长鞭"},"R007":{"path":"assets/curios/R007.png","source":"official_game_asset","sourceTitle":"“静音小队”"},"R008":{"path":"assets/curios/R008.png","source":"official_game_asset","sourceTitle":"锈蚀刀片"},"R009":{"path":"assets/curios/R009.png","source":"official_game_asset","sourceTitle":"凯旋号角"},"R010":{"path":"assets/curios/R010.png","source":"official_game_asset","sourceTitle":"衍生者终端-超级改"},"R011":{"path":"assets/curios/R011.png","source":"official_game_asset","sourceTitle":"支援补给站"},"R012":{"path":"assets/curios/R012.png","source":"official_game_asset","sourceTitle":"支援防暴桩"},"R013":{"path":"assets/curios/R013.png","source":"official_game_asset","sourceTitle":"精神治疗录像带"},"R014":{"path":"assets/curios/R014.png","source":"official_game_asset","sourceTitle":"古高卢银币"},"R015":{"path":"assets/curios/R015.png","source":"official_game_asset","sourceTitle":"遗落之帜"},"R016":{"path":"assets/curios/R016.png","source":"official_game_asset","sourceTitle":"判官经文布"},"R017":{"path":"assets/curios/R017.png","source":"official_game_asset","sourceTitle":"散轶诗简"},"R018":{"path":"assets/curios/R018.png","source":"official_game_asset","sourceTitle":"残破合影"},"R019":{"path":"assets/curios/R019.png","source":"official_game_asset","sourceTitle":"三钥协定"},"R020":{"path":"assets/curios/R020.png","source":"official_game_asset","sourceTitle":"悬丝傀儡"},"R021":{"path":"assets/curios/R021.png","source":"official_game_asset","sourceTitle":"异铁小圆盾"},"R022":{"path":"assets/curios/R022.png","source":"official_game_asset","sourceTitle":"荣耀绶带"},"R023":{"path":"assets/curios/R023.png","source":"official_game_asset","sourceTitle":"堡垒协议-方阵"},"R024":{"path":"assets/curios/R024.png","source":"official_game_asset","sourceTitle":"古旧的蒸汽甲胄"},"R025":{"path":"assets/curios/R025.png","source":"official_game_asset","sourceTitle":"制式防暴用具"},"R026":{"path":"assets/curios/R026.png","source":"official_game_asset","sourceTitle":"蓝卡坞安全衣"},"R027":{"path":"assets/curios/R027.png","source":"official_game_asset","sourceTitle":"几丁质刺刃"},"R028":{"path":"assets/curios/R028.png","source":"official_game_asset","sourceTitle":"嵌体甲片"},"R029":{"path":"assets/curios/R029.png","source":"official_game_asset","sourceTitle":"军团护心镜"},"R030":{"path":"assets/curios/R030.png","source":"official_game_asset","sourceTitle":"皇帝的恩宠"},"R031":{"path":"assets/curios/R031.png","source":"official_game_asset","sourceTitle":"特殊抑制器"},"R032":{"path":"assets/curios/R032.png","source":"official_game_asset","sourceTitle":"聚火源石虫"},"R033":{"path":"assets/curios/R033.png","source":"official_game_asset","sourceTitle":"海神的代谢"},"R034":{"path":"assets/curios/R034.png","source":"official_game_asset","sourceTitle":"涡旋座"},"R035":{"path":"assets/curios/R035.png","source":"official_game_asset","sourceTitle":"开裂的束缚带"},"R036":{"path":"assets/curios/R036.png","source":"official_game_asset","sourceTitle":"火油与药膏"},"R037":{"path":"assets/curios/R037.png","source":"official_game_asset","sourceTitle":"高闪相机"},"R038":{"path":"assets/curios/R038.png","source":"official_game_asset","sourceTitle":"神音海螺"},"R039":{"path":"assets/curios/R039.png","source":"official_game_asset","sourceTitle":"未知仪器"},"R040":{"path":"assets/curios/R040.png","source":"official_game_asset","sourceTitle":"深蓝之心"},"R041":{"path":"assets/curios/R041.png","source":"official_game_asset","sourceTitle":"紧急活性剂"},"R042":{"path":"assets/curios/R042.png","source":"official_game_asset","sourceTitle":"生命之水"},"R043":{"path":"assets/curios/R043.png","source":"official_game_asset","sourceTitle":"疗养体验卡"},"R044":{"path":"assets/curios/R044.png","source":"official_game_asset","sourceTitle":"沃特大叔养护套装"},"R045":{"path":"assets/curios/R045.png","source":"official_game_asset","sourceTitle":"生还者合约"},"R046":{"path":"assets/curios/R046.png","source":"official_game_asset","sourceTitle":"难闻的止血剂"},"R047":{"path":"assets/curios/R047.png","source":"official_game_asset","sourceTitle":"急救药箱"},"R048":{"path":"assets/curios/R048.png","source":"official_game_asset","sourceTitle":"医者-妙手"},"R049":{"path":"assets/curios/R049.png","source":"official_game_asset","sourceTitle":"教堂救济餐券"},"R050":{"path":"assets/curios/R050.png","source":"official_game_asset","sourceTitle":"达里奥的提灯"},"R051":{"path":"assets/curios/R051.png","source":"official_game_asset","sourceTitle":"《杜林地上环游记》"},"R052":{"path":"assets/curios/R052.png","source":"official_game_asset","sourceTitle":"地形图"},"R053":{"path":"assets/curios/R053.png","source":"official_game_asset","sourceTitle":"御2"},"R054":{"path":"assets/curios/R054.png","source":"official_game_asset","sourceTitle":"安洁莉娜的创想"},"R055":{"path":"assets/curios/R055.png","source":"official_game_asset","sourceTitle":"《旧高卢地名源流考》"},"R056":{"path":"assets/curios/R056.png","source":"official_game_asset","sourceTitle":"支援起重机"},"R057":{"path":"assets/curios/R057.png","source":"official_game_asset","sourceTitle":"捕鳞蓑"},"R058":{"path":"assets/curios/R058.png","source":"official_game_asset","sourceTitle":"古旧钱币"},"R059":{"path":"assets/curios/R059.png","source":"official_game_asset","sourceTitle":"佣兵保单"},"R060":{"path":"assets/curios/R060.png","source":"official_game_asset","sourceTitle":"遥乡之引"}};
+ const combatEffects61={R024:'每場首次承受至少150點原始傷害時，該次傷害減少50。',R028:'每回合首次受到異常傷害時，減免25%，最多60。',R036:'每回合首次持續傷害額外增加20點傷害。',R047:'每回合首次溢出治療時，最多50點溢出量轉為護盾。'};
+ const entries=Object.fromEntries(rows.map(([name,effect],i)=>{const id='R'+String(i+1).padStart(3,'0'),category=Math.floor(i/10);return[id,Object.freeze({id,name,effect:combatEffects61[id]??FrontierCombatUnits61.text(effect),category,catalogType:'run_curio',rank:(i+1)%10===0?'core':i%10>=6?'rare':'normal',icon:Object.freeze(iconAssets[id])})]}));
+ for(const d of [{"id":"H001","name":"獨奏八音盒","hope144":4,"ticket144":null,"effect":"獲得 4 希望。僅本局生效。","category":5,"catalogType":"run_curio","rank":"rare","rarity":5,"icon":{"source":"official_game_asset","path":"assets/curios/H001.png","sourceTitle":"独奏八音盒"}},{"id":"H002","name":"人事部密信","hope144":6,"ticket144":null,"effect":"獲得 6 希望。僅本局生效。","category":5,"catalogType":"run_curio","rank":"rare","rarity":6,"icon":{"source":"official_game_asset","path":"assets/curios/H002.png","sourceTitle":"人事部密信"}},{"id":"H003","name":"羅德島戰術電台","hope144":0,"ticket144":"triple","effect":"獲得一張三職招募券；招募或晉升仍須支付希望。僅本局生效。","category":5,"catalogType":"run_curio","rank":"normal","rarity":4,"icon":{"source":"official_game_asset","path":"assets/curios/H003.png","sourceTitle":"罗德岛战术电台"}},{"id":"H004","name":"地區行動方案","hope144":2,"ticket144":null,"effect":"獲得 2 希望。僅本局生效。","category":5,"catalogType":"run_curio","rank":"normal","rarity":4,"icon":{"source":"official_game_asset","path":"assets/curios/H004.png","sourceTitle":"地区行动方案"}},{"id":"H005","name":"遊戲室管理員權限卡","hope144":0,"ticket144":"universal","effect":"獲得一張通用招募券；招募或晉升仍須支付希望。僅本局生效。","category":5,"catalogType":"run_curio","rank":"rare","rarity":4,"icon":{"source":"official_game_asset","path":"assets/curios/H005.png","sourceTitle":"游戏室管理员权限卡"}},{"id":"H006","name":"一份演講稿","hope144":4,"ticket144":null,"effect":"獲得 4 希望。僅本局生效。","category":5,"catalogType":"run_curio","rank":"rare","rarity":5,"icon":{"source":"official_game_asset","path":"assets/curios/H006.png","sourceTitle":"一份演讲稿"}},{"id":"H007","name":"解約協議","hope144":4,"ticket144":null,"effect":"獲得 4 希望。僅本局生效。","category":5,"catalogType":"run_curio","rank":"rare","rarity":5,"icon":{"source":"official_game_asset","path":"assets/curios/H007.png","sourceTitle":"解约协议"}},{"id":"H008","name":"全局作戰文件","hope144":4,"ticket144":null,"effect":"獲得 4 希望。僅本局生效。","category":5,"catalogType":"run_curio","rank":"rare","rarity":5,"icon":{"source":"official_game_asset","path":"assets/curios/H008.png","sourceTitle":"全局作战文件"}},{"id":"H009","name":"古舊樂譜殘章","hope144":4,"ticket144":null,"effect":"獲得 4 希望。僅本局生效。","category":5,"catalogType":"run_curio","rank":"rare","rarity":5,"icon":{"source":"official_game_asset","path":"assets/curios/H009.png","sourceTitle":"古旧乐谱残章"}},{"id":"H010","name":"熱水壺","hope144":1,"ticket144":null,"effect":"獲得 1 希望。僅本局生效。","category":5,"catalogType":"run_curio","rank":"normal","rarity":4,"icon":{"source":"official_game_asset","path":"assets/curios/H010.png","sourceTitle":"热水壶"}},{"id":"H011","name":"被撬開的道具箱","hope144":4,"ticket144":null,"effect":"獲得 4 希望。僅本局生效。","category":5,"catalogType":"run_curio","rank":"rare","rarity":5,"icon":{"source":"official_game_asset","path":"assets/curios/H011.png","sourceTitle":"被撬开的道具箱"}}])entries[d.id]=Object.freeze(d);
+ return Object.freeze({version:1,categories:Object.freeze(categories),entries:Object.freeze(entries)});
+})();

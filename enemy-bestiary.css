@@ -1,0 +1,11 @@
+.enemy-index label{display:flex;align-items:center;gap:8px}.enemy-index select{flex:1;min-width:0;min-height:44px}
+.enemy-index-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin:8px 0}
+.enemy-index-tabs button{min-width:0;min-height:44px;padding:4px;font-size:.8rem}
+.enemy-index-tabs [aria-pressed=true]{border-color:#d7e896;color:#e5f6a4;background:#26342b}
+.enemy-index-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:5px}
+.enemy-index-grid .enemy-index-tile{display:grid;justify-items:center;align-content:center;gap:2px;min-width:0;min-height:87px;padding:6px 3px;font-size:.75rem;overflow-wrap:anywhere;position:relative}
+.enemy-index-tile:disabled{opacity:.65}.enemy-index-art,.enemy-index-unknown{width:54px;height:54px;object-fit:contain;display:grid;place-items:center}.enemy-index-unknown{font-size:1.5rem;color:#a8bcc7}
+.enemy-index-captured{position:absolute;top:3px;right:3px;background:#183b2e;color:#e0ffdb;font-size:.63rem;padding:2px}
+.enemy-index-detail{display:flex;gap:8px;align-items:center}.enemy-index-hp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+.enemy-index-hp>div{padding:7px;background:#21333c;display:grid;gap:4px}
+.enemy-phase-label{color:#eff4ae;font-size:.72rem;white-space:nowrap}.enemy-fragment .intent{font-size:.65rem}

@@ -1,0 +1,25 @@
+{
+  "name": "界外餘響",
+  "short_name": "界外餘響",
+  "lang": "zh-Hant",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#101719",
+  "theme_color": "#101719",
+  "icons": [
+    {
+      "src": "assets/home-icon-portrait-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/home-icon-portrait-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
+    }
+  ]
+}

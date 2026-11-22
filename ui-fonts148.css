@@ -1,0 +1,4 @@
+@font-face{font-family:"FrontierSans148";src:url("assets/fonts/NotoSansTC-variable-148.woff2") format("woff2");font-weight:400 900;font-display:swap;font-style:normal}
+@font-face{font-family:"FrontierDisplay148";src:url("assets/fonts/Rajdhani-500-148.ttf") format("truetype");font-weight:500;font-display:swap;font-style:normal}
+@font-face{font-family:"FrontierDisplay148";src:url("assets/fonts/Rajdhani-700-148.ttf") format("truetype");font-weight:700;font-display:swap;font-style:normal}
+.recruit144,.command148-hud,.map-node,.screen-tool-head{font-family:"FrontierSans148","Source Han Sans TC","Noto Sans CJK TC",sans-serif}.recruit147-name{font-weight:900!important;letter-spacing:-.035em}.command148-hud b,.recruit147-cost b{font-family:"Bender","FrontierDisplay148",sans-serif;font-variant-numeric:tabular-nums}

@@ -1,0 +1,8 @@
+'use strict';
+globalThis.FrontierOperatorDamageV31=(()=>{
+ function calculate(target,raw,type){if(!Number.isFinite(raw)||raw<0||!['physical','arts','true'].includes(type))throw Error('Invalid damage instruction');const hp=target.hp,block=target.block||0,def=target.def||0,res=target.res||0;if(![hp,block,def,res].every(Number.isFinite)||hp<0||block<0||def<0||res<0||res>100)throw Error('Invalid target stats');const damage=raw===0?0:Math.max(10,Math.round(type==='physical'?raw-def:type==='arts'?raw*(1-res/100):raw)),absorbed=Math.min(block,damage),hpLoss=Math.min(hp,damage-absorbed);return{raw,damage,absorbed,hpLoss,hp:hp-hpLoss,block:block-absorbed}}
+ function damage(state,actor,target,raw,type){const result=calculate(target,raw,type);target.hp=result.hp;target.block=result.block;state.events??=[];state.events.push({type:'directCardDamage',source:actor.uid,target:target.uid,damageType:type,...result});return result}
+ function preview(input,command,effects){const s=effects.execute(input,command,{damage,heal});return{state:s,events:(s.events||[]).slice((input.events||[]).length)}}
+ function heal(state,actor,target,amount){if(!Number.isFinite(amount)||amount<0||!Number.isFinite(target.hp)||!Number.isFinite(target.max)||target.hp<0||target.max<0||target.hp>target.max)throw Error('Invalid healing');if(target.hp===0||target.exited||target.embers?.active)return 0;const restored=Math.min(amount,Math.max(0,target.max-target.hp));target.hp+=restored;state.events??=[];state.events.push({type:'directCardHeal',source:actor.uid,target:target.uid,amount:restored,overflow:amount-restored});return restored}
+ return{calculate,damage,heal,preview};
+})();

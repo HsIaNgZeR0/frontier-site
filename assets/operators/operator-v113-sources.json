@@ -1,0 +1,1602 @@
+{
+  "repository": "https://github.com/ArknightsAssets/ArknightsAssets2",
+  "branch": "cn",
+  "sourcePolicy": "Same pre-existing project source and attribution. Original artwork rights belong to Hypergryph and respective rightsholders; public availability is not an open redistribution license. QA staging only; no publication.",
+  "at": "2026-11-02T09:50:58.139Z",
+  "files": [
+    {
+      "operator": "operator_v31_vanilla",
+      "name": "香草",
+      "officialId": "char_240_wyvern",
+      "kind": "avatar",
+      "file": "operator_v31_vanilla.png",
+      "relative": "charavatars/char_240_wyvern.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/charavatars/char_240_wyvern.png",
+      "width": 180,
+      "height": 180,
+      "bytes": 51135,
+      "sha256": "28a546deb82ad8f6c033263c49bfa89433ea51599c8180d18e89e2e16c61b4b2"
+    },
+    {
+      "operator": "operator_v31_vanilla",
+      "name": "香草",
+      "officialId": "char_240_wyvern",
+      "kind": "fullbody",
+      "file": "operator_v31_vanilla-full.png",
+      "relative": "characters/char_240_wyvern/char_240_wyvern_1.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_240_wyvern/char_240_wyvern_1.png",
+      "width": 988,
+      "height": 1304,
+      "bytes": 716820,
+      "sha256": "0c25134af2b08e8f74735842d9a204ae8bde91b289ff12acaeed64f5e25cfe40"
+    },
+    {
+      "operator": "operator_v31_plume",
+      "name": "翎羽",
+      "officialId": "char_192_falco",
+      "kind": "avatar",
+      "file": "operator_v31_plume.png",
+      "relative": "charavatars/char_192_falco.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/charavatars/char_192_falco.png",
+      "width": 180,
+      "height": 180,
+      "bytes": 49723,
+      "sha256": "fe888f55d2b24f298e2c653fdff54cce8eb1b7a5a20fd2b61c936d91178e9276"
+    },
+    {
+      "operator": "operator_v31_popukar",
+      "name": "泡普卡",
+      "officialId": "char_281_popka",
+      "kind": "avatar",
+      "file": "operator_v31_popukar.png",
+      "relative": "charavatars/char_281_popka.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/charavatars/char_281_popka.png",
+      "width": 180,
+      "height": 180,
+      "bytes": 58906,
+      "sha256": "e0ede47d7d35b78add5873df97aa125ee014771b60142465359046af8a4eae1d"
+    },
+    {
+      "operator": "operator_v31_plume",
+      "name": "翎羽",
+      "officialId": "char_192_falco",
+      "kind": "fullbody",
+      "file": "operator_v31_plume-full.png",
+      "relative": "characters/char_192_falco/char_192_falco_1.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_192_falco/char_192_falco_1.png",
+      "width": 922,
+      "height": 1496,
+      "bytes": 826784,
+      "sha256": "8872c03b49ca370ee0e6c3b9e1040e33a800a1474740b94cbde18246dd6cab4d"
+    },
+    {
+      "operator": "operator_v31_midnight",
+      "name": "月見夜",
+      "officialId": "char_283_midn",
+      "kind": "avatar",
+      "file": "operator_v31_midnight.png",
+      "relative": "charavatars/char_283_midn.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/charavatars/char_283_midn.png",
+      "width": 180,
+      "height": 180,
+      "bytes": 58813,
+      "sha256": "f84e84baeb35cc14bb1206e446879408c52ae6c56df2159ee03cb71528b243f1"
+    },
+    {
+      "operator": "operator_v31_popukar",
+      "name": "泡普卡",
+      "officialId": "char_281_popka",
+      "kind": "fullbody",
+      "file": "operator_v31_popukar-full.png",
+      "relative": "characters/char_281_popka/char_281_popka_1.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_281_popka/char_281_popka_1.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 325540,
+      "sha256": "ac728ef78c2823e49eddb2a0c3c55673930441b5d07efa847f1f80d12583a3bf"
+    },
+    {
+      "operator": "operator_v31_cardigan",
+      "name": "卡緹",
+      "officialId": "char_209_ardign",
+      "kind": "avatar",
+      "file": "operator_v31_cardigan.png",
+      "relative": "charavatars/char_209_ardign.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/charavatars/char_209_ardign.png",
+      "width": 180,
+      "height": 180,
+      "bytes": 62514,
+      "sha256": "ea7c4b8bb360ecb07fa52392cc80d06a48eafabdaa8ef63bd59b650af2a54454"
+    },
+    {
+      "operator": "operator_v31_spot",
+      "name": "斑點",
+      "officialId": "char_284_spot",
+      "kind": "avatar",
+      "file": "operator_v31_spot.png",
+      "relative": "charavatars/char_284_spot.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/charavatars/char_284_spot.png",
+      "width": 180,
+      "height": 180,
+      "bytes": 46950,
+      "sha256": "f4bb2e4da9c113f69e2598890941c84751d84287dc75d600abc8af28498b0337"
+    },
+    {
+      "operator": "operator_v31_midnight",
+      "name": "月見夜",
+      "officialId": "char_283_midn",
+      "kind": "fullbody",
+      "file": "operator_v31_midnight-full.png",
+      "relative": "characters/char_283_midn/char_283_midn_1.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_283_midn/char_283_midn_1.png",
+      "width": 621,
+      "height": 1409,
+      "bytes": 801729,
+      "sha256": "6f032ea9b35163becaa830570bbe27fe11242e2bf2645eb0919c65835618e98f"
+    },
+    {
+      "operator": "operator_v31_cardigan",
+      "name": "卡緹",
+      "officialId": "char_209_ardign",
+      "kind": "fullbody",
+      "file": "operator_v31_cardigan-full.png",
+      "relative": "characters/char_209_ardign/char_209_ardign_1.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_209_ardign/char_209_ardign_1.png",
+      "width": 671,
+      "height": 1307,
+      "bytes": 711020,
+      "sha256": "0eabab41b56082f07b15658c3ef44115d8a406a424e66d5dee2af7b4a8101172"
+    },
+    {
+      "operator": "operator_v31_spot",
+      "name": "斑點",
+      "officialId": "char_284_spot",
+      "kind": "fullbody",
+      "file": "operator_v31_spot-full.png",
+      "relative": "characters/char_284_spot/char_284_spot_1.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_284_spot/char_284_spot_1.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 379053,
+      "sha256": "43e21015fbada99231a4dea7df9a6d331d7dce13ab094d787eefb8b5a4f2f71a"
+    },
+    {
+      "operator": "operator_v31_adnachiel",
+      "name": "安德切爾",
+      "officialId": "char_211_adnach",
+      "kind": "avatar",
+      "file": "operator_v31_adnachiel.png",
+      "relative": "charavatars/char_211_adnach.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/charavatars/char_211_adnach.png",
+      "width": 180,
+      "height": 180,
+      "bytes": 51712,
+      "sha256": "4f9100f9c8a677f1787f92ea28b753f2d59617c2aaf9da9146ee8e31ea6593a9"
+    },
+    {
+      "operator": "operator_v31_catapult",
+      "name": "空爆",
+      "officialId": "char_282_catap",
+      "kind": "avatar",
+      "file": "operator_v31_catapult.png",
+      "relative": "charavatars/char_282_catap.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/charavatars/char_282_catap.png",
+      "width": 180,
+      "height": 180,
+      "bytes": 47298,
+      "sha256": "e184f05e54dd6488c91560fa1a7f6b0e6f0e8f012fdd581aa7e025014b2d2d8d"
+    },
+    {
+      "operator": "operator_v31_adnachiel",
+      "name": "安德切爾",
+      "officialId": "char_211_adnach",
+      "kind": "fullbody",
+      "file": "operator_v31_adnachiel-full.png",
+      "relative": "characters/char_211_adnach/char_211_adnach_1.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_211_adnach/char_211_adnach_1.png",
+      "width": 547,
+      "height": 1298,
+      "bytes": 478520,
+      "sha256": "2d209370a11c4514ef004b3dc3f566603d43d62e5d7d4ad5f5e7ea9f9bd25a76"
+    },
+    {
+      "operator": "operator_v31_lava",
+      "name": "炎熔",
+      "officialId": "char_121_lava",
+      "kind": "avatar",
+      "file": "operator_v31_lava.png",
+      "relative": "charavatars/char_121_lava.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/charavatars/char_121_lava.png",
+      "width": 180,
+      "height": 180,
+      "bytes": 55725,
+      "sha256": "af82c2c02f979590868bb37d072b097a3d7978c608f28187acd70e558fdbaff9"
+    },
+    {
+      "operator": "operator_v31_catapult",
+      "name": "空爆",
+      "officialId": "char_282_catap",
+      "kind": "fullbody",
+      "file": "operator_v31_catapult-full.png",
+      "relative": "characters/char_282_catap/char_282_catap_1.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_282_catap/char_282_catap_1.png",
+      "width": 659,
+      "height": 1213,
+      "bytes": 533051,
+      "sha256": "47c9c05df034537546cf4cc0baa5c6a0a248121347e48ec9bc7995939ea62fc0"
+    },
+    {
+      "operator": "operator_v31_ansel",
+      "name": "安賽爾",
+      "officialId": "char_212_ansel",
+      "kind": "avatar",
+      "file": "operator_v31_ansel.png",
+      "relative": "charavatars/char_212_ansel.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/charavatars/char_212_ansel.png",
+      "width": 180,
+      "height": 180,
+      "bytes": 59810,
+      "sha256": "88fd4ea99261c7ca310e268d7a8e5aba4a85a2b48241bd90664a2a7d44d7668c"
+    },
+    {
+      "operator": "operator_v31_lava",
+      "name": "炎熔",
+      "officialId": "char_121_lava",
+      "kind": "fullbody",
+      "file": "operator_v31_lava-full.png",
+      "relative": "characters/char_121_lava/char_121_lava_1.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_121_lava/char_121_lava_1.png",
+      "width": 479,
+      "height": 1226,
+      "bytes": 471358,
+      "sha256": "f930bcea0547ea4265c9a019956be9b82192c6e94cb04776dec97a3c865b1157"
+    },
+    {
+      "operator": "operator_v31_ansel",
+      "name": "安賽爾",
+      "officialId": "char_212_ansel",
+      "kind": "fullbody",
+      "file": "operator_v31_ansel-full.png",
+      "relative": "characters/char_212_ansel/char_212_ansel_1.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_212_ansel/char_212_ansel_1.png",
+      "width": 441,
+      "height": 1269,
+      "bytes": 481602,
+      "sha256": "9a8a505fa84868a9b85839a6c8345a9654b66c74e44bc6fe6dad025db594b18d"
+    },
+    {
+      "operator": "operator_v31_orchid",
+      "name": "梓蘭",
+      "officialId": "char_278_orchid",
+      "kind": "avatar",
+      "file": "operator_v31_orchid.png",
+      "relative": "charavatars/char_278_orchid.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/charavatars/char_278_orchid.png",
+      "width": 180,
+      "height": 180,
+      "bytes": 56022,
+      "sha256": "2f1ecaa883e84c1ffc5e7d555c1e508b50c158035996c50aee078b9fb5b8d136"
+    },
+    {
+      "operator": "operator_v31_orchid",
+      "name": "梓蘭",
+      "officialId": "char_278_orchid",
+      "kind": "fullbody",
+      "file": "operator_v31_orchid-full.png",
+      "relative": "characters/char_278_orchid/char_278_orchid_1.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_278_orchid/char_278_orchid_1.png",
+      "width": 515,
+      "height": 1212,
+      "bytes": 570480,
+      "sha256": "ba3abbed35da5b4fcb7b351f51fcdb5f60abf53fa06783a1737c6093a3d0e187"
+    },
+    {
+      "operator": "operator_v31_ambriel",
+      "name": "安比爾",
+      "officialId": "char_302_glaze",
+      "kind": "avatar",
+      "file": "operator_v31_ambriel.png",
+      "relative": "charavatars/char_302_glaze.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/charavatars/char_302_glaze.png",
+      "width": 180,
+      "height": 180,
+      "bytes": 60781,
+      "sha256": "69868ba3fc0c58f6c96f1d73d637ee2d17a77a2a5081b7b2c862e88238c79f6b"
+    },
+    {
+      "operator": "operator_v31_vigna",
+      "name": "紅豆",
+      "officialId": "char_290_vigna",
+      "kind": "avatar",
+      "file": "operator_v31_vigna.png",
+      "relative": "charavatars/char_290_vigna.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/charavatars/char_290_vigna.png",
+      "width": 180,
+      "height": 180,
+      "bytes": 53847,
+      "sha256": "f03affab92a449d412e4bfbcb2f9ae81a1ca5f3882dc027b934c29af7504e9d7"
+    },
+    {
+      "operator": "operator_v31_ambriel",
+      "name": "安比爾",
+      "officialId": "char_302_glaze",
+      "kind": "fullbody",
+      "file": "operator_v31_ambriel-full.png",
+      "relative": "characters/char_302_glaze/char_302_glaze_1.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_302_glaze/char_302_glaze_1.png",
+      "width": 832,
+      "height": 1411,
+      "bytes": 834472,
+      "sha256": "3f445911f92883a34c4444f584fc17e09568d7b94797693e1a16187665008f22"
+    },
+    {
+      "operator": "operator_v31_lapluma",
+      "name": "羽毛筆",
+      "officialId": "char_421_crow",
+      "kind": "avatar",
+      "file": "operator_v31_lapluma.png",
+      "relative": "charavatars/char_421_crow.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/charavatars/char_421_crow.png",
+      "width": 180,
+      "height": 180,
+      "bytes": 48035,
+      "sha256": "14ef899fc87149aba1b4668815472737cf450d1ecf2bdce19d989db8de3c29ef"
+    },
+    {
+      "operator": "operator_v31_vigna",
+      "name": "紅豆",
+      "officialId": "char_290_vigna",
+      "kind": "fullbody",
+      "file": "operator_v31_vigna-full.png",
+      "relative": "characters/char_290_vigna/char_290_vigna_1.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_290_vigna/char_290_vigna_1.png",
+      "width": 1205,
+      "height": 1142,
+      "bytes": 1068431,
+      "sha256": "8a168fb79470fd0d8f3e63db8d412954b61e7effe0af493a832f818d2709281c"
+    },
+    {
+      "operator": "operator_v31_cantabile",
+      "name": "曉歌",
+      "officialId": "char_497_ctable",
+      "kind": "avatar",
+      "file": "operator_v31_cantabile.png",
+      "relative": "charavatars/char_497_ctable.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/charavatars/char_497_ctable.png",
+      "width": 180,
+      "height": 180,
+      "bytes": 48680,
+      "sha256": "3a36fe8980236a72cae1dc099c468818b2c2138a86f6c3b6ea03bbe47bc585fe"
+    },
+    {
+      "operator": "operator_v31_lapluma",
+      "name": "羽毛筆",
+      "officialId": "char_421_crow",
+      "kind": "fullbody",
+      "file": "operator_v31_lapluma-full.png",
+      "relative": "characters/char_421_crow/char_421_crow_1.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_421_crow/char_421_crow_1.png",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 1072838,
+      "sha256": "ee3820fec8af51ecf0b94415cde0abe43a3a6a35b34114c127b2bf72f456b825"
+    },
+    {
+      "operator": "operator_v31_cantabile",
+      "name": "曉歌",
+      "officialId": "char_497_ctable",
+      "kind": "fullbody",
+      "file": "operator_v31_cantabile-full.png",
+      "relative": "characters/char_497_ctable/char_497_ctable_1.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_497_ctable/char_497_ctable_1.png",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 1104420,
+      "sha256": "759bf472a8748734a9fd74cda9e5f10c78997c6b3063e2f2d944810c7ecd6a4c"
+    },
+    {
+      "operator": "operator_v31_projektred",
+      "name": "紅",
+      "officialId": "char_144_red",
+      "kind": "avatar",
+      "file": "operator_v31_projektred.png",
+      "relative": "charavatars/char_144_red.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/charavatars/char_144_red.png",
+      "width": 180,
+      "height": 180,
+      "bytes": 59671,
+      "sha256": "9b2d95546d1e6dd53950ba1b9ad4dce4c112ee12d025766a0a379f5e6cd4aea2"
+    },
+    {
+      "operator": "operator_v31_heavyrain",
+      "name": "暴雨",
+      "officialId": "char_304_zebra",
+      "kind": "avatar",
+      "file": "operator_v31_heavyrain.png",
+      "relative": "charavatars/char_304_zebra.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/charavatars/char_304_zebra.png",
+      "width": 180,
+      "height": 180,
+      "bytes": 44186,
+      "sha256": "7d1ae46e0e0c501c1f833adb2ba07c6deea08fadb7d1444969d3d9f6d5773602"
+    },
+    {
+      "operator": "operator_v31_projektred",
+      "name": "紅",
+      "officialId": "char_144_red",
+      "kind": "fullbody",
+      "file": "operator_v31_projektred-full.png",
+      "relative": "characters/char_144_red/char_144_red_1.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_144_red/char_144_red_1.png",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 1220850,
+      "sha256": "bdb5544a44ab8a39c358cc5a7641dfc89a7d0fd3670d139a2e49daa3e507e77a"
+    },
+    {
+      "operator": "operator_v31_warfarin",
+      "name": "華法林",
+      "officialId": "char_171_bldsk",
+      "kind": "avatar",
+      "file": "operator_v31_warfarin.png",
+      "relative": "charavatars/char_171_bldsk.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/charavatars/char_171_bldsk.png",
+      "width": 180,
+      "height": 180,
+      "bytes": 39549,
+      "sha256": "1f7ed4f973bba3267da9135b2a8f22af5f7210e42646f93d7370edc3169bd16b"
+    },
+    {
+      "operator": "operator_v31_heavyrain",
+      "name": "暴雨",
+      "officialId": "char_304_zebra",
+      "kind": "fullbody",
+      "file": "operator_v31_heavyrain-full.png",
+      "relative": "characters/char_304_zebra/char_304_zebra_1.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_304_zebra/char_304_zebra_1.png",
+      "width": 666,
+      "height": 1257,
+      "bytes": 595217,
+      "sha256": "bca913611e374005b5580d9a7d094099ada67ae571c3e08ed9db11e24d4a5980"
+    },
+    {
+      "operator": "operator_v31_warfarin",
+      "name": "華法林",
+      "officialId": "char_171_bldsk",
+      "kind": "fullbody",
+      "file": "operator_v31_warfarin-full.png",
+      "relative": "characters/char_171_bldsk/char_171_bldsk_1.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_171_bldsk/char_171_bldsk_1.png",
+      "width": 947,
+      "height": 1177,
+      "bytes": 613878,
+      "sha256": "084d51b92446eab0cf0d416f57a6635f9ce84dd64197f024732ecc86f4a60e5c"
+    },
+    {
+      "operator": "operator_v31_surtr",
+      "name": "史爾特爾",
+      "officialId": "char_350_surtr",
+      "kind": "avatar",
+      "file": "operator_v31_surtr.png",
+      "relative": "charavatars/char_350_surtr.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/charavatars/char_350_surtr.png",
+      "width": 180,
+      "height": 180,
+      "bytes": 49886,
+      "sha256": "7056b8909b50ecfab31c70d52a518acf03becb62f6a2398018f38210e4013412"
+    },
+    {
+      "operator": "operator_v31_eyjafjalla",
+      "name": "愛雅法拉",
+      "officialId": "char_180_amgoat",
+      "kind": "avatar",
+      "file": "operator_v31_eyjafjalla.png",
+      "relative": "charavatars/char_180_amgoat.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/charavatars/char_180_amgoat.png",
+      "width": 180,
+      "height": 180,
+      "bytes": 60917,
+      "sha256": "04f63aca703122be459f2c410ad4154cfe562f56425114e97cf416f7c9b636c6"
+    },
+    {
+      "operator": "operator_v31_surtr",
+      "name": "史爾特爾",
+      "officialId": "char_350_surtr",
+      "kind": "fullbody",
+      "file": "operator_v31_surtr-full.png",
+      "relative": "characters/char_350_surtr/char_350_surtr_1.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_350_surtr/char_350_surtr_1.png",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 868074,
+      "sha256": "e95a3446d332a3c91c50bed255c47ec13968bb76a164c6c03970c325e231ae84"
+    },
+    {
+      "operator": "operator_v31_hoshiguma",
+      "name": "星熊",
+      "officialId": "char_136_hsguma",
+      "kind": "avatar",
+      "file": "operator_v31_hoshiguma.png",
+      "relative": "charavatars/char_136_hsguma.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/charavatars/char_136_hsguma.png",
+      "width": 180,
+      "height": 180,
+      "bytes": 43854,
+      "sha256": "a78d86dd7c9a7415ad72e11f21837a16ccfc01c4193939731df5cb7ffec2a205"
+    },
+    {
+      "operator": "operator_v31_eyjafjalla",
+      "name": "愛雅法拉",
+      "officialId": "char_180_amgoat",
+      "kind": "fullbody",
+      "file": "operator_v31_eyjafjalla-full.png",
+      "relative": "characters/char_180_amgoat/char_180_amgoat_1.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_180_amgoat/char_180_amgoat_1.png",
+      "width": 636,
+      "height": 1155,
+      "bytes": 775458,
+      "sha256": "bbd3cb8805fe86780ce717deffedd5cc962a0dd90a0e0e9dd0d04947ed7d2765"
+    },
+    {
+      "operator": "operator_v31_skadi",
+      "name": "斯卡蒂",
+      "officialId": "char_263_skadi",
+      "kind": "avatar",
+      "file": "operator_v31_skadi.png",
+      "relative": "charavatars/char_263_skadi.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/charavatars/char_263_skadi.png",
+      "width": 180,
+      "height": 180,
+      "bytes": 55017,
+      "sha256": "501c25ff8533ff5316a44d9c1a1a56921a9cefad12d296767004f4dc24f5ee63"
+    },
+    {
+      "operator": "operator_v31_hoshiguma",
+      "name": "星熊",
+      "officialId": "char_136_hsguma",
+      "kind": "fullbody",
+      "file": "operator_v31_hoshiguma-full.png",
+      "relative": "characters/char_136_hsguma/char_136_hsguma_1.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_136_hsguma/char_136_hsguma_1.png",
+      "width": 877,
+      "height": 1311,
+      "bytes": 843326,
+      "sha256": "048c6da44ff02814ae1167c135ef6600d27236919ad853c5320473a67bd8c14b"
+    },
+    {
+      "operator": "operator_v31_skadi",
+      "name": "斯卡蒂",
+      "officialId": "char_263_skadi",
+      "kind": "fullbody",
+      "file": "operator_v31_skadi-full.png",
+      "relative": "characters/char_263_skadi/char_263_skadi_1.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_263_skadi/char_263_skadi_1.png",
+      "width": 889,
+      "height": 1230,
+      "bytes": 826735,
+      "sha256": "aac3c79face6d496ff6b8d0bfb9c5687924993bfb6ca8ab1a85e181b45861f25"
+    },
+    {
+      "operator": "operator_v31_angelina",
+      "name": "安潔莉納",
+      "officialId": "char_291_aglina",
+      "kind": "avatar",
+      "file": "operator_v31_angelina.png",
+      "relative": "charavatars/char_291_aglina.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/charavatars/char_291_aglina.png",
+      "width": 180,
+      "height": 180,
+      "bytes": 65013,
+      "sha256": "245e8202ba7f3186fcc88b632a22b96c9d115bff665ccaf4d482019c34d8e864"
+    },
+    {
+      "operator": "operator_v31_mlynar",
+      "name": "瑪恩納",
+      "officialId": "char_4064_mlynar",
+      "kind": "avatar",
+      "file": "operator_v31_mlynar.png",
+      "relative": "charavatars/char_4064_mlynar.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/charavatars/char_4064_mlynar.png",
+      "width": 180,
+      "height": 180,
+      "bytes": 53522,
+      "sha256": "8d128614eab28f0e8ccfd73dd3e020ca1bc490f16bf605553bae74cf65f148a5"
+    },
+    {
+      "operator": "operator_v31_angelina",
+      "name": "安潔莉納",
+      "officialId": "char_291_aglina",
+      "kind": "fullbody",
+      "file": "operator_v31_angelina-full.png",
+      "relative": "characters/char_291_aglina/char_291_aglina_1.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_291_aglina/char_291_aglina_1.png",
+      "width": 776,
+      "height": 1263,
+      "bytes": 995387,
+      "sha256": "e45681bfed2bf06282d257b2db3591208dde15035204417c88e34f7e05ad2f4e"
+    },
+    {
+      "operator": "operator_v31_specter",
+      "name": "幽靈鯊",
+      "officialId": "char_143_ghost",
+      "kind": "avatar",
+      "file": "operator_v31_specter.png",
+      "relative": "charavatars/char_143_ghost.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/charavatars/char_143_ghost.png",
+      "width": 180,
+      "height": 180,
+      "bytes": 57014,
+      "sha256": "d57fc1d5051670e9d01c917c98dde9ac1c3ea1061697ebf5fdd57e1873d2c4a6"
+    },
+    {
+      "operator": "operator_v31_muelsyse",
+      "name": "繆爾賽思",
+      "officialId": "char_249_mlyss",
+      "kind": "avatar",
+      "file": "operator_v31_muelsyse.png",
+      "relative": "charavatars/char_249_mlyss.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/charavatars/char_249_mlyss.png",
+      "width": 180,
+      "height": 180,
+      "bytes": 54226,
+      "sha256": "0f914eeea11b6222b898dbcc0f5c16e280e2d2707f3dd71e0004e2b681f844a4"
+    },
+    {
+      "operator": "operator_v31_specter",
+      "name": "幽靈鯊",
+      "officialId": "char_143_ghost",
+      "kind": "fullbody",
+      "file": "operator_v31_specter-full.png",
+      "relative": "characters/char_143_ghost/char_143_ghost_1.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_143_ghost/char_143_ghost_1.png",
+      "width": 1065,
+      "height": 1282,
+      "bytes": 1232087,
+      "sha256": "7ee2bcceceb998af99c9c6ff0e785a38bca9bed1b6011c569792ce8bcdb65759"
+    },
+    {
+      "operator": "operator_v31_muelsyse",
+      "name": "繆爾賽思",
+      "officialId": "char_249_mlyss",
+      "kind": "fullbody",
+      "file": "operator_v31_muelsyse-full.png",
+      "relative": "characters/char_249_mlyss/char_249_mlyss_1.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_249_mlyss/char_249_mlyss_1.png",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 1104529,
+      "sha256": "ab311ec526e6beaf1bc5f915c957c7599a29538a5150ec6a3ca1c9785e20e8db"
+    },
+    {
+      "operator": "operator_v31_aak",
+      "name": "阿",
+      "officialId": "char_225_haak",
+      "kind": "avatar",
+      "file": "operator_v31_aak.png",
+      "relative": "charavatars/char_225_haak.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/charavatars/char_225_haak.png",
+      "width": 180,
+      "height": 180,
+      "bytes": 41676,
+      "sha256": "f4796cef4cdde39f8daef3f70ee830d8c0888eac0442828f5bd0986a07188a00"
+    },
+    {
+      "operator": "operator_v31_aak",
+      "name": "阿",
+      "officialId": "char_225_haak",
+      "kind": "fullbody",
+      "file": "operator_v31_aak-full.png",
+      "relative": "characters/char_225_haak/char_225_haak_1.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_225_haak/char_225_haak_1.png",
+      "width": 660,
+      "height": 1259,
+      "bytes": 551089,
+      "sha256": "55ce7a9023a121d902f16cd7e425aadc17f5144704e4f40c71237a7c66b1b938"
+    },
+    {
+      "operator": "operator_v31_mlynar",
+      "name": "瑪恩納",
+      "officialId": "char_4064_mlynar",
+      "kind": "fullbody",
+      "file": "operator_v31_mlynar-full.png",
+      "relative": "characters/char_4064_mlynar/char_4064_mlynar_1.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_4064_mlynar/char_4064_mlynar_1.png",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 1045944,
+      "sha256": "05c2a14ed3b3964345e2bddc0988041677b5fd23cb53484fec56b8c925ec307f"
+    },
+    {
+      "operator": "char_124_kroos",
+      "name": "克洛絲",
+      "form": "standard",
+      "officialId": "char_124_kroos",
+      "kind": "fullbody",
+      "file": "char_124_kroos-full.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_124_kroos/char_124_kroos_1.png",
+      "width": 733,
+      "height": 1263,
+      "bytes": 640260,
+      "sha256": "758bf6da73c9634c99d6445bd1382c8a20bbbf0bef331dd520fe7aef9159e27c"
+    },
+    {
+      "operator": "char_208_melan",
+      "name": "玫蘭莎",
+      "form": "standard",
+      "officialId": "char_208_melan",
+      "kind": "fullbody",
+      "file": "char_208_melan-full.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_208_melan/char_208_melan_1.png",
+      "width": 732,
+      "height": 1290,
+      "bytes": 582268,
+      "sha256": "a905d7d526d4b4868acf01f9a7542df684d8d0a62dfb7c95a103548300dc0c9a"
+    },
+    {
+      "operator": "char_210_stward",
+      "name": "史都華德",
+      "form": "standard",
+      "officialId": "char_210_stward",
+      "kind": "fullbody",
+      "file": "char_210_stward-full.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_210_stward/char_210_stward_1.png",
+      "width": 503,
+      "height": 1339,
+      "bytes": 633295,
+      "sha256": "0f359d2e18cd8ba7392fb3cafde1883fe66475c548095b673165c35f0070fa42"
+    },
+    {
+      "operator": "char_123_fang",
+      "name": "芬",
+      "form": "standard",
+      "officialId": "char_123_fang",
+      "kind": "fullbody",
+      "file": "char_123_fang-full.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_123_fang/char_123_fang_1.png",
+      "width": 913,
+      "height": 1235,
+      "bytes": 736019,
+      "sha256": "0c12ece15dfd3b434dc4d2bad4da33ea763e1c469a9834da931d96dd6b4955a1"
+    },
+    {
+      "operator": "char_355_ethan",
+      "name": "伊桑",
+      "form": "standard",
+      "officialId": "char_355_ethan",
+      "kind": "fullbody",
+      "file": "char_355_ethan-full.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_355_ethan/char_355_ethan_1.png",
+      "width": 680,
+      "height": 1095,
+      "bytes": 472841,
+      "sha256": "1f0207aa835fa0b7f7bd9a7c8d8d7b5778df24ee1eb7be9ae17d6f1d0a54c8ae"
+    },
+    {
+      "operator": "char_151_myrtle",
+      "name": "桃金娘",
+      "form": "standard",
+      "officialId": "char_151_myrtle",
+      "kind": "fullbody",
+      "file": "char_151_myrtle-full.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_151_myrtle/char_151_myrtle_1.png",
+      "width": 865,
+      "height": 1430,
+      "bytes": 916652,
+      "sha256": "a91f3ac1f6a9366e665c3693715af1adde017265def7608cc81438b4c048d122"
+    },
+    {
+      "operator": "hibiscus",
+      "name": "芙蓉",
+      "form": "standard",
+      "officialId": "char_120_hibisc",
+      "kind": "fullbody",
+      "file": "hibiscus-full.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_120_hibisc/char_120_hibisc_1.png",
+      "width": 439,
+      "height": 1243,
+      "bytes": 496515,
+      "sha256": "da6cfac8e115c1e9c7bd40a5ce3c4c890133ad525dda1deefb53a145e789ba69"
+    },
+    {
+      "operator": "char_272_strong",
+      "name": "孑",
+      "form": "standard",
+      "officialId": "char_272_strong",
+      "kind": "fullbody",
+      "file": "char_272_strong-full.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_272_strong/char_272_strong_1.png",
+      "width": 480,
+      "height": 1119,
+      "bytes": 415142,
+      "sha256": "8f7591ccaa52466e4026ba9d39f7c96e442424f32bdfac40f592d9671863ea19"
+    },
+    {
+      "operator": "amiya",
+      "name": "阿米婭",
+      "form": "caster",
+      "officialId": "char_002_amiya",
+      "kind": "fullbody",
+      "file": "amiya-full.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_002_amiya/char_002_amiya_1.png",
+      "width": 646,
+      "height": 1305,
+      "bytes": 648042,
+      "sha256": "cd0ab9b618a7c956015fb91f719681a0eef1c72ac6c8245a68cd3bc5e4e15bef"
+    },
+    {
+      "operator": "char_102_texas",
+      "name": "德克薩斯",
+      "form": "standard",
+      "officialId": "char_102_texas",
+      "kind": "fullbody",
+      "file": "char_102_texas-full.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_102_texas/char_102_texas_1.png",
+      "width": 516,
+      "height": 1321,
+      "bytes": 547625,
+      "sha256": "840e5d454fd325bb609b112918f674ee6d80e4bb5eb19621e8e4dd2fc096391d"
+    },
+    {
+      "operator": "char_140_whitew",
+      "name": "拉普蘭德",
+      "form": "standard",
+      "officialId": "char_140_whitew",
+      "kind": "fullbody",
+      "file": "char_140_whitew-full.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_140_whitew/char_140_whitew_1.png",
+      "width": 890,
+      "height": 1221,
+      "bytes": 857875,
+      "sha256": "0add362d046c0d578c8ba67c26f4f39f9bd45c71c89336bc083a089e5c5bc042"
+    },
+    {
+      "operator": "char_128_plosis",
+      "name": "白面鴞",
+      "form": "standard",
+      "officialId": "char_128_plosis",
+      "kind": "fullbody",
+      "file": "char_128_plosis-full.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_128_plosis/char_128_plosis_1.png",
+      "width": 917,
+      "height": 1245,
+      "bytes": 688634,
+      "sha256": "88119a93853e29f814be176e6e173ea38fcdb1af240371aee013f90d43e655b6"
+    },
+    {
+      "operator": "char_103_angel",
+      "name": "能天使",
+      "form": "standard",
+      "officialId": "char_103_angel",
+      "kind": "fullbody",
+      "file": "char_103_angel-full.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_103_angel/char_103_angel_1.png",
+      "width": 597,
+      "height": 1250,
+      "bytes": 495058,
+      "sha256": "da170e3ea916a5897551390ad4d141547b06cfe1110b7212ce843aa0294bcc4b"
+    },
+    {
+      "operator": "char_202_demkni",
+      "name": "賽雷婭",
+      "form": "standard",
+      "officialId": "char_202_demkni",
+      "kind": "fullbody",
+      "file": "char_202_demkni-full.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_202_demkni/char_202_demkni_1.png",
+      "width": 811,
+      "height": 1352,
+      "bytes": 993237,
+      "sha256": "e699c99f079df200613327044b7ac36f167a3218571316a4ff6e271a16d1c401"
+    },
+    {
+      "operator": "char_172_svrash",
+      "name": "銀灰",
+      "form": "standard",
+      "officialId": "char_172_svrash",
+      "kind": "fullbody",
+      "file": "char_172_svrash-full.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_172_svrash/char_172_svrash_1.png",
+      "width": 983,
+      "height": 1435,
+      "bytes": 1107448,
+      "sha256": "1ea0b65d036d09ab11a2ddf8c831a62a82ef3ccc0c7f218acf88b49bfb68e31f"
+    },
+    {
+      "operator": "amiya",
+      "name": "阿米婭",
+      "form": "guard",
+      "officialId": "char_1001_amiya2",
+      "kind": "fullbody",
+      "file": "amiya-guard-full.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_1001_amiya2/char_1001_amiya2_2.png",
+      "variant": "E2-original",
+      "width": 1889,
+      "height": 2042,
+      "bytes": 3841422,
+      "sha256": "9cd38f8f07ee726ca877c32716ec381bf1119340328a706331337e55ac8d75e0"
+    },
+    {
+      "operator": "amiya",
+      "name": "阿米婭",
+      "form": "medic",
+      "officialId": "char_1037_amiya3",
+      "kind": "fullbody",
+      "file": "amiya-medic-full.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_1037_amiya3/char_1037_amiya3_2.png",
+      "variant": "E2-original",
+      "width": 2516,
+      "height": 2384,
+      "bytes": 6108389,
+      "sha256": "cbbb2b3ef06588879a89d134bdc4a63211fa8d5e9c39add6337c350ee98b32d0"
+    },
+    {
+      "name": "緘默德克薩斯",
+      "operator": "texas_the_omertosa",
+      "designName": "緘默德克薩斯",
+      "form": "standard",
+      "officialId": "char_1028_texas2",
+      "kind": "avatar",
+      "file": "char_1028_texas2.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/charavatars/char_1028_texas2.png",
+      "width": 180,
+      "height": 180,
+      "bytes": 49261,
+      "sha256": "603317b0d166c1f165cb4d1c3ab4df0861eb997729f8838283700a9e319eecfb",
+      "playerIdStatus": "Confirmed design ID: rhodes_43_signatures_v7_full_spec.md:580",
+      "introducedBy": "operator-v113"
+    },
+    {
+      "name": "緘默德克薩斯",
+      "operator": "texas_the_omertosa",
+      "designName": "緘默德克薩斯",
+      "form": "standard",
+      "officialId": "char_1028_texas2",
+      "kind": "fullbody",
+      "file": "char_1028_texas2-full.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_1028_texas2/char_1028_texas2_1.png",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 1508920,
+      "sha256": "8096d457c53c2319b1d103bd21fa80c6c36d97f83755d8777b82d5d0669af6ec",
+      "playerIdStatus": "Confirmed design ID: rhodes_43_signatures_v7_full_spec.md:580",
+      "introducedBy": "operator-v113"
+    }
+  ],
+  "failed": [],
+  "formIdSource": {
+    "url": "https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/char_patch_table.json",
+    "sha256": "431e964c1588bc8dd4cc01f01071139d606c52ceca09c19f81674d15030be737",
+    "mapping": {
+      "caster": "char_002_amiya",
+      "guard": "char_1001_amiya2",
+      "medic": "char_1037_amiya3"
+    }
+  },
+  "index": {
+    "char_123_fang": {
+      "name": "芬",
+      "forms": {
+        "standard": {
+          "officialId": "char_123_fang",
+          "file": "char_123_fang-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_123_fang/char_123_fang_1.png",
+          "width": 913,
+          "height": 1235,
+          "sha256": "0c12ece15dfd3b434dc4d2bad4da33ea763e1c469a9834da931d96dd6b4955a1"
+        }
+      }
+    },
+    "operator_v31_vanilla": {
+      "name": "香草",
+      "forms": {
+        "standard": {
+          "officialId": "char_240_wyvern",
+          "file": "operator_v31_vanilla-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_240_wyvern/char_240_wyvern_1.png",
+          "width": 988,
+          "height": 1304,
+          "sha256": "0c25134af2b08e8f74735842d9a204ae8bde91b289ff12acaeed64f5e25cfe40"
+        }
+      }
+    },
+    "operator_v31_plume": {
+      "name": "翎羽",
+      "forms": {
+        "standard": {
+          "officialId": "char_192_falco",
+          "file": "operator_v31_plume-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_192_falco/char_192_falco_1.png",
+          "width": 922,
+          "height": 1496,
+          "sha256": "8872c03b49ca370ee0e6c3b9e1040e33a800a1474740b94cbde18246dd6cab4d"
+        }
+      }
+    },
+    "char_208_melan": {
+      "name": "玫蘭莎",
+      "forms": {
+        "standard": {
+          "officialId": "char_208_melan",
+          "file": "char_208_melan-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_208_melan/char_208_melan_1.png",
+          "width": 732,
+          "height": 1290,
+          "sha256": "a905d7d526d4b4868acf01f9a7542df684d8d0a62dfb7c95a103548300dc0c9a"
+        }
+      }
+    },
+    "operator_v31_popukar": {
+      "name": "泡普卡",
+      "forms": {
+        "standard": {
+          "officialId": "char_281_popka",
+          "file": "operator_v31_popukar-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_281_popka/char_281_popka_1.png",
+          "width": 1024,
+          "height": 1024,
+          "sha256": "ac728ef78c2823e49eddb2a0c3c55673930441b5d07efa847f1f80d12583a3bf"
+        }
+      }
+    },
+    "operator_v31_midnight": {
+      "name": "月見夜",
+      "forms": {
+        "standard": {
+          "officialId": "char_283_midn",
+          "file": "operator_v31_midnight-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_283_midn/char_283_midn_1.png",
+          "width": 621,
+          "height": 1409,
+          "sha256": "6f032ea9b35163becaa830570bbe27fe11242e2bf2645eb0919c65835618e98f"
+        }
+      }
+    },
+    "operator_v31_cardigan": {
+      "name": "卡緹",
+      "forms": {
+        "standard": {
+          "officialId": "char_209_ardign",
+          "file": "operator_v31_cardigan-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_209_ardign/char_209_ardign_1.png",
+          "width": 671,
+          "height": 1307,
+          "sha256": "0eabab41b56082f07b15658c3ef44115d8a406a424e66d5dee2af7b4a8101172"
+        }
+      }
+    },
+    "operator_v31_spot": {
+      "name": "斑點",
+      "forms": {
+        "standard": {
+          "officialId": "char_284_spot",
+          "file": "operator_v31_spot-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_284_spot/char_284_spot_1.png",
+          "width": 1024,
+          "height": 1024,
+          "sha256": "43e21015fbada99231a4dea7df9a6d331d7dce13ab094d787eefb8b5a4f2f71a"
+        }
+      }
+    },
+    "char_124_kroos": {
+      "name": "克洛絲",
+      "forms": {
+        "standard": {
+          "officialId": "char_124_kroos",
+          "file": "char_124_kroos-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_124_kroos/char_124_kroos_1.png",
+          "width": 733,
+          "height": 1263,
+          "sha256": "758bf6da73c9634c99d6445bd1382c8a20bbbf0bef331dd520fe7aef9159e27c"
+        }
+      }
+    },
+    "operator_v31_adnachiel": {
+      "name": "安德切爾",
+      "forms": {
+        "standard": {
+          "officialId": "char_211_adnach",
+          "file": "operator_v31_adnachiel-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_211_adnach/char_211_adnach_1.png",
+          "width": 547,
+          "height": 1298,
+          "sha256": "2d209370a11c4514ef004b3dc3f566603d43d62e5d7d4ad5f5e7ea9f9bd25a76"
+        }
+      }
+    },
+    "operator_v31_catapult": {
+      "name": "空爆",
+      "forms": {
+        "standard": {
+          "officialId": "char_282_catap",
+          "file": "operator_v31_catapult-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_282_catap/char_282_catap_1.png",
+          "width": 659,
+          "height": 1213,
+          "sha256": "47c9c05df034537546cf4cc0baa5c6a0a248121347e48ec9bc7995939ea62fc0"
+        }
+      }
+    },
+    "operator_v31_lava": {
+      "name": "炎熔",
+      "forms": {
+        "standard": {
+          "officialId": "char_121_lava",
+          "file": "operator_v31_lava-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_121_lava/char_121_lava_1.png",
+          "width": 479,
+          "height": 1226,
+          "sha256": "f930bcea0547ea4265c9a019956be9b82192c6e94cb04776dec97a3c865b1157"
+        }
+      }
+    },
+    "char_210_stward": {
+      "name": "史都華德",
+      "forms": {
+        "standard": {
+          "officialId": "char_210_stward",
+          "file": "char_210_stward-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_210_stward/char_210_stward_1.png",
+          "width": 503,
+          "height": 1339,
+          "sha256": "0f359d2e18cd8ba7392fb3cafde1883fe66475c548095b673165c35f0070fa42"
+        }
+      }
+    },
+    "hibiscus": {
+      "name": "芙蓉",
+      "forms": {
+        "standard": {
+          "officialId": "char_120_hibisc",
+          "file": "hibiscus-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_120_hibisc/char_120_hibisc_1.png",
+          "width": 439,
+          "height": 1243,
+          "sha256": "da6cfac8e115c1e9c7bd40a5ce3c4c890133ad525dda1deefb53a145e789ba69"
+        }
+      }
+    },
+    "operator_v31_ansel": {
+      "name": "安賽爾",
+      "forms": {
+        "standard": {
+          "officialId": "char_212_ansel",
+          "file": "operator_v31_ansel-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_212_ansel/char_212_ansel_1.png",
+          "width": 441,
+          "height": 1269,
+          "sha256": "9a8a505fa84868a9b85839a6c8345a9654b66c74e44bc6fe6dad025db594b18d"
+        }
+      }
+    },
+    "operator_v31_orchid": {
+      "name": "梓蘭",
+      "forms": {
+        "standard": {
+          "officialId": "char_278_orchid",
+          "file": "operator_v31_orchid-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_278_orchid/char_278_orchid_1.png",
+          "width": 515,
+          "height": 1212,
+          "sha256": "ba3abbed35da5b4fcb7b351f51fcdb5f60abf53fa06783a1737c6093a3d0e187"
+        }
+      }
+    },
+    "char_151_myrtle": {
+      "name": "桃金娘",
+      "forms": {
+        "standard": {
+          "officialId": "char_151_myrtle",
+          "file": "char_151_myrtle-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_151_myrtle/char_151_myrtle_1.png",
+          "width": 865,
+          "height": 1430,
+          "sha256": "a91f3ac1f6a9366e665c3693715af1adde017265def7608cc81438b4c048d122"
+        }
+      }
+    },
+    "char_355_ethan": {
+      "name": "伊桑",
+      "forms": {
+        "standard": {
+          "officialId": "char_355_ethan",
+          "file": "char_355_ethan-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_355_ethan/char_355_ethan_1.png",
+          "width": 680,
+          "height": 1095,
+          "sha256": "1f0207aa835fa0b7f7bd9a7c8d8d7b5778df24ee1eb7be9ae17d6f1d0a54c8ae"
+        }
+      }
+    },
+    "char_272_strong": {
+      "name": "孑",
+      "forms": {
+        "standard": {
+          "officialId": "char_272_strong",
+          "file": "char_272_strong-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_272_strong/char_272_strong_1.png",
+          "width": 480,
+          "height": 1119,
+          "sha256": "8f7591ccaa52466e4026ba9d39f7c96e442424f32bdfac40f592d9671863ea19"
+        }
+      }
+    },
+    "amiya": {
+      "name": "阿米婭",
+      "forms": {
+        "caster": {
+          "officialId": "char_002_amiya",
+          "file": "amiya-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_002_amiya/char_002_amiya_1.png",
+          "width": 646,
+          "height": 1305,
+          "sha256": "cd0ab9b618a7c956015fb91f719681a0eef1c72ac6c8245a68cd3bc5e4e15bef"
+        },
+        "guard": {
+          "officialId": "char_1001_amiya2",
+          "file": "amiya-guard-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_1001_amiya2/char_1001_amiya2_2.png",
+          "width": 1889,
+          "height": 2042,
+          "sha256": "9cd38f8f07ee726ca877c32716ec381bf1119340328a706331337e55ac8d75e0",
+          "variant": "E2-original"
+        },
+        "medic": {
+          "officialId": "char_1037_amiya3",
+          "file": "amiya-medic-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_1037_amiya3/char_1037_amiya3_2.png",
+          "width": 2516,
+          "height": 2384,
+          "sha256": "cbbb2b3ef06588879a89d134bdc4a63211fa8d5e9c39add6337c350ee98b32d0",
+          "variant": "E2-original"
+        }
+      }
+    },
+    "operator_v31_ambriel": {
+      "name": "安比爾",
+      "forms": {
+        "standard": {
+          "officialId": "char_302_glaze",
+          "file": "operator_v31_ambriel-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_302_glaze/char_302_glaze_1.png",
+          "width": 832,
+          "height": 1411,
+          "sha256": "3f445911f92883a34c4444f584fc17e09568d7b94797693e1a16187665008f22"
+        }
+      }
+    },
+    "operator_v31_vigna": {
+      "name": "紅豆",
+      "forms": {
+        "standard": {
+          "officialId": "char_290_vigna",
+          "file": "operator_v31_vigna-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_290_vigna/char_290_vigna_1.png",
+          "width": 1205,
+          "height": 1142,
+          "sha256": "8a168fb79470fd0d8f3e63db8d412954b61e7effe0af493a832f818d2709281c"
+        }
+      }
+    },
+    "char_102_texas": {
+      "name": "德克薩斯",
+      "forms": {
+        "standard": {
+          "officialId": "char_102_texas",
+          "file": "char_102_texas-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_102_texas/char_102_texas_1.png",
+          "width": 516,
+          "height": 1321,
+          "sha256": "840e5d454fd325bb609b112918f674ee6d80e4bb5eb19621e8e4dd2fc096391d"
+        }
+      }
+    },
+    "operator_v31_lapluma": {
+      "name": "羽毛筆",
+      "forms": {
+        "standard": {
+          "officialId": "char_421_crow",
+          "file": "operator_v31_lapluma-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_421_crow/char_421_crow_1.png",
+          "width": 2048,
+          "height": 2048,
+          "sha256": "ee3820fec8af51ecf0b94415cde0abe43a3a6a35b34114c127b2bf72f456b825"
+        }
+      }
+    },
+    "char_140_whitew": {
+      "name": "拉普蘭德",
+      "forms": {
+        "standard": {
+          "officialId": "char_140_whitew",
+          "file": "char_140_whitew-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_140_whitew/char_140_whitew_1.png",
+          "width": 890,
+          "height": 1221,
+          "sha256": "0add362d046c0d578c8ba67c26f4f39f9bd45c71c89336bc083a089e5c5bc042"
+        }
+      }
+    },
+    "operator_v31_cantabile": {
+      "name": "曉歌",
+      "forms": {
+        "standard": {
+          "officialId": "char_497_ctable",
+          "file": "operator_v31_cantabile-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_497_ctable/char_497_ctable_1.png",
+          "width": 2048,
+          "height": 2048,
+          "sha256": "759bf472a8748734a9fd74cda9e5f10c78997c6b3063e2f2d944810c7ecd6a4c"
+        }
+      }
+    },
+    "char_128_plosis": {
+      "name": "白面鴞",
+      "forms": {
+        "standard": {
+          "officialId": "char_128_plosis",
+          "file": "char_128_plosis-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_128_plosis/char_128_plosis_1.png",
+          "width": 917,
+          "height": 1245,
+          "sha256": "88119a93853e29f814be176e6e173ea38fcdb1af240371aee013f90d43e655b6"
+        }
+      }
+    },
+    "operator_v31_projektred": {
+      "name": "紅",
+      "forms": {
+        "standard": {
+          "officialId": "char_144_red",
+          "file": "operator_v31_projektred-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_144_red/char_144_red_1.png",
+          "width": 2048,
+          "height": 2048,
+          "sha256": "bdb5544a44ab8a39c358cc5a7641dfc89a7d0fd3670d139a2e49daa3e507e77a"
+        }
+      }
+    },
+    "operator_v31_heavyrain": {
+      "name": "暴雨",
+      "forms": {
+        "standard": {
+          "officialId": "char_304_zebra",
+          "file": "operator_v31_heavyrain-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_304_zebra/char_304_zebra_1.png",
+          "width": 666,
+          "height": 1257,
+          "sha256": "bca913611e374005b5580d9a7d094099ada67ae571c3e08ed9db11e24d4a5980"
+        }
+      }
+    },
+    "operator_v31_warfarin": {
+      "name": "華法林",
+      "forms": {
+        "standard": {
+          "officialId": "char_171_bldsk",
+          "file": "operator_v31_warfarin-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_171_bldsk/char_171_bldsk_1.png",
+          "width": 947,
+          "height": 1177,
+          "sha256": "084d51b92446eab0cf0d416f57a6635f9ce84dd64197f024732ecc86f4a60e5c"
+        }
+      }
+    },
+    "char_103_angel": {
+      "name": "能天使",
+      "forms": {
+        "standard": {
+          "officialId": "char_103_angel",
+          "file": "char_103_angel-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_103_angel/char_103_angel_1.png",
+          "width": 597,
+          "height": 1250,
+          "sha256": "da170e3ea916a5897551390ad4d141547b06cfe1110b7212ce843aa0294bcc4b"
+        }
+      }
+    },
+    "char_202_demkni": {
+      "name": "賽雷婭",
+      "forms": {
+        "standard": {
+          "officialId": "char_202_demkni",
+          "file": "char_202_demkni-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_202_demkni/char_202_demkni_1.png",
+          "width": 811,
+          "height": 1352,
+          "sha256": "e699c99f079df200613327044b7ac36f167a3218571316a4ff6e271a16d1c401"
+        }
+      }
+    },
+    "char_172_svrash": {
+      "name": "銀灰",
+      "forms": {
+        "standard": {
+          "officialId": "char_172_svrash",
+          "file": "char_172_svrash-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_172_svrash/char_172_svrash_1.png",
+          "width": 983,
+          "height": 1435,
+          "sha256": "1ea0b65d036d09ab11a2ddf8c831a62a82ef3ccc0c7f218acf88b49bfb68e31f"
+        }
+      }
+    },
+    "operator_v31_surtr": {
+      "name": "史爾特爾",
+      "forms": {
+        "standard": {
+          "officialId": "char_350_surtr",
+          "file": "operator_v31_surtr-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_350_surtr/char_350_surtr_1.png",
+          "width": 2048,
+          "height": 2048,
+          "sha256": "e95a3446d332a3c91c50bed255c47ec13968bb76a164c6c03970c325e231ae84"
+        }
+      }
+    },
+    "operator_v31_eyjafjalla": {
+      "name": "愛雅法拉",
+      "forms": {
+        "standard": {
+          "officialId": "char_180_amgoat",
+          "file": "operator_v31_eyjafjalla-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_180_amgoat/char_180_amgoat_1.png",
+          "width": 636,
+          "height": 1155,
+          "sha256": "bbd3cb8805fe86780ce717deffedd5cc962a0dd90a0e0e9dd0d04947ed7d2765"
+        }
+      }
+    },
+    "operator_v31_hoshiguma": {
+      "name": "星熊",
+      "forms": {
+        "standard": {
+          "officialId": "char_136_hsguma",
+          "file": "operator_v31_hoshiguma-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_136_hsguma/char_136_hsguma_1.png",
+          "width": 877,
+          "height": 1311,
+          "sha256": "048c6da44ff02814ae1167c135ef6600d27236919ad853c5320473a67bd8c14b"
+        }
+      }
+    },
+    "operator_v31_skadi": {
+      "name": "斯卡蒂",
+      "forms": {
+        "standard": {
+          "officialId": "char_263_skadi",
+          "file": "operator_v31_skadi-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_263_skadi/char_263_skadi_1.png",
+          "width": 889,
+          "height": 1230,
+          "sha256": "aac3c79face6d496ff6b8d0bfb9c5687924993bfb6ca8ab1a85e181b45861f25"
+        }
+      }
+    },
+    "operator_v31_angelina": {
+      "name": "安潔莉納",
+      "forms": {
+        "standard": {
+          "officialId": "char_291_aglina",
+          "file": "operator_v31_angelina-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_291_aglina/char_291_aglina_1.png",
+          "width": 776,
+          "height": 1263,
+          "sha256": "e45681bfed2bf06282d257b2db3591208dde15035204417c88e34f7e05ad2f4e"
+        }
+      }
+    },
+    "operator_v31_mlynar": {
+      "name": "瑪恩納",
+      "forms": {
+        "standard": {
+          "officialId": "char_4064_mlynar",
+          "file": "operator_v31_mlynar-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_4064_mlynar/char_4064_mlynar_1.png",
+          "width": 2048,
+          "height": 2048,
+          "sha256": "05c2a14ed3b3964345e2bddc0988041677b5fd23cb53484fec56b8c925ec307f"
+        }
+      }
+    },
+    "operator_v31_specter": {
+      "name": "幽靈鯊",
+      "forms": {
+        "standard": {
+          "officialId": "char_143_ghost",
+          "file": "operator_v31_specter-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_143_ghost/char_143_ghost_1.png",
+          "width": 1065,
+          "height": 1282,
+          "sha256": "7ee2bcceceb998af99c9c6ff0e785a38bca9bed1b6011c569792ce8bcdb65759"
+        }
+      }
+    },
+    "operator_v31_muelsyse": {
+      "name": "繆爾賽思",
+      "forms": {
+        "standard": {
+          "officialId": "char_249_mlyss",
+          "file": "operator_v31_muelsyse-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_249_mlyss/char_249_mlyss_1.png",
+          "width": 2048,
+          "height": 2048,
+          "sha256": "ab311ec526e6beaf1bc5f915c957c7599a29538a5150ec6a3ca1c9785e20e8db"
+        }
+      }
+    },
+    "operator_v31_aak": {
+      "name": "阿",
+      "forms": {
+        "standard": {
+          "officialId": "char_225_haak",
+          "file": "operator_v31_aak-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_225_haak/char_225_haak_1.png",
+          "width": 660,
+          "height": 1259,
+          "sha256": "55ce7a9023a121d902f16cd7e425aadc17f5144704e4f40c71237a7c66b1b938"
+        }
+      }
+    },
+    "texas_the_omertosa": {
+      "name": "緘默德克薩斯",
+      "forms": {
+        "standard": {
+          "officialId": "char_1028_texas2",
+          "file": "char_1028_texas2-full.png",
+          "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_1028_texas2/char_1028_texas2_1.png",
+          "width": 2048,
+          "height": 2048,
+          "sha256": "8096d457c53c2319b1d103bd21fa80c6c36d97f83755d8777b82d5d0669af6ec"
+        }
+      }
+    }
+  },
+  "attemptHistory": [
+    {
+      "operator": "amiya",
+      "name": "阿米婭",
+      "form": "guard",
+      "officialId": "char_1001_amiya2",
+      "kind": "fullbody",
+      "file": "amiya-guard-full.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_1001_amiya2/char_1001_amiya2_1.png",
+      "error": "HTTP 404"
+    },
+    {
+      "operator": "amiya",
+      "name": "阿米婭",
+      "form": "medic",
+      "officialId": "char_1037_amiya3",
+      "kind": "fullbody",
+      "file": "amiya-medic-full.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_1037_amiya3/char_1037_amiya3_1.png",
+      "error": "HTTP 404"
+    }
+  ],
+  "summary": {
+    "operators": 43,
+    "forms": 45,
+    "fullbodyFiles": 45,
+    "avatarFiles": 28,
+    "missing": [],
+    "additionalOperatorAssetKeys": [
+      "char_1028_texas2"
+    ]
+  },
+  "additionalOperators": {
+    "char_1028_texas2": {
+      "name": "緘默德克薩斯",
+      "officialId": "char_1028_texas2",
+      "baseOperatorOfficialId": "char_102_texas",
+      "mustHaveDistinctPlayerId": true,
+      "playerId": "texas_the_omertosa",
+      "form": "standard",
+      "file": "char_1028_texas2-full.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets2/cn/assets/dyn/arts/characters/char_1028_texas2/char_1028_texas2_1.png",
+      "width": 2048,
+      "height": 2048,
+      "sha256": "8096d457c53c2319b1d103bd21fa80c6c36d97f83755d8777b82d5d0669af6ec",
+      "idSource": "specs/operator-v113/rhodes_43_signatures_v7_full_spec.md:580"
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "release": "public-recruitment-desks-inplace-settings-20261115-r73",
+  "version": "v13.9",
+  "tactical": 150,
+  "exploration": 50,
+  "modules": 100,
+  "ui": "standing-art-left-cultivation-and-stats-right-three-equal-gear-slots-below",
+  "assetPolicy": "188-arknights-modules-12-endfield-equipment-60-official-medicines",
+  "baseline": "0cb10196e90cd280cade476c4fe3d509e6a14bad",
+  "controlConversion": "charged-control-pressure-equipment-hooks",
+  "maintenance": 73,
+  "migration": 2,
+  "settlement": "final-snapshot-before-save",
+  "saveCompatibility": "combat61-idempotent-legacy-run-and-record-conversion-preserve-assets",
+  "combat": "scoped-cost-floor-conditional-aoe-isolated-preview",
+  "uniqueEquipmentImages": 200,
+  "highRarityModules": 125,
+  "combatUnitScale": 10,
+  "unchangedUnits": [
+    "RES",
+    "percentages",
+    "AP",
+    "statusStacks",
+    "signatureCharge",
+    "turns",
+    "controlPressure"
+  ],
+  "tuning": {
+    "schema": 15,
+    "reforgeLimits": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "publication": "user-authorized",
+    "poolSize": 11,
+    "concurrent": "unused-instance-only"
+  },
+  "moduleInstall": "active-run-any-node-and-battle",
+  "enemyHealth": "four-difficulties-natural-spawn-x10-verified-no-extra-scaling"
+}

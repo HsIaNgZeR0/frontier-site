@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="320" viewBox="0 0 480 320">
+  <defs>
+    <linearGradient id="panel" x2="1" y2="1">
+      <stop stop-color="#223e4b"/><stop offset="1" stop-color="#0b171f"/>
+    </linearGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#81c7de" stroke-opacity=".12"/>
+    </pattern>
+  </defs>
+  <path fill="url(#panel)" d="M0 0h480v320H0z"/>
+  <path fill="url(#grid)" d="M0 0h480v320H0z"/>
+  <g fill="none" stroke="#86d6ee" stroke-width="2" opacity=".6">
+    <circle cx="240" cy="148" r="112"/>
+    <path d="M240 24v22m0 204v22M116 148h22m204 0h22M56 58h42M56 58v42m326-42h42v42M56 244v24h42m284 0h42v-24"/>
+  </g>
+  <path d="m240 51-70 59-18 105 45 55h86l45-55-18-105z" fill="#15242e" stroke="#c0e5ef" stroke-width="4"/>
+  <path d="m240 79-49 44 12 70 37 26 37-26 12-70z" fill="#071119" stroke="#6a9aab" stroke-width="3"/>
+  <path d="m205 148 35 7 35-7" fill="none" stroke="#8ae0f1" stroke-width="4"/>
+  <path d="m154 215 53-19 33 40 33-40 53 19-23 60H177z" fill="#233c49" stroke="#9bbdc9" stroke-width="3"/>
+  <path d="M240 238v37m-29-54-15 32m73-32 15 32" stroke="#759cae" stroke-width="3"/>
+  <path d="M68 286h110m124 0h110" stroke="#7dc9e0" stroke-width="2" opacity=".55"/>
+</svg>

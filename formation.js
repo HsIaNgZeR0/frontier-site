@@ -1,0 +1,8 @@
+'use strict';
+window.FrontierFormation=(()=>{
+ const oldTune=tune;tune=function(id,fallback){if(R()?.team?.length===5){if(id==='energy'&&fallback===3)fallback=5;if(id==='draw'&&fallback===5)fallback=7}return oldTune(id,fallback)};
+ const oldRender=render;render=function(){oldRender();const body=document.querySelector('.screen-workspace-body');if(R()?.team?.length===5&&R().battle)body?.classList.add('five-member-battle');};
+ function incoming(){const live=R();if(!live?.battle||live.result)return{};const original=db,loss={};try{db=structuredClone(original);const r=R(),b=r.battle;for(const e of b.enemies.filter(e=>e.hp>0))if(e.poison)e.hp=Math.max(0,e.hp-e.poison);for(const e of b.enemies.filter(e=>e.hp>0&&e.intent==='attack'&&!e.npcTarget)){const target=r.team.find(a=>a.id===e.target&&a.hp>0)||r.team.find(a=>a.hp>0);if(!target)break;FrontierCombat.actorHit(target,e.atk,e.damageType,e);FrontierCombat.sync()}for(const a of live.team){const simulated=r.team.find(x=>x.id===a.id);loss[a.id]=Math.min(a.hp,Math.max(0,a.hp-simulated.hp))}}finally{db=original}return loss}
+ const prev=render;render=function(){prev();const r=R();if(!r?.battle||r.result||r.operatorSystemVersion===113)return;const forecast=incoming();for(const row of document.querySelectorAll('.team-actor[data-inspect-actor]')){const actor=r.team.find(a=>a.id===row.dataset.inspectActor),damage=forecast[actor?.id]||0;if(!actor||!damage)continue;const band=document.createElement('span');band.className='incoming-damage-band';band.style.left=((actor.hp-damage)/actor.max*100)+'%';band.style.width=(damage/actor.max*100)+'%';band.setAttribute('aria-label','預計受到 '+damage+' 傷害');row.insertBefore(band,row.firstChild)}};
+ return{incoming};
+})();

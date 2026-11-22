@@ -1,0 +1,8 @@
+'use strict';
+window.FrontierMasteryIcons60=(()=>{
+ const rank=stage=>Math.max(0,Math.min(3,Number(String(stage||'M0').match(/M([0-3])/)?.[1]||0)));
+ function html(stage='M0'){const n=rank(stage),branch=/M3[AB]/.test(stage)?stage.slice(-1):'';return '<span class="mastery60-icon" data-mastery-icon="'+n+'"'+(branch?' data-branch="'+branch+'"':'')+' role="img" aria-label="專精'+n+(branch?' '+branch+'分支':'')+'" title="專精'+n+(branch?' · '+branch+'分支':'')+'"><img src="assets/mastery/m'+n+'.png" alt="" draggable="false"><span class="mastery60-text" aria-hidden="true">'+stage+'</span></span>'}
+ function decorate(root){if(!root?.isConnected)return;const nodes=[],walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);while(walker.nextNode())nodes.push(walker.currentNode);for(const node of nodes){if(node.parentElement?.closest('[data-mastery-icon],script,style,input,textarea,select,[contenteditable]'))continue;const text=node.nodeValue,re=/(?<![A-Za-z0-9])M[0-3](?:[AB])?(?![A-Za-z0-9])/g;if(!re.test(text))continue;re.lastIndex=0;let at=0,fragment=document.createDocumentFragment();for(const m of text.matchAll(re)){fragment.append(text.slice(at,m.index));const temp=document.createElement('span');temp.innerHTML=html(m[0]);fragment.append(temp.firstChild);at=m.index+m[0].length}fragment.append(text.slice(at));node.replaceWith(fragment)}}
+ const modal=document.querySelector('#modal');let queued=false;if(modal)new MutationObserver(()=>{if(queued||!modal.open)return;queued=true;queueMicrotask(()=>{queued=false;decorate(modal)})}).observe(modal,{childList:true,subtree:true});
+ return{html,rank,decorate};
+})();

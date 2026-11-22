@@ -1,0 +1,21 @@
+'use strict';
+window.FrontierCurrencyIcons=(()=>{
+ const labels={ingot:'源石碇',lmd:'龍門幣',originium:'源石',synth:'合成玉',green:'綠憑證',yellow:'黃憑證'},aliases={'源石碇':'ingot','源石錠':'ingot','源石锭':'ingot','龍門幣':'lmd','龙门币':'lmd','LMD':'lmd','至純源石':'originium','源石':'originium','合成玉':'synth','初期憑證':'green','綠資格憑證':'green','綠憑證':'green','資深憑證':'yellow','黃資格憑證':'yellow','黃憑證':'yellow'},key=id=>String(id).replace(/^wallet:|^\$/,'');
+ function html(id){const k=key(id),label=labels[k];return label?'<span class="currency-icon currency-'+k+'" role="img" aria-label="'+label+'" title="'+label+'"><img src="assets/currencies/'+k+'.png" alt="" draggable="false" decoding="async"></span>':''}
+ function element(k){const span=document.createElement('span');span.className='currency-icon currency-'+k;span.setAttribute('role','img');span.setAttribute('aria-label',labels[k]);span.title=labels[k];const img=document.createElement('img');img.src='assets/currencies/'+k+'.png';img.alt='';img.draggable=false;span.append(img);return span}
+ const terms=Object.keys(aliases).sort((a,b)=>b.length-a.length).join('|'),inline=new RegExp('('+terms+')(?=\\s*[+−-]?\\s*[0-9])|([0-9,]+\\s*)('+terms+')(?![\\u4e00-\\u9fff])','g');
+ const scope='#app,#modal,#base-construction-modal,#toast',ignored='.rewards151-block h3,.command148-hud,.currency-icon,script,style,textarea,input,select,[contenteditable="true"]',pending=new Set();let scheduled=false;const metrics={scans:0,textNodes:0};
+ function scan(root){
+  if(!root?.isConnected)return;metrics.scans++;
+  const walker=root.nodeType===Node.TEXT_NODE?null:document.createTreeWalker(root,NodeFilter.SHOW_TEXT),nodes=walker?[]:[root];if(walker)while(walker.nextNode())nodes.push(walker.currentNode);
+  for(const node of nodes){metrics.textNodes++;const text=node.nodeValue,trim=text.trim();inline.lastIndex=0;if(!aliases[trim]&&!inline.test(text))continue;if(!node.parentElement||node.parentElement.closest(ignored))continue;
+   if(aliases[trim]){if(node.parentElement.closest('.store-card')?.querySelector('.store-picture .currency-icon'))continue;const fragment=document.createDocumentFragment();fragment.append(document.createTextNode(text.slice(0,text.indexOf(trim))),element(aliases[trim]),document.createTextNode(text.slice(text.indexOf(trim)+trim.length)));node.replaceWith(fragment);continue}
+   inline.lastIndex=0;const matches=[...text.matchAll(inline)];if(!matches.length)continue;const fragment=document.createDocumentFragment();let start=0;for(const m of matches){fragment.append(document.createTextNode(text.slice(start,m.index)),document.createTextNode(m[2]||''),element(aliases[m[1]||m[3]]));start=m.index+m[0].length}fragment.append(document.createTextNode(text.slice(start)));node.replaceWith(fragment);
+  }
+ }
+ function decorate(){for(const root of document.querySelectorAll(scope))scan(root)}
+ function schedule(node){const el=node.nodeType===Node.TEXT_NODE?node.parentElement:node;if(!el?.closest?.(scope)||el.closest(ignored))return;pending.add(node);if(scheduled)return;scheduled=true;queueMicrotask(()=>{scheduled=false;const roots=new Set([...pending].filter(n=>n.isConnected));pending.clear();for(const root of roots){let ancestor=root.parentNode,covered=false;while(ancestor){if(roots.has(ancestor)){covered=true;break}ancestor=ancestor.parentNode}if(!covered)scan(root)}})}
+ new MutationObserver(records=>{for(const record of records)if(record.type==='characterData')schedule(record.target);else for(const node of record.addedNodes)if(node.nodeType===Node.ELEMENT_NODE||node.nodeType===Node.TEXT_NODE)schedule(node)}).observe(document.body,{childList:true,subtree:true,characterData:true});window.addEventListener('frontier:boot',decorate);decorate();
+ const oldSources=window.sources;if(oldSources)window.sources=function(){oldSources();const host=document.querySelector('#modal');if(host){const credit=document.createElement('p');credit.textContent='貨幣圖像：明日方舟／鷹角網絡；來源 PRTS Wiki。';const link=document.createElement('a');link.href='https://prts.wiki/w/分类:基础道具';link.textContent='PRTS 道具資料';link.target='_blank';link.rel='noopener';credit.append(link);host.append(credit)}};
+ return {html,labels,decorate,info:()=>({...metrics}),has:id=>!!labels[key(id)]};
+})();

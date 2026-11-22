@@ -1,0 +1,9 @@
+/* Mobile presentation only; preserve card geometry, feedback and game rules. */
+@media(max-width:720px),(pointer:coarse){
+ #nav{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:#101d27!important}
+ dialog#modal::backdrop,dialog.base-construction-modal::backdrop{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:#02090de8!important}
+ .grain{display:none!important}
+ .home20-assistant-art,.hero-character,.operator-visual img{filter:none!important}
+ body.in-battle .v113-hand .play-card{box-shadow:none!important}
+ body.in-battle .v113-hand .play-card:is(.picked,.fan-focused){outline:2px solid #dcecb0;outline-offset:1px}
+}
