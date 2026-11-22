@@ -112,3 +112,12 @@ dialog#modal:not([open]){display:none!important}
 .fd-card-slot .play-card .card-cost{transform:scale(.75);transform-origin:top left}
 .fd-card-slot .play-card .card-class{font-size:9px!important}
 .fd-card-slot .play-card .card-art{height:52px!important;min-height:52px!important}
+
+/* 戰後收藏品（與戰利品同區） */
+.fd-curio-drop{margin:10px 0;padding:8px;border:1px solid #c9a45c88;background:#2a2416cc;border-radius:4px}
+.fd-curio-drop h3{margin:0 0 6px;font-size:14px;color:#f2d38a}
+.fd-curio-choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:6px}
+.fd-curio-choices button,.fd-curio-got{min-height:44px;display:grid;grid-template-columns:40px 1fr;grid-template-rows:auto auto;gap:2px 6px;align-items:center;text-align:left;padding:6px;background:#14252d;border:1px solid #3c525b;border-radius:4px}
+.fd-curio-choices img{width:40px;height:40px;object-fit:contain;grid-row:span 2}
+.fd-curio-choices b{font-size:12px}.fd-curio-choices small{font-size:10px;line-height:1.3;color:#c8d6da}
+.fd-curio-skip{margin-top:6px;min-height:36px;font-size:12px}

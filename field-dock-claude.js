@@ -177,9 +177,36 @@ window.FrontierFieldDock=(()=>{
   grid.innerHTML=r.deck.map((c,i)=>{let html='';try{html=cardHtml(c,i,'reward')}catch{html='<button class="play-card">'+esc(c.id)+'</button>'}return '<div class="fd-card-slot" data-fd-card="'+i+'">'+html+'</div>'}).join('');
   for(const el of grid.querySelectorAll('[onclick]'))el.removeAttribute('onclick');
   for(const slot of grid.querySelectorAll('[data-fd-card]')){const i=Number(slot.dataset.fdCard),c=r.deck[i],disabled=s.stage==='upgrade'&&typeof FrontierStrategy.canUpgrade==='function'&&!FrontierStrategy.canUpgrade(c);if(disabled)slot.classList.add('is-disabled');slot.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();if(!disabled)FrontierStrategy.pickCard(i)},true)}
-  const anchor=[...body.querySelectorAll('h3,h2')].find(h=>/選擇移除|選擇升級/.test(h.textContent));if(anchor){anchor.replaceWith(title)}else body.prepend(title);title.after(grid)} let packSyncing=false;
+  const anchor=[...body.querySelectorAll('h3,h2')].find(h=>/選擇移除|選擇升級/.test(h.textContent));if(anchor){anchor.replaceWith(title)}else body.prepend(title);title.after(grid)} /* 戰後收藏品：和其他戰利品顯示在同一區；普通作戰直接取得 1 個，緊急作戰／首領二選一。 */
+ function curioDrops(){const r=R();if(page!=='run'||!r||r.result)return;const s=window.FrontierCurios?.curios?.();if(!s)return;
+  if(!r.reward){if(s.lastAuto)delete s.lastAuto;return}
+  const host=document.querySelector('#app .compact-reward-content')||document.querySelector('#app .screen-workspace-body');if(!host||host.querySelector('.fd-curio-drop'))return;
+  const D=FrontierCurioData.entries,box=document.createElement('section');box.className='fd-curio-drop';
+  const offer=s.offers?.[0];
+  if(offer){box.innerHTML='<h3>收藏品 · '+(offer.ids.length>1?'二選一':'取得')+'</h3><div class="fd-curio-choices">'+offer.ids.map(id=>'<button type="button" data-fd-claim="'+id+'">'+FrontierCurios.icon(id)+'<b>'+esc(D[id]?.name||id)+'</b><small>'+esc(D[id]?.effect||'')+'</small></button>').join('')+'</div><button type="button" class="fd-curio-skip" data-fd-skip>放棄收藏品</button>';
+   box.addEventListener('click',e=>{const c=e.target.closest('[data-fd-claim]');if(c){FrontierCurios.claim(offer.key,c.dataset.fdClaim);return}if(e.target.closest('[data-fd-skip]'))FrontierCurios.decline(offer.key)})}
+  else if(s.lastAuto&&D[s.lastAuto.id]){const d=D[s.lastAuto.id];box.innerHTML='<h3>收藏品 · 取得</h3><div class="fd-curio-choices"><div class="fd-curio-got">'+FrontierCurios.icon(s.lastAuto.id)+'<b>'+esc(d.name)+'</b><small>'+esc(d.effect||'')+'</small></div></div>'}
+  else return;
+  const anchor=host.querySelector('.reward-footer')||host.querySelector('.reward-cards');if(anchor)anchor.after(box);else host.append(box)}
+ /* 詭異行商商品格式（刷新後亦同）：0～1 結局藏品（地區模組另行附加）、1 個依層數的箱子、1 張單一職業招募券、
+    3 個收藏品、2 個裝備詞條、2～3 個依層數的素材（最低綠色）。 */
+ if(window.FrontierTrading?.fieldMerchant){const buildMerchant=FrontierTrading.fieldMerchant;FrontierTrading.fieldMerchant=function(node){buildMerchant(node);const r=R(),e=r?.event;if(e?.type!=='fieldMerchant'||!r.recruitment144&&!r.expedition)return;
+  const layer=r.expedition.layer||0,seed=h32([r.number,node.id,e.talentRefresh43||0,'merchant149'].join(':')),rnd=k=>h32(seed+':'+k);
+  const defs=FrontierInventory.definitions,rows=e.rows,box=rows.find(x=>x.type==='container'),curios=rows.filter(x=>x.type==='curio').slice(0,3);
+  const modulePool=Object.values(defs).filter(d=>d.category==='runModule'),owned=new Set((r.equipment139?.modules||[]).map(m=>m.id)),fresh=modulePool.filter(d=>!owned.has(d.id)),pool=fresh.length>=2?fresh:modulePool;
+  const modules=[];for(let i=0;modules.length<2&&i<pool.length*2&&pool.length;i++){const d=pool[rnd('module'+i)%pool.length];if(!modules.some(m=>m.item===d.id))modules.push({id:'module:'+modules.length,type:'module',item:d.id,qty:1,price:18+12*(d.occupancy||1)})}
+  const roleList=window.FrontierExpeditionRecruit144?.roles||['PIONEER','WARRIOR','TANK','SNIPER','CASTER','MEDIC','SUPPORT','SPECIAL'];
+  const ticket=r.recruitment144?{id:'ticket144',type:'ticket144',role:roleList[rnd('role')%roleList.length],qty:1,price:20+Math.min(10,Math.round(layer*2.5))}:null;
+  const tiers=[3,3,4,4,5,5,5],count=2+rnd('matcount')%2,families=Object.keys(FrontierProgress.families),mats=[];
+  for(let i=0;i<count;i++){const tier=Math.max(3,Math.min(5,tiers[layer]+(rnd('tier'+i)%3===0?1:0)));mats.push({id:'material:'+i,type:'material',item:FrontierProgress.materialId(families[rnd('fam'+i)%families.length],Math.min(5,tier)),qty:tier===3?3:tier===4?2:1,price:{3:14,4:22,5:38}[Math.min(5,tier)]})}
+  e.rows=[box,ticket,...curios,...(r.equipment139?modules:[]),...mats].filter(Boolean);e.format149=true;save();render()}}
+ if(window.FrontierTrading?.fieldBuy){const buyField=FrontierTrading.fieldBuy;FrontierTrading.fieldBuy=function(id){const r=R(),e=r?.event,row=e?.rows?.find(x=>x.id===id);if(row?.type!=='ticket144')return buyField(id);
+  if(e.bought[id]||r.fieldPoints<row.price){toast('源石碇不足。');return}const g=r.recruitment144,E=FrontierExpeditionRecruit144;
+  return FrontierRuntime.perform('merchant-ticket',()=>{r.recruitment144=E.command(g,{id:crypto.randomUUID(),seq:g.seq+1,type:'shopTicket',args:{role:row.role,key:'shop:'+r.number+':'+e.node+':'+(e.talentRefresh43||0)}},FrontierCapture.units);r.fieldPoints-=row.price;e.bought[id]=true;save();render();toast('已購入'+(roleName[row.role]||row.role)+'招募券。');return true})}}
+ function merchantTicketCard(){const e=R()?.event;if(e?.type!=='fieldMerchant')return;const row=e.rows?.find(x=>x.type==='ticket144'),card=document.querySelector('[data-field-product="ticket144"]');if(!row||!card||card.dataset.fdDone)return;card.dataset.fdDone='1';const pic=card.querySelector('.store-picture');if(pic)pic.innerHTML='<img src="assets/professions/'+(roleFile[row.role]||'vanguard')+'.png" alt="">';const b=card.querySelector('b');if(b)b.textContent=(roleName[row.role]||row.role)+'招募券';const s=card.querySelector('small');if(s)s.textContent='只能招募'+(roleName[row.role]||row.role)+' · '+row.price+'源石碇'}
+ let packSyncing=false;
  function packRoster(){if(packSyncing||!window.FrontierPack?.needsRosterSync?.())return;if(FrontierRuntime.busy){setTimeout(packRoster,300);return}packSyncing=true;setTimeout(async()=>{try{await FrontierRuntime.perform('pack-roster-sync',()=>{FrontierPack.syncRoster();save();return true})}finally{packSyncing=false}render()},0)}
- const prior=render;render=function(...args){const out=prior(...args);try{decorate();keyHints();merchantLimit();battleMarks();packRoster();deckPicker()}catch(error){console.error(error)}return out};
+ const prior=render;render=function(...args){const out=prior(...args);try{decorate();keyHints();merchantLimit();battleMarks();packRoster();deckPicker();curioDrops();merchantTicketCard();if(R()?.event?.type==='fieldMerchant'){setTimeout(merchantLimit,60);setTimeout(merchantLimit,300)}}catch(error){console.error(error)}return out};
  window.addEventListener('resize',()=>{if(sheet)redraw()});
  return{toggle,close,decorate,keyHints,keycardsFor,capBattles,get sheet(){return sheet}};
 })();
