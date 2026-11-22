@@ -2,7 +2,7 @@
 window.FrontierExpedition=(()=>{
  const regions=[['chernobog','切爾諾伯格廢墟','污染與工業殘骸','poison'],['lungmen','龍門外環','都市追擊與情報','pursuit'],['siesta','汐斯塔火山','灼燒與火山研究','burn'],['sargon','薩爾貢沙海','沙塵、補水與疲勞','fatigue'],['kazimierz','卡西米爾','騎士、穿甲與賞金','armor'],['kjerag','謝拉格雪境','低溫、凍結與搜救','cold'],['siracusa','敘拉古','追蹤、伏擊與幫派','bleed'],['columbia','哥倫比亞','機械、科研與改裝','machine'],['victoria','維多利亞','複合戰線與精英','war'],['iberia','伊比利亞','海嗣與神經損傷','neural'],['sami','薩米','低溫、異常與隱藏調查','anomaly'],['kazdel','卡茲戴爾','薩卡茲、詛咒與高危研究','corrosion']].map(([id,name,theme,element],i)=>({id,name,theme,element,index:i+1}));
  const difficulties={normal:{name:'普通',hp:1,attack:1},hard:{name:'困難',hp:1.12,attack:1.07},extreme:{name:'極危',hp:1.24,attack:1.14}};
- const nodeNames={battle:'普通作戰',elite:'緊急作戰',boss:'命運交鋒',search:'拾遺補闕',camp:'安全的角落',event:'不期而遇',signal:'邂逅同行',container:'拾遺補闕',merchant:'詭異行商'};
+ const nodeNames={battle:'普通作戰',elite:'緊急作戰',boss:'命運交鋒',search:'塵封之所',camp:'安全的角落',event:'不期而遇',signal:'不期而遇',container:'塵封之所',merchant:'詭異行商'};
  function ensure(){if(!db.regions)db.regions={version:1,highestUnlocked:1,cleared:{},visits:{}};return db.regions}
  const current=()=>R()?.expedition;
  function difficultyAllowed(regionId,difficulty,state=ensure()){
