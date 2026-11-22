@@ -1,6 +1,6 @@
 'use strict';
 window.FrontierDispatch=(()=>{
- const HOUR=3600000,templates={transport:{name:'補給運輸',hours:4,members:1,safe:28,strong:65,roles:['PIONEER','DEFENDER'],lmd:700,tier:2},survey:{name:'邊境勘察',hours:12,members:2,safe:38,strong:72,roles:['SNIPER','SPECIAL'],lmd:1800,tier:3},expedition:{name:'深區調查',hours:24,members:2,safe:48,strong:80,roles:['MEDIC','CASTER'],lmd:3500,tier:4},hazard:{name:'危險區回收',hours:48,members:3,safe:58,strong:90,roles:['WARRIOR','SUPPORT'],lmd:6000,tier:5}};
+ const HOUR=3600000,templates={transport:{name:'補給運輸',hours:4,members:1,safe:28,strong:65,roles:['PIONEER','DEFENDER'],lmd:3500,tier:2},survey:{name:'邊境勘察',hours:12,members:2,safe:38,strong:72,roles:['SNIPER','SPECIAL'],lmd:9000,tier:3},expedition:{name:'深區調查',hours:24,members:2,safe:48,strong:80,roles:['MEDIC','CASTER'],lmd:17500,tier:4},hazard:{name:'危險區回收',hours:48,members:3,safe:58,strong:90,roles:['WARRIOR','SUPPORT'],lmd:30000,tier:5}};
  let selected=[];
  function ensure(){FrontierBase.ensure();if(!db.dispatch){db.dispatch={version:1,next:1,jobs:[],history:[]};if(db.base151?.rulesVersion!==600)db.basev2.dispatch++}return db.dispatch}
  function eligible(){return Object.values(db.personnel.units).filter(u=>!FrontierCapture.units[u.id]?.retired&&u.status==='ready'&&!ensure().jobs.some(job=>job.uids.includes(u.uid)))}

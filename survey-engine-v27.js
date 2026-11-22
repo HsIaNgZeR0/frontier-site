@@ -30,7 +30,7 @@ globalThis.FrontierSurveyEngineV27=(()=>{
    }
   }
   if(limited){add('pull','尋訪憑證','pull',1,600,monthly?10:3);add('silver-pack','銀色材料自選包','silverPack',1,150,monthly?10:2);add('blue-pack','藍色材料自選包','bluePack',1,60,monthly?20:5)}
-  add('lmd','龍門幣','lmd',10000,600,monthly?5:1);add('carbon','碳','material',50,150,monthly?10:2,'base_carbon');
+  add('lmd','龍門幣','lmd',50000,600,monthly?5:1);add('carbon','碳','material',50,150,monthly?10:2,'base_carbon');
   for(const [i,cost]of [50,120,250].entries())add('manual'+(i+1),'專精教材'+(i+1),'material',1,cost,(monthly?[10,5,3]:[5,3,1])[i],'mastery_manual_'+(i+1));
   if(limited){add('silver-focus','銀色素材定向券','silverTicket',1,350,monthly?3:1);if(monthly){add('gold-focus','金色素材定向券','goldTicket',1,900,1);add('silver-equipment','精銳裝備補給','box',1,750,1,'survey_supply_silver')}add('blue-equipment','標準裝備補給','box',1,300,monthly?3:1,'survey_supply_blue');if(state)out.push(...rotating(section,state,at,catalog))}return out;
  }
