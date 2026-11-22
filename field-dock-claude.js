@@ -95,22 +95,25 @@ window.FrontierFieldDock=(()=>{
  }
 
  /* ---------- 招募券：左完整券（點擊直接招募）、右殘頁，最右合成 ---------- */
+ /* 殘頁封面直接顯示三個職業圖示與名稱，一眼認出是哪三職。 */
+ const roleFile={PIONEER:'vanguard',VANGUARD:'vanguard',WARRIOR:'warrior',GUARD:'warrior',TANK:'tank',DEFENDER:'tank',SNIPER:'sniper',CASTER:'caster',MEDIC:'medic',SUPPORT:'support',SUPPORTER:'support',SPECIAL:'special',SPECIALIST:'special'};
+ const roleName={PIONEER:'先鋒',WARRIOR:'近衛',TANK:'重裝',SNIPER:'狙擊',CASTER:'術師',MEDIC:'醫療',SUPPORT:'輔助',SPECIAL:'特種'};
+ const roleIcons=roles=>'<span class="fd-roles">'+roles.map(r=>'<img src="assets/professions/'+(roleFile[r]||'vanguard')+'.png" alt="'+(roleName[r]||r)+'">').join('')+'</span>';
+ const common=()=>{const st=g(),[a,b]=[...picked].map(id=>st.fragments.find(f=>f.id===id));return a&&b?a.roles.filter(r=>b.roles.includes(r)):null};
  function ticketView(){
   const st=g();if(!st)return '<p class="fd-empty">此模式沒有招募券。</p>';
-  const tickets=st.tickets.filter(t=>!t.used),frags=st.fragments,ok=[2,3].includes(picked.size);
-  return '<div class="fd-ticket-layout"><div class="fd-ticket-col"><b>完整券 '+tickets.length+'</b><div class="fd-ticket-list">'+(tickets.map(t=>'<button type="button" data-fd-ticket="'+t.id+'" '+(synth?'disabled':'')+'>'+FrontierRecruit152.art(t)+'<span>'+esc(t.name||(t.kind==='universal'?'通用招募券':'三職招募券'))+'</span></button>').join('')||'<p class="fd-empty">無</p>')+'</div></div>'+
-   '<div class="fd-ticket-col"><b>殘頁 '+frags.length+(synth?' · 已選 '+picked.size:'')+'</b><div class="fd-ticket-list">'+(frags.map(f=>'<button type="button" class="fd-frag" data-fd-frag="'+f.id+'" aria-pressed="'+picked.has(f.id)+'" '+(synth?'':'tabindex="-1"')+'>'+FrontierRecruit152.art(f,true)+'</button>').join('')||'<p class="fd-empty">無</p>')+'</div></div>'+
-   '<div class="fd-synth">'+(synth?'<button type="button" class="primary" data-fd-synth-confirm '+(ok?'':'disabled')+'>確認<br>合成</button><button type="button" data-fd-synth-cancel>取消</button>':'<button type="button" data-fd-synth '+(frags.length<2||R().battle?'disabled':'')+'>合成</button>')+'</div></div>'+
-   '<p class="fd-hint">'+(synth?'勾選 2 張殘頁合成三職券，3 張合成通用券。':'點擊完整券直接招募或晉升。')+'</p>';
+  const tickets=st.tickets.filter(t=>!t.used),frags=st.fragments,both=common();
+  const synth=picked.size?'<button type="button" class="primary" data-fd-synth-confirm '+(both?.length?'':'disabled')+'>合成'+(both?(both.length?'<small>'+both.map(r=>roleName[r]||r).join('／')+'券</small>':'<small>無共同職業</small>'):'<small>再選一張</small>')+'</button>':'';
+  return '<div class="fd-ticket-layout"><div class="fd-ticket-col"><b>完整券 '+tickets.length+'</b><div class="fd-ticket-list">'+(tickets.map(t=>'<button type="button" data-fd-ticket="'+t.id+'">'+(t.kind==='universal'||t.roles.length>=8?FrontierRecruit152.art(t):roleIcons(t.roles))+'<span>'+esc(t.name||(t.kind==='universal'||t.roles.length>=8?'通用招募券':t.roles.map(r=>roleName[r]||r).join('／')))+'</span></button>').join('')||'<p class="fd-empty">無</p>')+'</div></div>'+
+   '<div class="fd-ticket-col"><b>殘頁 '+frags.length+(picked.size?' · 已選 '+picked.size+'/2':'')+'</b><div class="fd-ticket-list">'+(frags.map(f=>'<button type="button" class="fd-frag" data-fd-frag="'+f.id+'" aria-pressed="'+picked.has(f.id)+'">'+roleIcons(f.roles)+'<span>'+f.roles.map(r=>roleName[r]||r).join('')+'</span></button>').join('')||'<p class="fd-empty">無</p>')+'</div></div>'+
+   '<div class="fd-synth">'+synth+'</div></div>'+
+   '<p class="fd-hint">'+(picked.size?'選兩張殘頁，合成兩張共同職業的招募券。':'點完整券直接招募；點殘頁開始合成。')+'</p>';
  }
  async function onTicket(e){
-  const t=e.target.closest('[data-fd-ticket]');if(t&&!synth){close(true);decorate();FrontierRecruitUI144.ticket(t.dataset.fdTicket);return}
-  if(e.target.closest('[data-fd-synth]')){synth=true;picked.clear();return redraw()}
-  if(e.target.closest('[data-fd-synth-cancel]')){synth=false;picked.clear();return redraw()}
-  const f=e.target.closest('[data-fd-frag]');if(f&&synth){const id=f.dataset.fdFrag;if(picked.has(id))picked.delete(id);else if(picked.size<3)picked.add(id);else toast('每次最多選三張殘頁。');return redraw()}
-  if(e.target.closest('[data-fd-synth-confirm]')){const ids=[...picked];if(![2,3].includes(ids.length))return;const ok=await FrontierRecruitUI144.command('synthesize',{kind:ids.length===2?'triple':'universal',fragments:ids});if(ok){synth=false;picked.clear();toast(ids.length===2?'已合成三職招募券。':'已合成通用招募券。')}redraw()}
- }
- function redraw(){const dock=document.querySelector('.screen-combat-actions');if(dock)decorate()}
+  const t=e.target.closest('[data-fd-ticket]');if(t){picked.clear();close(true);decorate();FrontierRecruitUI144.ticket(t.dataset.fdTicket);return}
+  const f=e.target.closest('[data-fd-frag]');if(f){const id=f.dataset.fdFrag;if(picked.has(id))picked.delete(id);else if(picked.size<2)picked.add(id);else{picked.delete([...picked][0]);picked.add(id)}return redraw()}
+  if(e.target.closest('[data-fd-synth-confirm]')){const ids=[...picked];if(ids.length!==2||!common()?.length)return;const ok=await FrontierRecruitUI144.command('synthesize',{kind:'triple',fragments:ids});if(ok){picked.clear();toast('已合成招募券。')}redraw()}
+ } function redraw(){const dock=document.querySelector('.screen-combat-actions');if(dock)decorate()}
 
  /* 背包：移除縮放百分比與 −／＋，改放「編輯幹員背包」；預設自動縮放到剛好塞滿寬度（仍可雙指縮放）。 */
  if(window.FrontierBagUX?.create){const create=FrontierBagUX.create;FrontierBagUX.create=function(...args){const host=create(...args);
@@ -126,16 +129,14 @@ window.FrontierFieldDock=(()=>{
     在所有路線模組處理完後執行；只把非必戰、非首領的普通／緊急作戰改成不期而遇。 */
  const isBattle=n=>['battle','elite','boss'].includes(n.type);
  function layerMax(layer){let prev=new Map();for(let row=0;row<layer.rows.length;row++){const next=new Map();for(const n of layer.rows[row]){const src=row===0?[{v:0,path:[]}]:layer.rows[row-1].filter(p=>p.links?.includes(n.id)).map(p=>prev.get(p.id)).filter(Boolean);if(!src.length)continue;const best=src.reduce((a,b)=>b.v>a.v?b:a);next.set(n.id,{v:best.v+(isBattle(n)?1:0),path:[...best.path,n]})}prev=next}return [...prev.values()].reduce((a,b)=>!a||b.v>a.v?b:a,null)||{v:0,path:[]}}
- function capBattles(e,limit=10){
-  for(let guard=0;guard<60;guard++){
-   const maxes=e.layers.map(layerMax),total=maxes.reduce((n,x)=>n+x.v,0);if(total<=limit)return total;
-   const order=maxes.map((m,i)=>[m,i]).sort((a,b)=>b[0].v-a[0].v);let changed=false;
-   for(const [m,li] of order){
+ // 每層戰鬥上限（使用者定案 1／2／3／3／3），超過的非必戰作戰改為不期而遇。
+ const layerLimits=[1,2,3,3,3];
+ function capBattles(e){
+  for(const [li,layer] of e.layers.entries()){const limit=layerLimits[li]??3;
+   for(let guard=0;guard<40;guard++){const m=layerMax(layer);if(m.v<=limit)break;
     const pick=m.path.filter(n=>isBattle(n)&&n.type!=='boss'&&!n.requiredCombat&&!(li===0&&n.row===0)).sort((a,b)=>(a.type==='elite')-(b.type==='elite'))[0];
-    if(pick){pick.type='event';pick.risk=0;pick.battleCapped=true;changed=true;break}
-   }
-   if(!changed)return total;
-  }
+    if(!pick)break;pick.type='event';pick.risk=0;pick.battleCapped=true}}
+  return e.layers.reduce((n,l)=>n+layerMax(l).v,0);
  }
  /* 塵封之所：出發時預定每個搜索房間，讓地圖揭露節點類型後就能看到需要的房卡。 */
  const h32=s=>{let n=2166136261;for(const c of String(s))n=Math.imul(n^c.charCodeAt(0),16777619);return n>>>0};
@@ -152,7 +153,13 @@ window.FrontierFieldDock=(()=>{
    const hint=document.createElement('span');hint.className='fd-keyhint';hint.setAttribute('aria-label','可開門房卡：'+keys.map(id=>FrontierSearchLocks174.catalog[id].name).join('、'));
    hint.innerHTML=keys.slice(0,3).map(id=>'<img src="assets/search174/'+id+'.png" alt="" draggable="false">').join('')+(keys.length>3?'<b>+'+(keys.length-3)+'</b>':'');el.append(hint)}}
  if(typeof startRun==='function'){const start=startRun;startRun=function(...args){const before=R();const out=start(...args);const r=R();if(r&&r!==before&&r.expedition){try{if(r.expedition.mode==='standard'&&!r.expedition.battleCap149)r.expedition.battleCap149=capBattles(r.expedition);assignRooms(r);save();render()}catch(error){console.error(error)}}return out}}
- const prior=render;render=function(...args){const out=prior(...args);try{decorate();keyHints()}catch(error){console.error(error)}return out};
+ /* 詭異行商：所有商品只放在上方商品格，總數最多 10 個；劇情藏品（結局線索）優先保留，佔用一般商品的名額。 */
+ function merchantLimit(){if(R()?.event?.type!=='fieldMerchant')return;const grid=document.querySelector('.field-store .store-grid');if(!grid)return;
+  for(const extra of document.querySelectorAll('.field-store .store-alternative')){extra.classList.add('store-card');grid.append(extra)}
+  const cards=[...grid.children].filter(c=>c.matches('[data-field-product],.store-card'));if(cards.length<=10)return;
+  const keep=cards.filter(c=>c.classList.contains('region75-key')||c.matches('.store-alternative'));const regular=cards.filter(c=>!keep.includes(c));
+  regular.slice(Math.max(0,10-keep.length)).forEach(c=>c.remove())}
+ const prior=render;render=function(...args){const out=prior(...args);try{decorate();keyHints();merchantLimit()}catch(error){console.error(error)}return out};
  window.addEventListener('resize',()=>{if(sheet)redraw()});
  return{toggle,close,decorate,keyHints,keycardsFor,capBattles,get sheet(){return sheet}};
 })();

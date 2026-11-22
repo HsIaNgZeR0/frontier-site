@@ -57,3 +57,13 @@ dialog#modal:not([open]){display:none!important}
 .ui-route-node .fd-keyhint{position:absolute;left:50%;top:-16px;transform:translateX(-50%);display:flex;gap:1px;align-items:center;padding:1px 3px;background:#0c171ce6;border:1px solid #d4eb9666;border-radius:3px;pointer-events:none;z-index:3;white-space:nowrap}
 .ui-route-node .fd-keyhint img{width:14px;height:14px;object-fit:contain}
 .ui-route-node .fd-keyhint b{font-size:9px;color:#d4eb96;font-weight:500}
+
+/* 取得收藏品時不在畫面上方顯示「三選一」提示（前進時會自動開啟選擇） */
+.curio-offer-entry{display:none!important}
+
+.fd-roles{display:flex;gap:1px;justify-content:center}
+.fd-roles img{width:18px;height:18px;object-fit:contain;background:#0008;border-radius:2px}
+.fd-ticket-list button>span:last-child{font-size:10px;line-height:1.1}
+.fd-synth button small{display:block;font-size:10px;font-weight:500}
+.fd-roles img{width:20px!important;height:20px!important;background:#1d2b33!important;border:1px solid #4d6570;padding:1px}
+
