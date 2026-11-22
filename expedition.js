@@ -14,7 +14,7 @@ window.FrontierExpedition=(()=>{
  }
  function create(regionId,difficulty,mode){
  const weighted=mode==='highrisk'?['search','search','search','search','battle','battle','elite','camp','event','merchant']:['battle','battle','search','search','event','merchant','camp'];
- const counts=mode==='highrisk'?[4+rnd(3),4+rnd(3),4+rnd(3)]:mode==='scout'?[3+rnd(3)]:[4+rnd(2),5+rnd(2),6,7+rnd(2),8],layers=[];
+ const counts=mode==='highrisk'?[4+rnd(3),4+rnd(3),4+rnd(3)]:mode==='scout'?[3+rnd(3)]:[4+rnd(2),5+rnd(2),6+rnd(2),6+rnd(2),7+rnd(2)],layers=[];
  for(let layer=0;layer<counts.length;layer++){
   const rows=[];
   for(let row=0;row<counts[layer];row++){

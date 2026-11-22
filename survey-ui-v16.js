@@ -68,7 +68,7 @@ window.FrontierSurvey16=(()=>{
   if(!x)return false;
   const returned=ev.surveyReturned16;
   const choices=returned?'':`<button class="primary" ${r.survey16.surveyIndex<2?'disabled':''} onclick="FrontierSurvey16.enter('${x.id}')">進入深埋迷境 · 2 勘察</button>`;
-  $('#app').innerHTML=runHeader()+`<section class="panel reward139-stage passage16-stage"><div class="passage16-emblem">${FrontierTrail.icon('passage')}</div><h1>樹籬之途</h1><p>${returned?'探索完畢。小隊已回到原本的路口。':'探索 '+x.nodes.length+' 站後返回主路線。'}</p><div class="reward139-options">${choices}<button onclick="FrontierSurvey16.leaveGate('${x.id}')">${returned?'返回主路線':'略過入口，沿主路前進'}</button></div></section>`;
+  $('#app').innerHTML=runHeader()+`<section class="panel reward139-stage passage16-stage"><div class="passage16-emblem">${FrontierTrail.icon('passage')}</div><h1>誤入奇境</h1><p>${returned?'探索完畢。小隊已回到原本的路口。':'探索 '+x.nodes.length+' 站後返回主路線。'}</p><div class="reward139-options">${choices}<button onclick="FrontierSurvey16.leaveGate('${x.id}')">${returned?'返回主路線':'略過入口，沿主路前進'}</button></div></section>`;
   return true;
  }
  function routeState(r=R()){
