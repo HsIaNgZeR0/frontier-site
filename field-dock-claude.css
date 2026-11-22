@@ -217,3 +217,15 @@ dialog#modal:not([open]){display:none!important}
 .fd-card-slot .play-card .card-art{height:28px!important;min-height:28px!important;flex:none!important}
 .fd-card-slot .play-card b{font-size:10px!important;line-height:1.25!important;margin:3px 0 1px!important}
 .fd-card-slot .play-card p{font-size:9px!important;line-height:1.25!important;display:-webkit-box!important;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden!important}
+
+/* 素材調度站（簡潔版） */
+.x600{display:grid;gap:8px}
+.x600-label{margin:4px 0 0;font-size:12px;font-weight:700;color:#d4eb96}
+.x600-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:6px}
+.x600-cell{position:relative;display:flex;align-items:center;justify-content:center;min-height:52px;min-width:0;padding:4px;background:#14242b;border:1px solid #506471}
+.x600-cell img{width:36px;height:36px;object-fit:contain}
+.x600-cell b{position:absolute;right:3px;bottom:1px;font-size:10px;text-shadow:0 1px 2px #000}
+.x600-cell.is-on{border-color:#d4eb96;background:#304333;box-shadow:0 0 0 1px #d4eb96}
+.x600-cell:disabled{opacity:.4}
+.x600-go{min-height:44px}
+.x600-hint,.x600-empty{font-size:11px;opacity:.75;margin:0}
