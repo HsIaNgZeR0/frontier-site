@@ -168,18 +168,21 @@ dialog#modal:not([open]){display:none!important}
 
 /* 地圖節點（仿薩米肉鴿）：下一排可前往的節點顯示類型底色＋呼吸燈；未走到的節點灰底；已走過變暗 */
 .ui-route-map .ui-route-node[class*="route-type-"]:not(.reachable):not(.completed):not(.current){--node-top:#4a5156;--node-bottom:#2a2f33;--node-edge:#6c757b}
-.ui-route-map .ui-route-node.reachable.route-type-battle{--node-top:#3f6f96;--node-bottom:#1d3a52;--node-edge:#8fc3e6}
-.ui-route-map .ui-route-node.reachable.route-type-elite{--node-top:#b2343c;--node-bottom:#5a1419;--node-edge:#ff8a80}
-.ui-route-map .ui-route-node.reachable.route-type-boss{--node-top:#8a1420;--node-bottom:#3c070d;--node-edge:#ff5a5a}
-.ui-route-map .ui-route-node.reachable.route-type-event{--node-top:#2f78c8;--node-bottom:#163d6d;--node-edge:#8cc8ff}
-.ui-route-map .ui-route-node.reachable.route-type-story{--node-top:#7a4fc0;--node-bottom:#3a2366;--node-edge:#c9a8ff}
-.ui-route-map .ui-route-node.reachable.route-type-gift{--node-top:#b04f9c;--node-bottom:#57224c;--node-edge:#ffa6e6}
-.ui-route-map .ui-route-node.reachable.route-type-exchange{--node-top:#c0702a;--node-bottom:#5e3410;--node-edge:#ffc07a}
-.ui-route-map .ui-route-node.reachable.route-type-merchant{--node-top:#c09a2a;--node-bottom:#5e4a10;--node-edge:#ffe07a}
-.ui-route-map .ui-route-node.reachable.route-type-camp{--node-top:#3e9a5c;--node-bottom:#1a4a2b;--node-edge:#9ee6b4}
-.ui-route-map .ui-route-node.reachable.route-type-container,.ui-route-map .ui-route-node.reachable.route-type-search{--node-top:#2a9a9a;--node-bottom:#104a4a;--node-edge:#8ff0f0}
-.ui-route-map .ui-route-node.reachable.route-type-passage{--node-top:#5b5fc0;--node-bottom:#272a66;--node-edge:#b0b4ff}
-.ui-route-map .ui-route-node.completed::before{filter:grayscale(.6) brightness(.6)}
+/* 依 Arknights Terra Wiki〈探索者的銀凇止境〉節點表的節點色（薩米肉鴿）。塵封之所為本作獨有，採用幕間餘興色 #7FE3FE 近似。 */
+.ui-route-map .ui-route-node.reachable{--sami:#A29CFE}
+.ui-route-map .ui-route-node.reachable.route-type-battle{--sami:#A29CFE}
+.ui-route-map .ui-route-node.reachable.route-type-elite{--sami:#FF6F60}
+.ui-route-map .ui-route-node.reachable.route-type-boss{--sami:#574FB8}
+.ui-route-map .ui-route-node.reachable.route-type-event{--sami:#80E2FF}
+.ui-route-map .ui-route-node.reachable.route-type-gift{--sami:#1D7767}
+.ui-route-map .ui-route-node.reachable.route-type-camp{--sami:#4994FF}
+.ui-route-map .ui-route-node.reachable.route-type-merchant{--sami:#0C493D}
+.ui-route-map .ui-route-node.reachable.route-type-story{--sami:#80E2FF}
+.ui-route-map .ui-route-node.reachable.route-type-exchange{--sami:#7CE5FF}
+.ui-route-map .ui-route-node.reachable.route-type-passage{--sami:#F091F2}
+.ui-route-map .ui-route-node.reachable.route-type-container,.ui-route-map .ui-route-node.reachable.route-type-search{--sami:#7FE3FE}
+.ui-route-map .ui-route-node.reachable[class*="route-type-"]{--node-top:var(--sami);--node-bottom:color-mix(in srgb,var(--sami) 55%,#000);--node-edge:color-mix(in srgb,var(--sami) 55%,#fff)}
+.ui-route-map .ui-route-node.reachable .route-pixel-icon{filter:drop-shadow(0 1px 1px #0009)}.ui-route-map .ui-route-node.completed::before{filter:grayscale(.6) brightness(.6)}
 .ui-route-map .ui-route-node.reachable::before{animation:fdNodeBreath 1.8s ease-in-out infinite}
 @keyframes fdNodeBreath{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--node-edge) 0%,transparent),inset 0 1px #e7eee316}50%{box-shadow:0 0 12px 3px color-mix(in srgb,var(--node-edge) 70%,transparent),inset 0 1px #e7eee316}}
 @media(prefers-reduced-motion:reduce){.ui-route-map .ui-route-node.reachable::before{animation:none}}
