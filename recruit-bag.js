@@ -114,7 +114,7 @@ window.FrontierRecruitBag=(()=>{
  F.reveal=id=>open([id]);
  F.revealAll=()=>open(F.ensure().results.filter(e=>!e.claimed).map(e=>e.id));
  UI.revealAll=F.revealAll;
- const pull=F.pull;F.pull=count=>{const before=new Set(F.ensure().results.map(e=>e.id));pull(count);open(F.ensure().results.filter(e=>!before.has(e.id)&&!e.claimed).map(e=>e.id))};
+ const pull=F.pull;F.pull=count=>{const before=new Set(F.ensure().results.map(e=>e.id));pull(count);/* 抽取可能經存檔交易後才換入新存檔，等新結果出現再開袋。 */let tries=0;const wait=()=>{const ids=F.ensure().results.filter(e=>!before.has(e.id)&&!e.claimed).map(e=>e.id);if(ids.length)open(ids);else if(++tries<40)setTimeout(wait,50)};wait()};
  F.claimPublic=id=>{const r=F.ensure(),job=r.jobs.find(x=>x.id===id&&!x.claimed);if(!job||Date.now()<job.readyAt)return;job.claimed=true;const entry=F.result(job.operator,'public');save();render();open([entry.id])};
  return{open};
 })();
