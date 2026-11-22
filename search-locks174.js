@@ -118,7 +118,8 @@ function greenPrice(id){const d=catalog[id];return greenPrices[d.key?'keycard':'
 // 黃票：綠票換算後約 8 折。
 function yellowPrice(id){return Math.max(1,Math.round(greenPrice(id)/10*.8))}
 // 調查點數基準（之後由點數商店再套每月／每週倍率）。
-function pointBase(id){return greenPrice(id)*12}
+// 房卡與開鎖裝置在點數商店半價（使用者定案）；炸藥維持原換算。
+function pointBase(id){return greenPrice(id)*12*(catalog[id].key||id[0]==='T'?.5:1)}
 function shopPrice(id,ladder){const d=catalog[id];return d.key?(d.rarity>=6?ladder[6]*2:ladder[d.rarity+1]):ladder[d.rarity]}
 // unit: 0≤u<1 的決定性亂數。回傳在 minRarity 以上依權重抽中的房卡 ID（排除 exclude）。
 function pickKeycard(unit,minRarity=3,exclude=[]){
