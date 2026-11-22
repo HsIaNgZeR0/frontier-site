@@ -67,3 +67,15 @@
 #modal .recruit147-stage:empty{display:none}
 #modal .recruit146-subhead .recruit-hope-bar b{color:#fff3bb!important;font-size:18px;font-family:"FrontierDisplay148","Rajdhani",sans-serif}
 #modal .recruit146-subhead .recruit-hope-bar span{color:#fff3bb}
+
+/* 招募卡片 v2：精英圖示移到名稱下方不遮立繪；各星級色條明顯區分（買不起時色條仍保留）；移除右上角關閉 */
+#modal img.recruit147-elite{left:82px!important;top:auto!important;bottom:4px;width:26px!important;height:26px!important;padding:2px!important}
+#modal .recruit147-card .recruit147-stage{left:112px!important;bottom:9px!important}
+#modal [data-recruit-rarity="3"] .recruit147-strip{background:linear-gradient(90deg,#0b4f86,#2fa8ff)!important;color:#e8f6ff!important}
+#modal [data-recruit-rarity="4"] .recruit147-strip{background:linear-gradient(90deg,#4a1f86,#b06cff)!important;color:#f6ecff!important}
+#modal [data-recruit-rarity="5"] .recruit147-strip{background:linear-gradient(90deg,#7a6000,#ffd800)!important;color:#fffbe0!important}
+#modal [data-recruit-rarity="6"] .recruit147-strip{background:linear-gradient(90deg,#8a2400,#ff6a00 65%,#ffb347)!important;color:#fff3e6!important}
+.recruit147-card.recruit-unaffordable{filter:none!important}
+.recruit147-card.recruit-unaffordable .recruit147-portrait,.recruit147-card.recruit-unaffordable .recruit147-profession{filter:grayscale(1) brightness(.6)}
+.recruit147-card.recruit-unaffordable .recruit147-name,.recruit147-card.recruit-unaffordable .recruit147-cost{opacity:.55}
+#modal:has(.recruit147) .screen-tool-head button{display:none!important}
