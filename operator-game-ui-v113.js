@@ -271,7 +271,8 @@ window.FrontierOperatorUIV113=(()=>{
    const artId=FrontierEnemyData.units[enemy.species]?.image,paths133=window.FrontierEnemyIdleAssets?.[enemy.species]||window.FrontierEnemyIdleAssets?.[artId];
    /* 優先用 Spine 小模型（原地待機）；同一隻已在播放就不重建，失敗退回 webp。 */
    /* 機制單位／召喚物：血刃與裝置靠旗標區分，對應官方模型。 */const flagId=enemy.bloodblade75?'enemy_1186_bldbld':enemy.device75?'enemy_1369_bmbcar1':null,spineId=flagId?(window.FrontierEnemySpine?.has(flagId)?flagId:null):window.FrontierEnemySpine?.has(enemy.species)?enemy.species:window.FrontierEnemySpine?.has(artId)?artId:null;
-   if(figure&&spineId&&FrontierEnemySpine.mount(figure,spineId,enemy.id)){figure.dataset.spine=spineId;figure.addEventListener('spine-failed',()=>{delete figure.dataset.spine;figure.dataset.spineFailed='1'},{once:true})}
+   const life=FrontierEnemySpine.lifeOf(enemy,b),lifeKey=b.operatorBattleId+':'+enemy.uid,prevLife=FrontierEnemySpine.lastLife.get(lifeKey);FrontierEnemySpine.lastLife.set(lifeKey,life);
+   if(figure&&spineId&&FrontierEnemySpine.mount(figure,spineId,enemy.id,life>=2?'B':'A')){if(prevLife&&life>prevLife){const ms=FrontierEnemySpine.transition(spineId,enemy.id,'B');FrontierEnemySpine.lock(ms||1200,enemy.boss||enemy.regionBoss?'第 '+life+' 階段':'再起')}figure.dataset.spine=spineId;figure.addEventListener('spine-failed',()=>{delete figure.dataset.spine;figure.dataset.spineFailed='1'},{once:true})}
    else if(figure&&paths133&&!figure.querySelector('canvas')){
     const paths=paths133,sprite=document.createElement('img');
     sprite.className='enemy-art enemy-idle-model';sprite.alt='';sprite.draggable=false;
@@ -700,6 +701,8 @@ window.FrontierOperatorUIV113=(()=>{
  function actorBarTotal(actor){return actor.max+Math.max(0,actor.block||0)}
  function paintForecast(board,battle){
   cancelAnimationFrame(forecastFrame);clearTimeout(forecastTimer);if(forecastIdle!=null)window.cancelIdleCallback?.(forecastIdle);
+  /* 狀態一變就先清掉舊預估，避免顯示過時（例如加盾前）的致命預估。 */
+  for(const band of board.querySelectorAll('.v113-incoming-grey')){band.style.width='0%';band.removeAttribute('aria-label')}
   function update(){
    if(!board.isConnected||R()?.battle!==battle)return;
    const quiet=performance.now()-lastBattleInput;if(FrontierGestures.active||drawnPointer||FrontierRuntime.busy||quiet<300){forecastTimer=setTimeout(schedule,Math.max(70,300-quiet));return}

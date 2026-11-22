@@ -244,3 +244,9 @@ dialog#modal:not([open]){display:none!important}
 .fd-mech-tag b{font-size:10.5px;color:#8fe3ff}
 .fd-mech-tag.is-warn{border-left-color:#ff8a5c}.fd-mech-tag.is-warn b{color:#ffb27a}
 .fd-mech-tag.is-short{padding:2px 4px;font-size:9px}.fd-mech-tag.is-short b{font-size:9.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fd-mech-tag.is-short span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+/* 轉階段／再起：動畫播放期間不能操作 */
+.fd-phase-lock{position:fixed;inset:0;z-index:100000;display:none;align-items:flex-start;justify-content:center;padding-top:22vh;background:transparent;touch-action:none}
+.fd-phase-lock.is-on{display:flex}
+.fd-phase-lock b{padding:8px 22px;font-size:18px;letter-spacing:.2em;color:#ffe2c8;background:linear-gradient(90deg,transparent,#5a1a12e6 20%,#5a1a12e6 80%,transparent);border-top:1px solid #ff9a4d;border-bottom:1px solid #ff9a4d;animation:fdPhaseIn .35s ease-out}
+@keyframes fdPhaseIn{from{opacity:0;transform:scaleX(.6)}to{opacity:1;transform:none}}
