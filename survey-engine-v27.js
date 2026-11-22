@@ -15,18 +15,18 @@ globalThis.FrontierSurveyEngineV27=(()=>{
   if(limited){
    const access=Object.values(catalog.definitions).filter(d=>d.category==='searchTool');
    // 房卡保底：每週 5 張（全綠以上、至少 3 張藍以上）；每月 5 張（全藍以上、至少 3 張銀以上）。
-   // 抽選權重沿用房卡規則（高一階出現、金卡減半），售價按高一階定價。
-   const locks=globalThis.FrontierSearchLocks174,ladder={3:180,4:320,5:550,6:900};
+   // 抽選權重沿用房卡規則（高一階出現、金卡減半），售價由綠票價換算（1綠＝12點數基準，再套每月×1.2／每週×1.8）。
+   const locks=globalThis.FrontierSearchLocks174;
    if(locks){const period=stockKey(section,at);
     for(const id of locks.keycardStock(i=>hash(period+':keycard:'+i)/4294967296,monthly?{count:5,floor:4,premium:3,premiumRarity:5}:{count:5,floor:3,premium:3,premiumRarity:4})){
-     const d=catalog.definitions['search174_'+id];if(d)add(d.id,d.name,'rotating',1,locks.shopPrice(id,ladder),1,d.id);
+     const d=catalog.definitions['search174_'+id];if(d)add(d.id,d.name,'rotating',1,locks.pointBase(id),1,d.id);
     }}
    for(const type of ['T','B']) for(const tier of [3,4,5,6]){
     const pool=access.filter(d=>d.rarity===tier&&d.effect?.id.startsWith(type));
     if(!pool.length)continue;
     const period=stockKey(section,at);
     const picks=monthly?pool:[pool[hash(period+':search:'+type+tier)%pool.length]];
-    for(const d of picks) add(d.id,d.name,'rotating',1,{3:180,4:320,5:550,6:900}[tier],monthly&&type==='T'?2:1,d.id);
+    for(const d of picks) add(d.id,d.name,'rotating',1,locks?locks.pointBase(d.effect.id):{3:180,4:320,5:550,6:900}[tier],monthly&&type==='T'?2:1,d.id);
    }
   }
   if(limited){add('pull','尋訪憑證','pull',1,600,monthly?10:3);add('silver-pack','銀色材料自選包','silverPack',1,150,monthly?10:2);add('blue-pack','藍色材料自選包','bluePack',1,60,monthly?20:5)}

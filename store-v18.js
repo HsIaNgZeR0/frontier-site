@@ -4,11 +4,9 @@ window.FrontierStoreV18=(()=>{
  const hash=s=>{let n=2166136261;for(const x of s)n=Math.imul(n^x.charCodeAt(0),16777619);return n>>>0};
  F.ensure=function(){const s=oldEnsure();s.boughtYellowDay??={};s.boughtYellowWeek27??={...s.boughtYellowDay};s.yellowTicketWeek27??=s.week;if(s.yellowTicketWeek27!==s.week){s.boughtYellowWeek27={};s.yellowTicketWeek27=s.week}return s};
  const toolOffer=(id,cost,limit=1)=>({id:'search174:'+id,item:'search174_'+id,qty:1,cost,limit});
- // 房卡／開鎖裝置／炸藥：依稀有度定價（3綠 4藍 5銀 6金）。
- // 綠票：開鎖裝置與炸藥 50／100／200／400；房卡 100／300／500／1000。
- const unit=s=>hash(s)/4294967296,L=()=>FrontierSearchLocks174,yellowLadder={4:2,5:3,6:8};
- const greenLadder={tool:{3:50,4:100,5:200,6:400},keycard:{3:100,4:300,5:500,6:1000}};
- const priced=(id,ladder,limit=1)=>toolOffer(id,ladder.tool?ladder[L().catalog[id].key?'keycard':'tool'][L().catalog[id].rarity]:L().shopPrice(id,ladder),limit);
+ // 售價見 FrontierSearchLocks174.greenPrices（綠票）；黃票為換算後約 8 折。
+ const unit=s=>hash(s)/4294967296,L=()=>FrontierSearchLocks174,greenLadder='green',yellowLadder='yellow';
+ const priced=(id,currency,limit=1)=>toolOffer(id,currency==='yellow'?L().yellowPrice(id):L().greenPrice(id),limit);
  F.daily=function(){const s=F.ensure(),rows=oldDaily();
   rows.push(priced('T1',greenLadder,2),priced('T2',greenLadder),{...priced(unit(s.day+':support')<.3?'B1':'T1',greenLadder),id:'search174:daily-support'});
   // 每日一張房卡：綠卡＝藍物品機率、藍卡＝銀、銀卡＝金、金卡＝金的一半。
@@ -20,10 +18,10 @@ rows.unshift({id:"first-aid149",item:"med_aid_t3",qty:1,cost:5,limit:10});if((ha
  F.weekly=()=>{
   const seed=hash(F.ensure().week),rows=oldWeekly().filter(r=>r.id!=='ticket');
   const week=F.ensure().week;
-  rows.push(priced(seed%2?'T3':'B2',yellowLadder));
+  // 黃票只刷金、銀品質的房卡與開鎖裝置（不賣炸藥）；開鎖裝置依銀／金物品權重抽一件。
+  const w=L().shopTierWeight;rows.push(priced(unit(week+':tool')*(w[5]+w[6])<w[5]?'T3':'T4',yellowLadder));
   const first=L().pickKeycard(unit(week+':key'),5);rows.push(priced(first,yellowLadder));
   if(seed%4===0){const second=L().pickKeycard(unit(week+':key2'),5,[first]);if(second)rows.push(priced(second,yellowLadder))}
-  if(seed%6===0)rows.push(priced('T4',yellowLadder));
   return rows;
  };F.yellowDaily=()=>[{id:'daily-ticket',special:'ticket',qty:1,cost:5,limit:2}];
  F.buy=function(type,id){if(!['daily','weekly','yellowDaily'].includes(type))return;const s=F.ensure(),weekly=type==='weekly',yellow=weekly||type==='yellowDaily',rows=weekly?F.weekly():yellow?F.yellowDaily():F.daily(),stock=weekly?s.boughtWeek:yellow?s.boughtYellowWeek27:s.boughtDay,row=rows.find(r=>r.id===id),currency=yellow?'yellow':'green';if(!row||(stock[id]||0)>=row.limit||db.wallet[currency]<row.cost||row.global&&(s.global[row.global]||0)>=1){toast('憑證不足或已達限購。');return}db.wallet[currency]-=row.cost;stock[id]=(stock[id]||0)+1;if(row.global)s.global[row.global]=(s.global[row.global]||0)+1;if(row.operator)FrontierRecruitment.result(row.operator,'voucher-target');else if(row.special==='ticket')FrontierRecruitment.ensure().tickets+=row.qty;else if(row.special==='permit')FrontierRecruitment.ensure().permits+=row.qty;else F.grant(row.item,row.qty,weekly?'shop.weekly':'shop.daily');save();render()};

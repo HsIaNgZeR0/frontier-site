@@ -111,6 +111,14 @@ function accessKind(id){return id[0]==='K'?'keycard':id[0]==='T'?'lockpick':'exp
 const shopTierWeight={3:45,4:30,5:17,6:8};
 function keycardWeight(rarity){return rarity>=6?shopTierWeight[6]/2:shopTierWeight[rarity+1]}
 // 依稀有度的相對售價：開鎖裝置與炸藥按自身稀有度；房卡按高一階定價，金卡為金階兩倍。
+// 綠票基準價（使用者定案）：開鎖裝置／炸藥 50／100／200／400；房卡 100／300／500／1000。
+// 其他商店由此換算：尋訪憑證 綠50＝黃5＝點數基準600，故 1黃≈10綠、1綠≈12點數基準。
+const greenPrices={tool:{3:50,4:100,5:200,6:400},keycard:{3:100,4:300,5:500,6:1000}};
+function greenPrice(id){const d=catalog[id];return greenPrices[d.key?'keycard':'tool'][d.rarity]}
+// 黃票：綠票換算後約 8 折。
+function yellowPrice(id){return Math.max(1,Math.round(greenPrice(id)/10*.8))}
+// 調查點數基準（之後由點數商店再套每月／每週倍率）。
+function pointBase(id){return greenPrice(id)*12}
 function shopPrice(id,ladder){const d=catalog[id];return d.key?(d.rarity>=6?ladder[6]*2:ladder[d.rarity+1]):ladder[d.rarity]}
 // unit: 0≤u<1 的決定性亂數。回傳在 minRarity 以上依權重抽中的房卡 ID（排除 exclude）。
 function pickKeycard(unit,minRarity=3,exclude=[]){
@@ -219,7 +227,7 @@ function rollAccess(tier, ordinaryCount, random){
  }
  return null;
 }
-const FrontierSearchLocks174={accessKind,shopTierWeight,keycardWeight,shopPrice,pickKeycard,keycardStock,rollAccess,containerRule,keyRingLimit,register,validateTransition,keyFits,toolFits,breachPlan,keyUses,catalog,roomLock,tools};
+const FrontierSearchLocks174={greenPrices,greenPrice,yellowPrice,pointBase,accessKind,shopTierWeight,keycardWeight,shopPrice,pickKeycard,keycardStock,rollAccess,containerRule,keyRingLimit,register,validateTransition,keyFits,toolFits,breachPlan,keyUses,catalog,roomLock,tools};
 globalThis.FrontierSearchLocks174=FrontierSearchLocks174;
 if (typeof module!=='undefined') module.exports=FrontierSearchLocks174;
 
