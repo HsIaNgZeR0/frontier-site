@@ -54,3 +54,16 @@
 #modal:has(.recruit147) .screen-simple-dialog{overflow-y:auto!important}
 #modal .recruit147-actions select{display:block!important}
 #modal .recruit147-card .recruit147-stage{bottom:4px}
+
+/* 招募卡片（手機）：顯示實際精英階段、依星級配色（參考本家招募）、修正底部裁切、希望顯示數字 */
+#modal .recruit147-card{margin:0!important}
+#modal .recruit147-candidates{padding:2px 4px 12px 2px!important;align-content:start}
+#modal img.recruit147-elite{left:6px;top:30px;width:34px;height:34px;filter:drop-shadow(0 0 3px #000) drop-shadow(0 0 6px #ffffff66) brightness(1.25);background:#000a;border-radius:50%;padding:3px;box-sizing:border-box}
+#modal .recruit147-strip{font-size:14px;letter-spacing:0;text-shadow:0 0 3px #0008}
+#modal [data-recruit-rarity="3"] .recruit147-strip{background:linear-gradient(90deg,#0f4c75,#33b5ef);color:#e6f7ff}
+#modal [data-recruit-rarity="4"] .recruit147-strip{background:linear-gradient(90deg,#4d2f73,#b28ae6);color:#f3e6ff}
+#modal [data-recruit-rarity="5"] .recruit147-strip{background:linear-gradient(90deg,#6b5510,#f2cf3a);color:#fff6c9}
+#modal [data-recruit-rarity="6"] .recruit147-strip{background:linear-gradient(90deg,#7a3006,#ff8a1f 70%,#ffc35a);color:#fff1d6}
+#modal .recruit147-stage:empty{display:none}
+#modal .recruit146-subhead .recruit-hope-bar b{color:#fff3bb!important;font-size:18px;font-family:"FrontierDisplay148","Rajdhani",sans-serif}
+#modal .recruit146-subhead .recruit-hope-bar span{color:#fff3bb}
