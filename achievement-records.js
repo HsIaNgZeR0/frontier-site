@@ -35,7 +35,7 @@ globalThis.FrontierAchievementRecords=(()=>{
   let ambiguous=0,early=0;
   for(const raid of state.statistics?.raids||[]){
    const row=rows[raid.region],rank=difficulty.indexOf(raid.difficulty);
-   if(!row||rank<0||raid.mode==='scout'||raid.contractMode==='simulation'||simulations.has(raid.number))continue;
+   if(!row||rank<0||raid.mode==='scout'||raid.mode==='highrisk'||raid.contractMode==='simulation'||simulations.has(raid.number))continue;
    const clear=raid.result==='win'&&!!raid.fullClear;
    const layer=raid.exitLayer??Math.max(0,...(raid.layers||[]));
    if(raid.result==='extract'&&layer===3){early++;continue;}
@@ -55,7 +55,7 @@ globalThis.FrontierAchievementRecords=(()=>{
    if(raid.contractMode==='simulation'||simulations.has(raid.number)||counted.has(raid.number)||!raid.team?.some(a=>a.id===id))continue;
    counted.add(raid.number);
    const rank=difficulty.indexOf(raid.difficulty);
-   if(rank>=0&&raid.mode!=='scout'&&raid.result==='win'&&raid.fullClear)clears[rank]++;
+   if(rank>=0&&raid.mode!=='scout'&&raid.mode!=='highrisk'&&raid.result==='win'&&raid.fullClear)clears[rank]++;
   }
   const run=state.run;
   const active=run&&!run.result&&run.contract?.mode!=='simulation'&&!counted.has(run.number)&&run.team?.some(a=>(a.operator||a.id)===id);

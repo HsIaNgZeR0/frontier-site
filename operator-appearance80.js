@@ -48,11 +48,13 @@ window.FrontierAppearance80=(()=>{
   }
  }
  paths.set('assets/amiya-full.webp',{id:'amiya',kind:'full'});
+ const siteRoot=decodeURIComponent(new URL('.',location.href).pathname);
  function image(img){
   if(img.hasAttribute('data-appearance80-preview'))return;
   const raw=img.getAttribute('src');if(!raw)return;
   let file;
-  try{const u=new URL(raw,location.href);if(u.origin!==location.origin)return;file=decodeURIComponent(u.pathname).replace(/^\//,'')}catch{return}
+  // 以網站根目錄（index.html 所在資料夾）為基準比對，部署在子路徑（如 GitHub Pages /frontier-site/）也能對上。
+  try{const u=new URL(raw,location.href);if(u.origin!==location.origin)return;const path=decodeURIComponent(u.pathname);file=(path.startsWith(siteRoot)?path.slice(siteRoot.length):path).replace(/^\//,'')}catch{return}
   const r=paths.get(file);if(!r)return;
   const next=src(r.id,r.kind,r.form);if(next&&file!==next)img.src=next;
  }

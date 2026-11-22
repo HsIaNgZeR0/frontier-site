@@ -133,3 +133,16 @@ body.expedition-active #app{height:calc(var(--screen-height,100dvh) - env(safe-a
 .search174-access-picker .search174-icon{min-height:48px}
 
 .search174-access-detail{width:84px;height:84px;margin:0 auto 8px}
+
+/* 權限卡匣／開鎖裝置：兩個獨立區塊 */
+.search174-prep{display:flex;flex-direction:column;gap:10px}
+.search174-block h3 small{font-weight:400;opacity:.75;margin-left:4px}
+.search174-toolzone{width:100%;min-height:56px;display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:6px;border:1px dashed #46616c;background:#14232b;border-radius:4px;text-align:left}
+.search174-toolzone .search174-icon{width:44px;height:44px;flex:none}
+.search174-toolzone span{color:#a9bdc4;font-size:12px}
+
+/* 定向券：縮小圖示並改成橫排，減少高度（仍保留 44px 觸控高度） */
+.prep149-tickets{gap:6px}
+.prep149-tickets label{display:flex;align-items:center;justify-content:center;gap:4px;padding:4px 4px 4px 22px;min-height:44px}
+.prep149-tickets img{width:28px;height:28px}
+.prep149-tickets input{top:50%;transform:translateY(-50%);left:4px}

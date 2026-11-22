@@ -240,7 +240,9 @@ window.FrontierAdventure=(()=>{
  }
  const oldEnd=endRun;endRun=function(result,index){
   const r=R();if(!r||r.result)return;
-  const s=story(),endings=result==='win'?completedEndings(r):[];
+  // 高危探索不紀錄通關結局。
+  const highRisk=r.expedition?.mode==='highrisk';
+  const s=story(),endings=result==='win'&&!highRisk?completedEndings(r):[];
   if(s&&!s.settled&&r.contract?.mode!=='simulation'&&r.depth>=3){
    s.settled=true;gain(['extract','win'].includes(result)?3:1);
    for(const ending of endings){
@@ -251,7 +253,7 @@ window.FrontierAdventure=(()=>{
   }
   oldEnd(result,index);
   const record=db.statistics?.raids.find(x=>x.number===r.number);
-  if(record&&s){record.events=structuredClone(s.log);record.ending=endings.at(-1)||s.ending;if(endings.length)record.endings=endings;record.escort=structuredClone(s.escort)}
+  if(record&&s){record.events=structuredClone(s.log);record.ending=highRisk?null:endings.at(-1)||s.ending;if(endings.length)record.endings=endings;record.escort=structuredClone(s.escort)}
   save();
  };
  const oldFinish=finishView;finishView=function(){

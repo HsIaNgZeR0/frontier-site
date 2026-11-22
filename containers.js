@@ -253,12 +253,14 @@ window.FrontierContainers=(()=>{
  function accessPrep(){
   const capacity=locks.keyRingLimit(db),keys=accessCandidates('keys');
   const lock='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2"/></svg>';
-  return '<section class="search174-prep"><b>搜索裝備</b><div class="search174-keyslots">'+Array.from({length:7},(_,i)=>{
+  const tools=accessCandidates('tools').filter(i=>selectedAccess.tools.includes(i.uid));
+  // 權限卡匣：固定格數的房卡欄位；開鎖裝置：不設格數的攜帶區，點整個區塊選擇。
+  return '<div class="search174-prep"><section class="search174-block"><h3>權限卡匣 <small>'+selectedAccess.keys.length+'/'+capacity+' 張房卡</small></h3><div class="search174-keyslots">'+Array.from({length:7},(_,i)=>{
    if(i>=capacity)return '<button disabled aria-label="房卡欄位 '+(i+1)+' 尚未解鎖">'+lock+'</button>';
    const item=keys.find(x=>x.uid===selectedAccess.keys[i]);
    return '<button aria-label="選擇房卡 '+(i+1)+'" onclick="FrontierContainers.pickAccess(&quot;keys&quot;)">'+(item?FrontierIcons.access(item):'+')+'</button>';
-  }).join('')+'</div>'+(!capacity?'<button onclick="go(&quot;doctor&quot;)">前往認知構築解鎖房卡包</button>':'')+
-  '<button onclick="FrontierContainers.pickAccess(&quot;tools&quot;)">開鎖裝置／炸藥'+(selectedAccess.tools.length?' · '+selectedAccess.tools.length+' 件':'')+'</button></section>';
+  }).join('')+'</div>'+(!capacity?'<button onclick="go(&quot;doctor&quot;)">前往認知構築解鎖權限卡匣</button>':'')+'</section>'+
+  '<section class="search174-block"><h3>開鎖裝置 <small>'+(tools.length?'攜帶 '+tools.length+' 件':'未攜帶')+'</small></h3><button type="button" class="search174-toolzone" aria-label="選擇開鎖裝置與炸藥，目前攜帶 '+tools.length+' 件" onclick="FrontierContainers.pickAccess(&quot;tools&quot;)">'+(tools.length?tools.map(item=>FrontierIcons.access(item)).join(''):'<span>點此選擇開鎖裝置與炸藥</span>')+'</button></section></div>';
  }
  function pickAccess(kind){
   if(!Object.hasOwn(selectedAccess,kind))return;

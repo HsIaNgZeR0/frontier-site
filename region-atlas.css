@@ -77,3 +77,10 @@
  dialog#modal.region-atlas-dialog:has(.has-region-info){max-height:min(calc(var(--screen-height,100dvh) - 20px),94dvh)!important}
  .region-atlas-dialog .screen-simple-dialog:has(.has-region-info){max-height:none}
 }
+
+/* 難度列：四個難度＋高危探索並排一列，縮小避免換行（手機 320px 起） */
+.atlas-difficulties{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:4px!important}
+.atlas-difficulties button,.has-region-info .atlas-difficulties button{min-height:44px;padding:4px 1px!important;font-size:12px;letter-spacing:0;white-space:nowrap;line-height:1.15;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.atlas-difficulties button small{display:block;font-size:8px;line-height:1.1;white-space:normal;opacity:.75}
+.atlas-difficulties .atlas-highrisk{color:#ec8576;border-color:#ec857655}
+.atlas-difficulties .atlas-highrisk[aria-pressed="true"]{background:#4a2424;color:#ffd3cb;border-color:#ec8576}

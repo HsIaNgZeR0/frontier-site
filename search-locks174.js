@@ -203,10 +203,10 @@ function validateTransition(before,next){
  const prior=before?.run?.number===run.number?before.run:null;
  validateSceneTransition(prior,run);
  const source=before||next;
- if(!Array.isArray(keys)||(!prior&&keys.length>keyRingLimit(source))||new Set(keys).size!==keys.length)throw Error('房卡包格式無效。');
+ if(!Array.isArray(keys)||(!prior&&keys.length>keyRingLimit(source))||new Set(keys).size!==keys.length)throw Error('權限卡匣格式無效。');
  const selected=keys.map(uid=>source.inventory?.items?.find(item=>item.uid===uid));
- if(selected.some(item=>!catalog[item?.itemId?.slice(10)]?.key)||new Set(selected.map(item=>item.itemId)).size!==selected.length)throw Error('房卡包須放入不同款的真實房卡。');
- if(prior&&JSON.stringify(prior.searchKeys174||[])!==JSON.stringify(keys))throw Error('出發後不可改換房卡包。');
+ if(selected.some(item=>!catalog[item?.itemId?.slice(10)]?.key)||new Set(selected.map(item=>item.itemId)).size!==selected.length)throw Error('權限卡匣須放入不同款的真實房卡。');
+ if(prior&&JSON.stringify(prior.searchKeys174||[])!==JSON.stringify(keys))throw Error('出發後不可改換權限卡匣。');
  if(!Array.isArray(ledger)||ledger.length>2||new Set(ledger.map(e=>e.sector)).size!==ledger.length||
    ledger.some(e=>!['B1','B2'].includes(e.device)||!Number.isInteger(e.sector)||typeof e.lock!=='string')||
    ledger.filter(e=>e.device==='B2').length>1)throw Error('本局爆破額度不符。');
