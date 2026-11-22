@@ -159,3 +159,9 @@ dialog#modal:not([open]){display:none!important}
 @keyframes fdRfxArt{from{transform:translateX(40%);opacity:0}to{transform:none;opacity:1}}
 @keyframes fdRfxInfo{from{transform:translateX(-20px);opacity:0}to{transform:none;opacity:1}}
 @media(prefers-reduced-motion:reduce){.fd-recruit-fx,.fd-rfx-art,.fd-rfx-info,.fd-rfx-band,.fd-rfx-flash{animation:none!important}}
+
+/* 警戒值橫條：約畫面寬度 3/4，置於指揮列底部置中 */
+.command148-hud{position:relative!important;padding-bottom:16px!important}
+.command148-hud>.fd-alert{position:absolute!important;left:12.5%!important;right:12.5%!important;bottom:3px!important;width:auto!important;flex-direction:row!important;align-items:center!important;gap:6px!important;padding:0!important}
+.command148-hud>.fd-alert .fd-alert-bar{flex:1!important;height:6px!important}
+.command148-hud>.fd-alert small{font-size:10px!important;text-align:right}

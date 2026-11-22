@@ -210,7 +210,7 @@ window.FrontierFieldDock=(()=>{
  const alertOf=r=>r.alert??(r.expedition?.mode==='highrisk'?20:0);
  function addAlert(r,key,amount,reason){if(!r?.expedition||!amount)return false;r.alertLedger??=[];if(r.alertLedger.some(x=>x.key===key))return false;const before=alertOf(r);r.alert=Math.min(100,Math.max(0,before+amount));r.alertLedger.push({key,before,after:r.alert,reason});return true}
  const alertBands=[[25,'靜默'],[50,'注意'],[75,'戒備'],[90,'追緝'],[101,'封鎖']];
- function alertHud(){const r=R();if(!r?.expedition||r.result)return;const box=document.querySelector('.command148-survey');if(!box)return;box.querySelector('.fd-alert')?.remove();const v=alertOf(r),label=alertBands.find(([m])=>v<m)[1];
+ function alertHud(){const r=R();if(!r?.expedition||r.result)return;const box=document.querySelector('.command148-hud');if(!box)return;document.querySelectorAll('.fd-alert').forEach(n=>n.remove());const v=alertOf(r),label=alertBands.find(([m])=>v<m)[1];
   const el=document.createElement('div');el.className='fd-alert'+(v>=75?' is-high':'');el.dataset.battleStatus='警戒 '+v+'/100（'+label+'）。來源：搜索房間行動為主、交戰少量、每消耗 1 點勘察 +3、部分事件選項。75 以上離開搜索房間會遭到追擊。可在安全的角落選擇「隱蔽休整」降低。';el.setAttribute('aria-label',el.dataset.battleStatus);el.innerHTML='<span class="fd-alert-bar"><i style="width:'+v+'%"></i></span><small>警戒 '+v+'</small>';box.append(el)}
  // 交戰：普通 +1、緊急 +2、首領 +3
  if(typeof startBattle==='function'){const sb=startBattle;startBattle=function(type,...rest){const out=sb(type,...rest);const r=R();if(r?.battle&&r.expedition){addAlert(r,(r.expedition.current||'start')+':battle:'+(r.number||0),{battle:1,ambush:1,elite:2,boss:3}[type]||1,'交戰')}return out}}
