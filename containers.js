@@ -553,7 +553,7 @@ window.FrontierContainers=(()=>{
   save();render();
  }
  function searchPursuit(run){
-  if(run.expedition.mode!=='highrisk')return false;
+  /* 警戒追擊套用所有難度。 */
   return run.pendingBreachIntercept||run.alert>=75&&!run.searchPursuits174?.includes(run.expedition.layer);
  }
  function leaveSearchScene(evade=false){

@@ -121,3 +121,41 @@ dialog#modal:not([open]){display:none!important}
 .fd-curio-choices img{width:40px;height:40px;object-fit:contain;grid-row:span 2}
 .fd-curio-choices b{font-size:12px}.fd-curio-choices small{font-size:10px;line-height:1.3;color:#c8d6da}
 .fd-curio-skip{margin-top:6px;min-height:36px;font-size:12px}
+/* 集成戰略職業招募券官方圖 */
+.store-card .recruit152-stack img{width:44px;height:auto}
+.fd-ticket-list .recruit152-stack img{width:30px!important;height:auto}
+
+/* 警戒值：勘察指數下方的黃色進度條（不加寬區塊，數字上移） */
+.command148-survey{display:flex!important;flex-direction:column;justify-content:center;gap:2px;padding-top:2px!important;padding-bottom:3px!important}
+.command148-survey .survey16-indicator{min-height:0!important;padding-top:0!important;padding-bottom:0!important;margin-bottom:0!important}
+.fd-alert{display:flex;align-items:center;gap:4px;width:100%;padding:0 6px;box-sizing:border-box}
+.fd-alert-bar{flex:1;height:5px;background:#3b3417;border-radius:3px;overflow:hidden}
+.fd-alert-bar i{display:block;height:100%;background:linear-gradient(90deg,#d9b43a,#f5d84a)}
+.fd-alert.is-high .fd-alert-bar i{background:linear-gradient(90deg,#e08a2c,#ff5a3c)}
+.fd-alert small{font-size:9px;color:#f5d84a;white-space:nowrap;font-variant-numeric:tabular-nums}
+.fd-alert-cost{display:block;font-size:10px;color:#f5d84a}
+.fd-camp-alert{display:block;width:100%;min-height:44px;margin-top:6px}
+.fd-camp-alert small{display:block;font-size:10px;color:#f5d84a}
+.fd-alert{flex-direction:column!important;align-items:stretch!important;gap:1px!important;padding:0 5px!important}
+.fd-alert-bar{flex:none!important;width:100%;height:5px}
+.fd-alert small{text-align:center;font-size:8px;line-height:1}
+
+/* 招募轉場 */
+.fd-recruit-fx{position:fixed;inset:0;z-index:20000;background:#05080bee;overflow:hidden;animation:fdRfxIn .18s ease-out}
+.fd-recruit-fx.out{animation:fdRfxOut .2s ease-in forwards}
+.fd-rfx-flash{position:absolute;inset:0;background:#fff;opacity:0;animation:fdRfxFlash .5s ease-out}
+.fd-rfx-band{position:absolute;left:-10%;right:-10%;top:58%;height:86px;transform:skewY(-6deg);background:linear-gradient(90deg,transparent,var(--rfx,#2fa8ff) 20%,var(--rfx,#2fa8ff) 80%,transparent);opacity:.35;animation:fdRfxBand .6s ease-out}
+.star-4{--rfx:#b06cff}.star-5{--rfx:#ffd800}.star-6{--rfx:#ff6a00}
+.fd-rfx-art{position:absolute;right:-6%;bottom:6%;height:78%;max-width:110%;object-fit:contain;filter:drop-shadow(0 0 18px #000);animation:fdRfxArt .55s cubic-bezier(.2,.8,.2,1)}
+.fd-rfx-info{position:absolute;left:18px;bottom:14%;display:flex;flex-direction:column;gap:4px;color:#fff;text-shadow:0 2px 6px #000;animation:fdRfxInfo .5s .15s both}
+.fd-rfx-info small{font-size:12px;color:#d4eb96;letter-spacing:.08em}
+.fd-rfx-info b{font-size:30px;font-weight:900;letter-spacing:.02em}
+.fd-rfx-stars{font-size:20px;color:var(--rfx,#2fa8ff);letter-spacing:2px}
+.fd-rfx-info em{font-style:normal;font-size:12px;color:#c8d6da}
+.fd-rfx-skip{position:absolute;top:calc(env(safe-area-inset-top) + 12px);right:12px;min-height:44px;min-width:76px;background:#0008;color:#fff;border:1px solid #fff6;border-radius:4px;font-size:14px}
+@keyframes fdRfxIn{from{opacity:0}to{opacity:1}}@keyframes fdRfxOut{to{opacity:0}}
+@keyframes fdRfxFlash{0%{opacity:.7}100%{opacity:0}}
+@keyframes fdRfxBand{from{transform:skewY(-6deg) translateX(60%);opacity:0}to{transform:skewY(-6deg) translateX(0);opacity:.35}}
+@keyframes fdRfxArt{from{transform:translateX(40%);opacity:0}to{transform:none;opacity:1}}
+@keyframes fdRfxInfo{from{transform:translateX(-20px);opacity:0}to{transform:none;opacity:1}}
+@media(prefers-reduced-motion:reduce){.fd-recruit-fx,.fd-rfx-art,.fd-rfx-info,.fd-rfx-band,.fd-rfx-flash{animation:none!important}}
