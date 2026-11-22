@@ -105,7 +105,7 @@ window.FrontierFieldDock=(()=>{
   const tickets=st.tickets.filter(t=>!t.used),frags=st.fragments,both=common();
   const synth=picked.size?'<button type="button" class="primary" data-fd-synth-confirm '+(both?.length?'':'disabled')+'>合成'+(both?(both.length?'<small>'+both.map(r=>roleName[r]||r).join('／')+'券</small>':'<small>無共同職業</small>'):'<small>再選一張</small>')+'</button>':'';
   return '<div class="fd-ticket-layout"><div class="fd-ticket-col"><b>完整券 '+tickets.length+'</b><div class="fd-ticket-list">'+(tickets.map(t=>'<button type="button" data-fd-ticket="'+t.id+'">'+FrontierRecruit152.art(t)+'<span>'+esc(t.name||(t.kind==='universal'||t.roles.length>=8?'通用招募券':t.roles.map(r=>roleName[r]||r).join('／')))+'</span></button>').join('')||'<p class="fd-empty">無</p>')+'</div></div>'+
-   '<div class="fd-ticket-col"><b>殘頁 '+frags.length+(picked.size?' · 已選 '+picked.size+'/2':'')+'</b><div class="fd-ticket-list">'+(frags.map(f=>'<button type="button" class="fd-frag" data-fd-frag="'+f.id+'" aria-pressed="'+picked.has(f.id)+'">'+roleIcons(f.roles)+'<span>'+f.roles.map(r=>roleName[r]||r).join('')+'</span></button>').join('')||'<p class="fd-empty">無</p>')+'</div></div>'+
+   '<div class="fd-ticket-col"><b>殘頁 '+frags.length+(picked.size?' · 已選 '+picked.size+'/2':'')+'</b><div class="fd-ticket-list">'+(frags.map(f=>'<button type="button" class="fd-frag" data-fd-frag="'+f.id+'" aria-pressed="'+picked.has(f.id)+'">'+FrontierRecruit152.art(f,true)+'<span>'+f.roles.map(r=>roleName[r]||r).join('')+'</span></button>').join('')||'<p class="fd-empty">無</p>')+'</div></div>'+
    '<div class="fd-synth">'+synth+'</div></div>'+
    '<p class="fd-hint">'+(picked.size?'選兩張殘頁，合成兩張共同職業的招募券。':'點完整券直接招募；點殘頁開始合成。')+'</p>';
  }
@@ -180,15 +180,17 @@ window.FrontierFieldDock=(()=>{
   const anchor=[...body.querySelectorAll('h3,h2')].find(h=>/選擇移除|選擇升級/.test(h.textContent));if(anchor){anchor.replaceWith(title)}else body.prepend(title);title.after(grid)} /* 戰後收藏品：和其他戰利品顯示在同一區；普通作戰直接取得 1 個，緊急作戰／首領二選一。 */
  function curioDrops(){const r=R();if(page!=='run'||!r||r.result)return;const s=window.FrontierCurios?.curios?.();if(!s)return;
   if(!r.reward){if(s.lastAuto)delete s.lastAuto;return}
-  const host=document.querySelector('#app .compact-reward-content')||document.querySelector('#app .screen-workspace-body');if(!host||host.querySelector('.fd-curio-drop'))return;
-  const D=FrontierCurioData.entries,box=document.createElement('section');box.className='fd-curio-drop';
-  const offer=s.offers?.[0];
-  if(offer){box.innerHTML='<h3>收藏品 · '+(offer.ids.length>1?'二選一':'取得')+'</h3><div class="fd-curio-choices">'+offer.ids.map(id=>'<button type="button" data-fd-claim="'+id+'">'+FrontierCurios.icon(id)+'<b>'+esc(D[id]?.name||id)+'</b><small>'+esc(D[id]?.effect||'')+'</small></button>').join('')+'</div><button type="button" class="fd-curio-skip" data-fd-skip>放棄收藏品</button>';
-   box.addEventListener('click',e=>{const c=e.target.closest('[data-fd-claim]');if(c){FrontierCurios.claim(offer.key,c.dataset.fdClaim);return}if(e.target.closest('[data-fd-skip]'))FrontierCurios.decline(offer.key)})}
-  else if(s.lastAuto&&D[s.lastAuto.id]){const d=D[s.lastAuto.id];box.innerHTML='<h3>收藏品 · 取得</h3><div class="fd-curio-choices"><div class="fd-curio-got">'+FrontierCurios.icon(s.lastAuto.id)+'<b>'+esc(d.name)+'</b><small>'+esc(d.effect||'')+'</small></div></div>'}
-  else return;
-  const anchor=host.querySelector('.reward-footer')||host.querySelector('.reward-cards');if(anchor)anchor.after(box);else host.append(box)}
- /* 詭異行商商品格式（刷新後亦同）：0～1 結局藏品（地區模組另行附加）、1 個依層數的箱子、1 張單一職業招募券、
+  document.querySelectorAll('.curio-offer-entry').forEach(n=>n.remove());
+  const list=document.querySelector('#app .reward-stage-items'),host=list||document.querySelector('#app .compact-reward-content')||document.querySelector('#app .screen-workspace-body');if(!host||host.querySelector('.fd-curio-drop'))return;
+  const D=FrontierCurioData.entries,offer=s.offers?.[0],got=!offer&&s.lastAuto&&D[s.lastAuto.id]?s.lastAuto.id:null;if(!offer&&!got)return;
+  /* 戰後收藏品：與其他戰利品同樣的方框；多選時在方框內直接點選。 */
+  const box=document.createElement('article');box.className='rewards151-block fd-curio-drop';
+  if(offer){box.innerHTML='<div class="fd-curio-choices">'+offer.ids.map(id=>'<button type="button" data-fd-claim="'+id+'" aria-label="選擇 '+esc(D[id]?.name||id)+'">'+FrontierCurios.icon(id)+'<b>'+esc(D[id]?.name||id)+'</b><small>'+esc(D[id]?.effect||'')+'</small></button>').join('')+'</div>';
+   box.addEventListener('click',e=>{const c=e.target.closest('[data-fd-claim]');if(c)FrontierCurios.claim(offer.key,c.dataset.fdClaim)})}
+  else box.innerHTML='<div class="rewards151-art">'+FrontierCurios.icon(got)+'</div><div><h3>'+esc(D[got].name)+'</h3><p>'+esc(D[got].effect||'')+'</p></div>';
+  if(list)list.append(box);else host.append(box)}
+ /* 有待選收藏品時不另開彈窗，改捲到戰利品方框。 */
+ if(typeof modal==='function'){const baseModal=modal;window.modal=modal=function(title,...rest){if(String(title).startsWith('戰術收藏品 · 選擇')&&R()?.reward){const box=document.querySelector('.fd-curio-drop');if(box){box.scrollIntoView({block:'center',behavior:'smooth'});box.animate?.([{outline:'2px solid #d4eb96'},{outline:'2px solid transparent'}],{duration:900})}toast('PRTS｜請先在戰利品中選擇收藏品。');return}return baseModal(title,...rest)}} /* 詭異行商商品格式（刷新後亦同）：0～1 結局藏品（地區模組另行附加）、1 個依層數的箱子、1 張單一職業招募券、
     3 個收藏品、2 個裝備詞條、2～3 個依層數的素材（最低綠色）。 */
  if(window.FrontierTrading?.fieldMerchant){const buildMerchant=FrontierTrading.fieldMerchant;FrontierTrading.fieldMerchant=function(node){buildMerchant(node);const r=R(),e=r?.event;if(e?.type!=='fieldMerchant'||!r.recruitment144&&!r.expedition)return;
   const layer=r.expedition.layer||0,seed=h32([r.number,node.id,e.talentRefresh43||0,'merchant149'].join(':')),rnd=k=>h32(seed+':'+k);
