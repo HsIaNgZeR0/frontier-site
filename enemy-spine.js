@@ -4,8 +4,13 @@
    沒有素材或 WebGL 不可用時回傳 false，由呼叫端退回 webp／靜態圖。 */
 window.FrontierEnemySpine=(()=>{
  const base='assets/enemy-spine/',failed=new Set(),live=new Set(),byKey=new Map();let raf=0,last=0;const cost={n:0,ms:0};
- const ok=()=>!!window.spine?.webgl&&!matchMedia('(prefers-reduced-motion: reduce)').matches;
- const has=id=>!!window.FrontierEnemySpineIndex?.[id]&&!failed.has(id);
+ /* 播放程式庫（約 420KB）在第一次需要時才載入；載入前先用原本的圖片，載完再重繪一次。 */
+ let loading=null;
+ function ensure(){if(window.spine?.webgl)return true;if(!loading){loading=new Promise((res,rej)=>{const s=document.createElement('script');s.src='vendor/spine-webgl-3.8.js';s.onload=res;s.onerror=rej;document.head.append(s)}).then(()=>{if(typeof render==='function')render()}).catch(()=>{loading=null})}return false}
+ const ok=()=>!matchMedia('(prefers-reduced-motion: reduce)').matches&&ensure();
+ /* 組長／強化型（_2、_4…）沒有獨立素材時沿用基本型。 */
+ const resolve=id=>{const I=window.FrontierEnemySpineIndex||{};if(I[id])return id;const base=String(id).replace(/_\d+$/,'');return I[base]?base:null};
+ const has=id=>{const r=resolve(id);return !!r&&!failed.has(r)};
  const names=data=>data.animations.map(a=>a.name);
  /* 形態 A／B：B_Idle、Idle_B、Idle_BK 等命名都支援。 */
  const staged=(list,base,stage)=>list.find(n=>new RegExp('^'+stage+'_'+base+'$','i').test(n))||list.find(n=>new RegExp('^'+base+'_'+stage+'K?$','i').test(n));
@@ -16,7 +21,7 @@ window.FrontierEnemySpine=(()=>{
   const a=[pick(/^A_Die_Start$/i)||pick(/^Die_Begin_AK?$/i),pick(/^A_Die_Loop$/i)||pick(/^Die_Loop_AK?$/i),pick(/^A_Die_End$/i)||pick(/^Die_End_AK?$/i)].filter(Boolean);if(a.length)return a;
   const d=pick(/^Die_AK?$/i)||pick(/^A_Die$/i);if(d)return [d];const plain=pick(/^Die$/i);return plain?[plain]:[]}
  function mount(host,id,key,stage='A'){
-  if(!ok()||!has(id)||!host)return false;
+  if(!ok()||!has(id)||!host)return false;id=resolve(id);
   /* 同一個敵人重繪時沿用原畫布，不重建 WebGL、不重新載入。 */
   const k=key?id+'|'+key:null,old=k&&byKey.get(k);if(old&&live.has(old)){old.host=host;if(old.canvas.parentNode!==host)host.replaceChildren(old.canvas);return true}
   const canvas=document.createElement('canvas');canvas.className='enemy-art enemy-spine-model';canvas.setAttribute('aria-hidden','true');
@@ -27,7 +32,7 @@ window.FrontierEnemySpine=(()=>{
   host.replaceChildren(canvas);live.add(st);if(k){st.key=k;byKey.set(k,st)}loop();return true}
  function setup(st){
   const atlas=st.assets.get(st.id+'.atlas'),loader=new spine.AtlasAttachmentLoader(atlas),bin=new spine.SkeletonBinary(loader);bin.scale=1;
-  const data=bin.readSkeletonData(st.assets.get(st.id+'.skel')),sk=new spine.Skeleton(data),anim=pickIdle(data,st.stage);st.data=data;
+  const raw=st.assets.get(st.id+'.skel'),data=raw[0]===123?new spine.SkeletonJson(loader).readSkeletonData(new TextDecoder().decode(raw)):bin.readSkeletonData(raw),sk=new spine.Skeleton(data),anim=pickIdle(data,st.stage);st.data=data;
   const state=new spine.AnimationState(new spine.AnimationStateData(data));if(anim)state.setAnimation(0,anim,true);
   /* 以第 0 格的邊界框置中，之後不再重算，避免動作造成縮放跳動。 */
   sk.setToSetupPose();state.apply(sk);sk.updateWorldTransform();const off=new spine.Vector2(),size=new spine.Vector2();sk.getBounds(off,size,[]);
@@ -41,11 +46,12 @@ window.FrontierEnemySpine=(()=>{
   cam.position.x=b.x+b.w/2;cam.position.y=b.y+b.h/2;cam.viewportWidth=w*scale;cam.viewportHeight=h*scale;cam.update();
   const gl=st.ctx.gl;gl.viewport(0,0,w,h);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);
   r.begin();r.drawSkeleton(st.sk,true);r.end()}
- function frame(t){raf=0;const dt=last?Math.min(.1,(t-last)/1000):0;last=t;if(document.hidden){last=0}else{const t0=performance.now();for(const st of [...live])draw(st,dt);cost.n++;cost.ms+=performance.now()-t0}if(live.size)loop();else last=0}
+ /* 每秒最多 30 格：待機動作看不出差別，手機負擔約減半。 */
+ function frame(t){raf=0;if(last&&t-last<30){loop();return}const dt=last?Math.min(.1,(t-last)/1000):0;last=t;if(document.hidden){last=0}else{const t0=performance.now();for(const st of [...live])draw(st,dt);cost.n++;cost.ms+=performance.now()-t0}if(live.size)loop();else last=0}
  function loop(){if(!raf)raf=requestAnimationFrame(frame)}
  document.addEventListener('visibilitychange',()=>{if(!document.hidden)loop()});
  /* 播放轉階段動畫，結束後換成 B 形態待機；回傳毫秒（0 表示沒有可播的動作）。總長超過 4 秒會加速。 */
- function transition(id,key,stage='B'){const st=byKey.get(id+'|'+key);if(!st)return 0;st.stage=stage;if(!st.ready)return 0;const seq=transitionSeq(st.data);const idle=pickIdle(st.data,stage);if(!seq.length){st.state.setAnimation(0,idle,true);return 0}
+ function transition(id,key,stage='B'){id=resolve(id);const st=byKey.get(id+'|'+key);if(!st)return 0;st.stage=stage;if(!st.ready)return 0;const seq=transitionSeq(st.data);const idle=pickIdle(st.data,stage);if(!seq.length){st.state.setAnimation(0,idle,true);return 0}
   let total=seq.reduce((s,n)=>s+(st.data.findAnimation(n)?.duration||0),0);const speed=total>4?total/4:1;st.state.timeScale=speed;st.state.setAnimation(0,seq[0],false);for(const n of seq.slice(1))st.state.addAnimation(0,n,false,0);const back=st.state.addAnimation(0,idle,true,0);setTimeout(()=>{st.state.timeScale=1},total/speed*1000);return Math.round(total/speed*1000)}
  /* 第幾條命：精英再起、首領第二階段（tacticsBoss）、地區首領 phase。 */
  const lastLife=new Map();
