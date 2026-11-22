@@ -10,11 +10,18 @@ window.FrontierRecruitBag=(()=>{
 #rbag{position:fixed;inset:0;z-index:9000;background:radial-gradient(circle at 50% 40%,#2a2f36,#0b0d10 70%);color:#eef3f7;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;font-family:inherit}
 #rbag .rb-skip{position:absolute;top:max(12px,env(safe-area-inset-top));right:16px;min-width:64px;min-height:44px;padding:0 14px;background:rgba(0,0,0,.45);color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:2px;font-weight:700;letter-spacing:.1em;z-index:3}
 #rbag .rb-hint{margin-top:28px;font-size:13px;letter-spacing:.12em;opacity:.75;text-align:center;padding:0 16px}
-#rbag .rb-bag{position:relative;width:min(78vw,320px);aspect-ratio:3/4;border-radius:10px 10px 18px 18px;background:linear-gradient(160deg,#3c444d,#1d2228 70%);box-shadow:0 20px 60px rgba(0,0,0,.6),inset 0 0 0 2px rgba(255,255,255,.08)}
-#rbag .rb-bag::before{content:'RHODES ISLAND';position:absolute;left:0;right:0;top:46%;text-align:center;font-size:12px;letter-spacing:.35em;opacity:.35}
-#rbag .rb-bag::after{content:'';position:absolute;left:50%;top:56%;width:56px;height:56px;transform:translateX(-50%) rotate(45deg);border:2px solid rgba(255,255,255,.16)}
-#rbag .rb-seam{position:absolute;left:8%;right:8%;top:14%;height:10px;border-radius:5px;background:repeating-linear-gradient(90deg,#8b949e 0 4px,#59616a 4px 8px)}
-#rbag .rb-open{position:absolute;left:8%;top:14%;height:10px;width:0;border-radius:5px;background:#0b0d10;box-shadow:0 0 0 0 var(--g)}
+#rbag .rb-bag{position:relative;width:min(78vw,320px);aspect-ratio:3/4;border-radius:14px 14px 22px 22px;background:
+ repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 3px),
+ repeating-linear-gradient(90deg,rgba(0,0,0,.35) 0 1px,transparent 1px 3px),
+ radial-gradient(ellipse at 30% 25%,#2b2d30,#141517 55%,#0a0a0b 100%);
+ box-shadow:0 24px 60px rgba(0,0,0,.75),inset 0 2px 0 rgba(255,255,255,.06),inset 0 -14px 30px rgba(0,0,0,.6)}
+#rbag .rb-bag::before{content:'RHODES ISLAND';position:absolute;left:0;right:0;top:48%;text-align:center;font-size:12px;font-weight:700;letter-spacing:.35em;color:#c9ced3;opacity:.28}
+#rbag .rb-bag::after{content:'';position:absolute;inset:7px;border:1.5px dashed rgba(255,255,255,.13);border-radius:10px 10px 17px 17px;pointer-events:none}
+#rbag .rb-seam{position:absolute;left:8%;right:8%;top:14%;height:12px;border-radius:2px;background:
+ repeating-linear-gradient(90deg,transparent 0 1px,#e7eaee 1px 4px,#8d949b 4px 5px,transparent 5px 6px) 0 0/6px 6px repeat-x,
+ repeating-linear-gradient(90deg,transparent 0 4px,#e7eaee 4px 7px,#8d949b 7px 8px,transparent 8px 9px) 0 6px/6px 6px repeat-x,
+ #1c1d1f;box-shadow:0 -3px 0 #232426,0 3px 0 #232426,0 0 0 1px #000}
+#rbag .rb-open{position:absolute;left:8%;top:14%;height:12px;width:0;border-radius:2px;background:#050506;box-shadow:0 0 0 0 var(--g)}
 #rbag .rb-light{position:absolute;left:8%;top:calc(14% - 160px);height:170px;width:0;pointer-events:none;background:linear-gradient(to top,var(--g),transparent);filter:blur(6px);opacity:0;mix-blend-mode:screen}
 #rbag .rb-rays{position:absolute;inset:-40%;pointer-events:none;opacity:0;background:repeating-conic-gradient(from 0deg at 50% 22%,transparent 0 9deg,var(--g) 10deg 12deg,transparent 13deg 22deg);mix-blend-mode:screen;filter:blur(2px)}
 #rbag .rb-fire{position:absolute;left:8%;right:8%;top:14%;height:0;pointer-events:none;opacity:0}
@@ -22,8 +29,9 @@ window.FrontierRecruitBag=(()=>{
 #rbag .rb-fire b{position:absolute;bottom:0;width:3px;height:3px;border-radius:50%;background:#ffd27a;box-shadow:0 0 6px 2px #ff7a1a;animation:rbspark var(--d) linear infinite;animation-delay:var(--w);opacity:0}
 @keyframes rbfire{0%{transform:translateY(4px) scale(.5,.4);opacity:0}25%{opacity:1}100%{transform:translateY(calc(var(--h)*-1)) scale(.25,.9) rotate(var(--r));opacity:0}}
 @keyframes rbspark{0%{transform:translate(0,0);opacity:0}15%{opacity:1}100%{transform:translate(var(--x),calc(var(--h)*-1.6));opacity:0}}
-#rbag .rb-handle{position:absolute;top:calc(14% - 17px);left:calc(8% - 22px);width:44px;height:44px;border-radius:50%;background:#d9dee3;border:3px solid #6d757e;box-shadow:0 4px 12px rgba(0,0,0,.5);cursor:grab}
-#rbag .rb-handle::after{content:'';position:absolute;left:50%;top:100%;width:8px;height:22px;transform:translateX(-50%);background:#d9dee3;border-radius:0 0 4px 4px}
+#rbag .rb-handle{position:absolute;top:calc(14% - 16px);left:calc(8% - 22px);width:44px;height:44px;cursor:grab;background:none}
+#rbag .rb-handle::before{content:'';position:absolute;left:9px;top:10px;width:26px;height:24px;border-radius:5px 5px 9px 9px;background:linear-gradient(90deg,#7c838a,#f2f4f6 35%,#b8bec4 60%,#6f767d);box-shadow:0 3px 8px rgba(0,0,0,.7),inset 0 1px 0 #fff}
+#rbag .rb-handle::after{content:'';position:absolute;left:15px;top:30px;width:14px;height:26px;border-radius:3px 3px 7px 7px;background:linear-gradient(90deg,#80878e,#eef1f3 40%,#a9b0b6 65%,#6c737a);box-shadow:0 3px 6px rgba(0,0,0,.6),inset 0 -6px 0 -2px #2a2c2e}
 #rbag .rb-open-btn{margin-top:14px;min-height:44px;padding:0 18px;background:transparent;color:#cfd6dc;border:1px solid rgba(255,255,255,.3)}
 #rbag.rb-flash::after{content:'';position:absolute;inset:0;background:var(--g);animation:rbflash .55s ease-out forwards;pointer-events:none}
 @keyframes rbflash{from{opacity:.95}to{opacity:0}}
