@@ -193,6 +193,8 @@ dialog#modal:not([open]){display:none!important}
 /* 招募券／殘頁堆疊：左邊的券疊在上面，讓每張券右上角的職業圖示都露出來（三張券扇形展開）。 */
 .recruit152-stack img:nth-child(1){z-index:3}.recruit152-stack img:nth-child(2){z-index:2}.recruit152-stack img:nth-child(3){z-index:1}
 .recruit152-stack img{transform-origin:50% 100%}
+/* 殘頁：鋸齒斷口穿過職業圖標，約剩上半到 2/3，一眼看出是殘缺的券。 */
+.recruit152-stack.is-fragment img{clip-path:polygon(0 0,100% 0,100% 30%,90% 36%,80% 29%,69% 38%,58% 31%,47% 40%,36% 32%,24% 41%,12% 34%,0 42%)!important}
 .recruit152-stack img:nth-child(2){left:calc(1px + 1*var(--fan,16px))!important}.recruit152-stack img:nth-child(3){left:calc(1px + 2*var(--fan,16px))!important}
 .recruit152-stack{--fan:18px;width:96px!important}
 .recruit152-grid .recruit152-stack{--fan:20px;width:96px!important}
