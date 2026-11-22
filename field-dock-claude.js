@@ -168,9 +168,18 @@ window.FrontierFieldDock=(()=>{
   const last=[...document.querySelectorAll('.v113-actor-row')].at(-1);document.querySelectorAll('.fd-ally-row').forEach(n=>n.remove());
   const allies=(b.friendly75||[]).filter(a=>!a.exited&&a.hp>0);if(!last||!allies.length)return;
   for(const f of allies){const row=document.createElement('section');row.className='fd-ally-row';const tip='尼盧火（我方機構）：HP '+f.hp+'/'+f.max+'。用治療牌治到滿即可熄滅；第 '+f.expires75+' 回合仍未熄滅會爆炸，全隊受傷並削弱攻擊最高的幹員。場上每盞尼盧火使奎隆受到的物法傷害降低 20%。';row.dataset.battleStatus=tip;row.setAttribute('aria-label',tip);row.innerHTML='<img src="assets/battle-fire75.svg" alt=""><span class="fd-ally-bar"><i style="width:'+Math.round(f.hp/f.max*100)+'%"></i></span><b>尼盧火 '+f.hp+'/'+f.max+'</b><small>第'+f.expires75+'回合爆炸</small>';last.after(row)}}
- let packSyncing=false;
+ /* 戰術獎勵「精簡牌組／戰術研習」：用實際卡面列出全部卡牌（每列 3 張，可上下捲動），點卡即選擇。 */
+ function deckPicker(){const r=R(),s=r?.reward?.strategy;if(!s||!['remove','upgrade'].includes(s.stage)||typeof cardHtml!=='function')return;
+  const body=document.querySelector('#app .screen-workspace-body')||document.querySelector('#app');if(!body||body.querySelector('.fd-card-grid'))return;
+  for(const b of body.querySelectorAll('button'))if(/開啟卡牌列表/.test(b.textContent))b.remove();
+  const title=document.createElement('h3');title.className='fd-card-title';title.textContent=(s.stage==='upgrade'?'選擇要升級的卡牌':'選擇要移除的卡牌')+'（共 '+r.deck.length+' 張）';
+  const grid=document.createElement('div');grid.className='fd-card-grid';
+  grid.innerHTML=r.deck.map((c,i)=>{let html='';try{html=cardHtml(c,i,'reward')}catch{html='<button class="play-card">'+esc(c.id)+'</button>'}return '<div class="fd-card-slot" data-fd-card="'+i+'">'+html+'</div>'}).join('');
+  for(const el of grid.querySelectorAll('[onclick]'))el.removeAttribute('onclick');
+  for(const slot of grid.querySelectorAll('[data-fd-card]')){const i=Number(slot.dataset.fdCard),c=r.deck[i],disabled=s.stage==='upgrade'&&typeof FrontierStrategy.canUpgrade==='function'&&!FrontierStrategy.canUpgrade(c);if(disabled)slot.classList.add('is-disabled');slot.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();if(!disabled)FrontierStrategy.pickCard(i)},true)}
+  const anchor=[...body.querySelectorAll('h3,h2')].find(h=>/選擇移除|選擇升級/.test(h.textContent));if(anchor){anchor.replaceWith(title)}else body.prepend(title);title.after(grid)} let packSyncing=false;
  function packRoster(){if(packSyncing||!window.FrontierPack?.needsRosterSync?.())return;if(FrontierRuntime.busy){setTimeout(packRoster,300);return}packSyncing=true;setTimeout(async()=>{try{await FrontierRuntime.perform('pack-roster-sync',()=>{FrontierPack.syncRoster();save();return true})}finally{packSyncing=false}render()},0)}
- const prior=render;render=function(...args){const out=prior(...args);try{decorate();keyHints();merchantLimit();battleMarks();packRoster()}catch(error){console.error(error)}return out};
+ const prior=render;render=function(...args){const out=prior(...args);try{decorate();keyHints();merchantLimit();battleMarks();packRoster();deckPicker()}catch(error){console.error(error)}return out};
  window.addEventListener('resize',()=>{if(sheet)redraw()});
  return{toggle,close,decorate,keyHints,keycardsFor,capBattles,get sheet(){return sheet}};
 })();
