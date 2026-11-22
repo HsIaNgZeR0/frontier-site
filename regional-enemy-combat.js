@@ -33,7 +33,7 @@ window.FrontierRegionalEnemies=(()=>{
   gravity:{title:'重力擾動',tax:1,arts:true,text:'造成法術傷害。特殊攻擊未被破解並施放後，隊伍下回合初始 AP 減少 1，最低 1。'},
   redBlade:{title:'紅刃狂怒',phaseAttack:6,text:'首次在半血以下行動時，攻擊永久提高 60。'},
   iceCast:{title:'蓄積寒氣',arts:true,status:'cold',statusEvery:3,text:'以法術攻擊。每第三次攻擊造成生命損失時，追加 1 層寒冷。'},
-  grayTail:{title:'破盾突進',start:8,artsBreakShield:true,text:'開戰取得 80 護盾。首次法術命中帶盾的灰尾會移除剩餘護盾，灰尾同時獲得 25 攻擊。'},
+  packFang:{title:'群獵',pack:10,text:'場上每多一名存活同伴，普通攻擊原始傷害 +10，最多 +30。先清掉其他敵人可削弱牠。',combatText61:'場上每多一名存活同伴，普通攻擊原始傷害 +10，最多 +30。'},grayTail:{title:'破盾突進',start:8,artsBreakShield:true,text:'開戰取得 80 護盾。首次法術命中帶盾的灰尾會移除剩餘護盾，灰尾同時獲得 25 攻擊。'},
   longShot:{title:'狙擊壓制',target:'weakest',stunEvery:3,text:'瞄準生命比例最低的幹員。每第三次攻擊造成生命損失時，使受傷幹員下一回合無法出牌。'},
   volleyCar:{title:'連續扣殺',ramp:15,text:'連續回合攻擊時，每次原始傷害再加 15，最多加 45。中斷一回合後歸零。'},
   unlitArcher:{title:'暗處弩矢',artsUntil:2,text:'前兩回合發射法術弩矢，第 3 回合起改為物理傷害。'},
@@ -68,7 +68,7 @@ window.FrontierRegionalEnemies=(()=>{
   enemy_1249_lysdb:'veil',enemy_1250_lyengs:'arts',enemy_1325_cbgpro:'fast',enemy_1329_cbshld:'veil',enemy_1116_liprr:'rush',enemy_1117_liiprr:'arts',enemy_1253_lysytc:'veil',enemy_1328_cbjedi:'arts',enemy_1256_lyacpa:'artillery',enemy_1255_lybgpa:'charge',enemy_1330_cbrush:'fast',enemy_1118_lidbox:'fast',enemy_1119_vofsd:'heal',
   enemy_1165_duhond:'reflect',enemy_1166_dusbr:'reflect',enemy_1167_dubow:'reflect',enemy_1222_dpvt:'rush',enemy_1223_dmech:'alert',enemy_1168_dumage:'arts',enemy_1229_darmy:'neural',enemy_1170_dushld:'reflect',enemy_1272_nhtank:'corrosion',
   enemy_1147_dshond:'fast',enemy_1148_dssbr:'neural',enemy_1150_dsjely:'neural',enemy_1231_dsrunr:'veil',enemy_1233_dsshtr:'artillery',enemy_1153_dsexcu:'snipe',enemy_1232_dssalr:'barrier',enemy_1230_dsbudr:'reflect',enemy_1235_dsbskr:'corrosion',
-  enemy_2043_smsbr:'rush',enemy_2044_smwiz:'arts',enemy_2045_smdrn:'veil',enemy_2047_smtree:'armor',enemy_2046_smwar:'rush',enemy_2059_smbox:'barrier',
+  enemy_2043_smsbr:'rush',enemy_2044_smwiz:'arts',enemy_2045_smdrn:'veil',enemy_1187_krghd:'packFang',enemy_2046_smwar:'rush',enemy_2059_smbox:'barrier',
   enemy_1071_dftman:'reflect',enemy_1073_dscout:'alert',enemy_1410_mmelee:'brace',enemy_1411_mmrnge:'snipe',enemy_1412_mmjump:'veil',enemy_1074_dbskar:'artillery',enemy_1075_dmgswd:'arts',enemy_1076_bsthmr:'artillery',enemy_1413_mmstck:'fast',enemy_1429_lrwzrd:'artillery'
  };
  function profile(id,entry){const d=units[id];return entry||window.FrontierRegionalReinforcementTraits?.[id]||specialTraits[id]||(d?.archetype==='guard'?'armor':d?.ranged?'snipe':'fast');}
@@ -189,6 +189,8 @@ window.FrontierRegionalEnemies=(()=>{
     else{delete enemy.status;delete enemy.statusStacks}
    }
   }
+  /* 爪獸「群獵」：場上每多一名存活同伴，普通攻擊原始傷害 +10，最多 +30。 */
+  if(trait?.pack&&!specialAttack){const mates=(battle.enemies||[]).filter(e=>e!==enemy&&e.hp>0&&!e.exited&&!e.device75&&!e.bloodblade75).length;raw+=Math.min(trait.pack*3,mates*trait.pack)}
   if(trait?.ramp&&!specialAttack){
    enemy.regionalRamp=enemy.regionalLastAttack===battle.turn-1?Math.min(3,(enemy.regionalRamp||0)+1):0;
    enemy.regionalLastAttack=battle.turn;raw+=enemy.regionalRamp*trait.ramp;

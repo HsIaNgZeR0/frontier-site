@@ -186,7 +186,14 @@ window.FrontierFieldDock=(()=>{
     else{const alive=b.enemies.filter(x=>x.hp>0&&!x.exited),half=e.hp/e.max<=.5;
      const hint={awaken:'實驗體 '+alive.filter(x=>x.extra75==='experiment').length+' 隻存活時本體只受一半傷害',bigugly:'倒下後彈出駕駛員，兩回合內須擊倒',deer:half?'已過半血：物理／法術再減半，改用真傷':'半血後物理／法術傷害減半',degen:'突進命中者下回合繳械；先破韌可阻止',faust:'每 3 回合紫箭強化：留護盾與減傷',kazimierz:'公布的裁決類型減傷 55%：改用另一類型或挑戰反轉',mouse:'沙塵輪流瞄準 HP 上限最高／最低的幹員',pursuer:'每損 25% HP 預告自我泯滅：跨血線前先上盾',saint:'單發重擊後下一回合換彈'}[k];
      if(st)tag=['首領機制',st+(hint?'：'+hint:''),st];else if(hint)tag=['首領機制',hint,hint.split(/[：，；]/)[0]]}}
-   if(!tag)continue;const el=document.createElement('div');el.className='fd-mech-tag'+(warn?' is-warn':'')+(crowded?' is-short':'');el.title=tag[0]+'：'+tag[1];el.setAttribute('aria-label',el.title);el.innerHTML='<b>'+esc(tag[0])+'</b><span>'+esc(crowded?tag[2]:tag[1])+'</span>';(card.querySelector('.v113-enemy-vital')?.parentNode||card).append(el)}} /* 戰術獎勵「精簡牌組／戰術研習」：用實際卡面列出全部卡牌（每列 3 張，可上下捲動），點卡即選擇。 */
+   if(!tag)continue;const el=document.createElement('div');el.className='fd-mech-tag'+(warn?' is-warn':'')+(crowded?' is-short':'');el.title=tag[0]+'：'+tag[1];el.setAttribute('aria-label',el.title);el.innerHTML='<b>'+esc(tag[0])+'</b><span>'+esc(crowded?tag[2]:tag[1])+'</span>';(card.querySelector('.v113-enemy-vital')?.parentNode||card).append(el)}} /* 2026-11-22：移除沒有官方模型的「積雪銀凇」，名冊改由「爪獸」遞補；舊存檔中的收容／研究／圖鑑紀錄一併移除（只執行一次）。 */
+ const removedSpecies=['enemy_2047_smtree'];
+ function purgeRemovedSpecies(){if(typeof db==='undefined'||!db||db.removedSpecies36)return;let changed=false;const c=db.capture,gone=new Set();
+  if(c?.instances){const keep=c.instances.filter(x=>{if(removedSpecies.includes(x.species)){gone.add(x.uid);return false}return true});if(keep.length!==c.instances.length){c.instances=keep;changed=true}}
+  for(const id of removedSpecies){if(c?.research?.[id]){delete c.research[id];changed=true}if(db.world?.roster?.[id]){delete db.world.roster[id];changed=true}if(db.world?.seen?.[id]){delete db.world.seen[id];changed=true}}
+  if(gone.size&&db.base151?.rooms)for(const r of db.base151.rooms)if(Array.isArray(r.staff))r.staff=r.staff.filter(u=>!gone.has(u));
+  db.removedSpecies36=true;try{save()}catch(e){console.warn(e)}}
+ (function waitBoot(n){if(window.FrontierBootReady&&typeof db!=='undefined'&&db){try{FrontierRuntime.perform('purge-removed-species',()=>{purgeRemovedSpecies();return true})}catch(e){console.warn(e)}}else if(n<200)setTimeout(()=>waitBoot(n+1),250)})(0); /* 戰術獎勵「精簡牌組／戰術研習」：用實際卡面列出全部卡牌（每列 3 張，可上下捲動），點卡即選擇。 */
  function deckPicker(){const r=R(),s=r?.reward?.strategy;if(!s||!['remove','upgrade'].includes(s.stage)||typeof cardHtml!=='function')return;
   const body=document.querySelector('#app .screen-workspace-body')||document.querySelector('#app');if(!body||body.querySelector('.fd-card-grid'))return;
   for(const b of body.querySelectorAll('button'))if(/開啟卡牌列表/.test(b.textContent))b.remove();
