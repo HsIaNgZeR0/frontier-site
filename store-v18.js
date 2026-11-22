@@ -4,9 +4,11 @@ window.FrontierStoreV18=(()=>{
  const hash=s=>{let n=2166136261;for(const x of s)n=Math.imul(n^x.charCodeAt(0),16777619);return n>>>0};
  F.ensure=function(){const s=oldEnsure();s.boughtYellowDay??={};s.boughtYellowWeek27??={...s.boughtYellowDay};s.yellowTicketWeek27??=s.week;if(s.yellowTicketWeek27!==s.week){s.boughtYellowWeek27={};s.yellowTicketWeek27=s.week}return s};
  const toolOffer=(id,cost,limit=1)=>({id:'search174:'+id,item:'search174_'+id,qty:1,cost,limit});
- // 房卡／開鎖裝置／炸藥：依稀有度定價（綠票：3綠 4藍 5銀 6金），房卡按高一階定價。
- const unit=s=>hash(s)/4294967296,L=()=>FrontierSearchLocks174,greenLadder={3:6,4:16,5:40,6:90},yellowLadder={4:2,5:3,6:8};
- const priced=(id,ladder,limit=1)=>toolOffer(id,L().shopPrice(id,ladder),limit);
+ // 房卡／開鎖裝置／炸藥：依稀有度定價（3綠 4藍 5銀 6金）。
+ // 綠票：開鎖裝置與炸藥 50／100／200／400；房卡 100／300／500／1000。
+ const unit=s=>hash(s)/4294967296,L=()=>FrontierSearchLocks174,yellowLadder={4:2,5:3,6:8};
+ const greenLadder={tool:{3:50,4:100,5:200,6:400},keycard:{3:100,4:300,5:500,6:1000}};
+ const priced=(id,ladder,limit=1)=>toolOffer(id,ladder.tool?ladder[L().catalog[id].key?'keycard':'tool'][L().catalog[id].rarity]:L().shopPrice(id,ladder),limit);
  F.daily=function(){const s=F.ensure(),rows=oldDaily();
   rows.push(priced('T1',greenLadder,2),priced('T2',greenLadder),{...priced(unit(s.day+':support')<.3?'B1':'T1',greenLadder),id:'search174:daily-support'});
   // 每日一張房卡：綠卡＝藍物品機率、藍卡＝銀、銀卡＝金、金卡＝金的一半。
