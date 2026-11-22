@@ -48,3 +48,7 @@
 .fd-pack-edit{min-height:44px;font-size:12px;padding:4px 8px!important}
 .bag-zoom-quality30{display:flex!important;gap:4px;flex:1 1 auto;min-width:0}
 .bag-zoom-quality30 .fd-pack-edit{flex:1 1 auto;white-space:nowrap;min-width:0}
+
+/* 關閉的視窗一律隱藏（避免招募頁樣式 display:flex!important 讓已關閉的視窗殘留在畫面上） */
+dialog#modal:not([open]){display:none!important}
+

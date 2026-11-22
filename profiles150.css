@@ -79,3 +79,7 @@
 .recruit147-card.recruit-unaffordable .recruit147-portrait,.recruit147-card.recruit-unaffordable .recruit147-profession{filter:grayscale(1) brightness(.6)}
 .recruit147-card.recruit-unaffordable .recruit147-name,.recruit147-card.recruit-unaffordable .recruit147-cost{opacity:.55}
 #modal:has(.recruit147) .screen-tool-head button{display:none!important}
+
+/* 招募頁返回鈕：手機觸控至少 44px */
+#modal .recruit147 .recruit146-subhead button{min-height:44px!important;min-width:76px;padding:6px 12px!important;font-size:14px!important}
+
