@@ -7,7 +7,7 @@ window.FrontierMailbox=(()=>{
   const selectors=document.createElement('article');selectors.className='panel';selectors.innerHTML='<h3>六星幹員自選憑證 × '+data.vouchers.six_star_selector+'</h3><p class="tiny">選擇目前實裝的任一六星幹員。已持有者依既有潛能／重複補償規則處理。</p>';selectors.append(button('使用自選憑證',choose,busy||data.vouchers.six_star_selector<1));host.append(selectors);
  }
  /* 離線版本機信件：每封每個存檔限領一次。 */
- const LOCAL=[{id:'local:synth18000',title:'尋訪補給',sender:'羅德島後勤部',body:'博士，這是給您的尋訪補給，祝您好運。',wallet:{synth:18000}}];
+ const LOCAL=[{id:'local:synth18000',title:'尋訪補給',sender:'羅德島後勤部',body:'博士，這是給您的尋訪補給，祝您好運。',wallet:{synth:18000}},{id:'local:synth18000b',title:'尋訪補給（二）',sender:'羅德島後勤部',body:'博士，追加一份尋訪補給。',wallet:{synth:18000}}];
  let forceLocal=false;const local=()=>{try{return forceLocal||!FrontierCloud.info().onlineRequired}catch{return true}};
  const localData=()=>({messages:LOCAL.map(m=>({...m,claimed:!!db.localMail?.[m.id]})),vouchers:{six_star_selector:0},candidates:[]});
  async function open(){if(busy)return;try{if(local()){data=localData();paint();return}try{data=await FrontierIdentity.api('mailbox')}catch{forceLocal=true;data=localData()}paint();return;data=await FrontierIdentity.api('mailbox');paint()}catch(e){toast(e.message)}}
