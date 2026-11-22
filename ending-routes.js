@@ -136,10 +136,10 @@ window.FrontierEndings=(()=>{
   boss.max=Math.round(boss.max*[1.12,1.20,1.15,1.18][profile]);boss.hp=boss.max;
   boss.atk=Math.max(1,Math.round(boss.atk*[1.06,1,1.12,1.04][profile]));
   if(boss.regionRoster){b.endingBoss=path;return;}
-  if(profile===0){boss.def=(boss.def||0)+3;boss.block+=8}
+  if(profile===0){boss.def=(boss.def||0)+30;boss.block+=80}
   if(profile===1){boss.res=Math.min(100,(boss.res||0)+18);boss.damageType='arts'}
-  if(profile===2){for(const escort of b.enemies.filter(e=>e!==boss)){escort.name='護陣先遣隊';escort.max=Math.round(escort.max*1.25);escort.hp=escort.max;escort.atk+=2}}
-  if(profile===3){boss.block+=5;boss.mechanicTier=Math.max(1,boss.mechanicTier||0);if(boss.special)boss.special.threshold=Math.round(boss.special.threshold*1.12)}
+  if(profile===2){for(const escort of b.enemies.filter(e=>e!==boss)){escort.name='護陣先遣隊';escort.max=Math.round(escort.max*1.25);escort.hp=escort.max;escort.atk+=20}}
+  if(profile===3){boss.block+=50;boss.mechanicTier=Math.max(1,boss.mechanicTier||0);if(boss.special)boss.special.threshold=Math.round(boss.special.threshold*1.12)}
   b.endingBoss=path;
  }
  function finishStage(path){
