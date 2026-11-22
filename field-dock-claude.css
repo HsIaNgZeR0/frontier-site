@@ -67,3 +67,26 @@ dialog#modal:not([open]){display:none!important}
 .fd-synth button small{display:block;font-size:10px;font-weight:500}
 .fd-roles img{width:20px!important;height:20px!important;background:#1d2b33!important;border:1px solid #4d6570;padding:1px}
 
+
+/* 長按說明（敵人機制等）：盡量完整顯示 */
+.hold-inspection{top:calc(env(safe-area-inset-top) + 52px)!important;max-height:calc(100dvh - env(safe-area-inset-top) - 64px);overflow:hidden;padding:10px 12px!important;line-height:1.42}
+.hold-inspection b{font-size:14px!important}
+.hold-inspection p{font-size:12px!important;margin:5px 0!important}
+.hold-inspection small{font-size:10px!important}
+
+/* 被封鎖幹員：頭像上交叉鎖鏈 */
+.v113-actor-identity{position:relative}
+.fd-lock{position:absolute;inset:0;display:grid;place-items:center;pointer-events:auto;background:#0006;border-radius:inherit}
+.fd-lock .fd-chains{width:100%;height:100%}
+/* 我方機構（尼盧火）常駐列 */
+.fd-ally-row{display:grid;grid-template-columns:30px 1fr auto;align-items:center;gap:6px;margin:3px 0;padding:3px 6px;background:#3a1d12cc;border:1px solid #ff9a4d88;border-radius:4px;min-height:36px;font-size:11px;color:#ffe2c8}
+.fd-ally-row img{width:28px;height:28px;object-fit:contain;grid-row:span 2}
+.fd-ally-row .fd-ally-bar{height:6px;background:#2a1a12;border-radius:3px;overflow:hidden}
+.fd-ally-row .fd-ally-bar i{display:block;height:100%;background:#7fd37f}
+.fd-ally-row b{font-size:11px;font-weight:600;grid-column:2}
+.fd-ally-row small{grid-column:3;grid-row:1 / span 2;font-size:10px;color:#ffb27a}
+
+/* 保險箱：不受背包縮放影響，固定原尺寸並完整顯示 */
+.bag-ux-safe .bag-canvas31{transform:none!important}
+.bag-ux-safe .bag-canvas-stage31{width:auto!important;height:auto!important;overflow:visible!important}
+.bag-ux-safe{overflow:visible!important}

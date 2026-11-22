@@ -55,10 +55,10 @@ window.FrontierFieldDock=(()=>{
  /* ---------- 編隊：左 5 出戰、右 3 候補，下方全部幹員可左右滑動，拖曳到區塊 ---------- */
  function teamView(){
   const st=g();if(!st)return '<p class="fd-empty">此模式沒有招募編制。</p>';
-  const cap=FrontierExpeditionRecruit144.capacity(st),active=st.roster.filter(u=>u.active),reserve=st.roster.filter(u=>!u.active),canEdit=FrontierRecruitUI144.safe();
+  const cap=FrontierExpeditionRecruit144.capacity(st),active=st.roster.filter(u=>u.active),reserve=st.roster.filter(u=>!u.active),canEdit=!R().battle;
   const slot=(list,i,limit,zone)=>{if(i>=limit)return '<span class="fd-slot fd-locked" aria-label="尚未解鎖">'+lock+'</span>';const u=list[i];return '<span class="fd-slot" data-fd-zone="'+zone+'">'+(u?'<img src="'+esc(portrait(u))+'" alt="'+esc(units()[u.id].name)+'" data-fd-op="'+u.id+'" draggable="false"><i>E'+u.elite+'</i>':'')+'</span>'};
   return '<div class="fd-team-zones"><div class="fd-zone" data-fd-zone="active"><b>出戰 '+active.length+'/'+cap.active+'</b><div class="fd-slots">'+[0,1,2,3,4].map(i=>slot(active,i,cap.active,'active')).join('')+'</div></div><div class="fd-zone fd-zone-reserve" data-fd-zone="reserve"><b>候補 '+reserve.length+'/'+cap.reserve+'</b><div class="fd-slots">'+[0,1,2].map(i=>slot(reserve,i,cap.reserve,'reserve')).join('')+'</div></div></div>'+
-   '<p class="fd-hint">'+(canEdit?'拖曳頭像到出戰或候補；點一下也可切換。':'僅能在出發時、安全角落或層間整備調整編隊。')+'</p>'+
+   '<p class="fd-hint">'+(canEdit?'拖曳頭像到出戰或候補；點一下也可切換。':'戰鬥中無法調整編隊。')+'</p>'+
    '<div class="fd-roster" aria-label="全部幹員，可左右滑動">'+(st.roster.length?st.roster.map(u=>'<button type="button" class="fd-op '+(u.active?'is-active':'is-reserve')+'" data-fd-op="'+u.id+'" '+(canEdit?'':'disabled')+'><img src="'+esc(portrait(u))+'" alt="" draggable="false"><span>'+esc(units()[u.id].name)+'</span></button>').join(''):'<p class="fd-empty">尚未招募幹員，請使用招募券。</p>')+'</div>';
  }
  function setFormation(id,zone){
@@ -73,7 +73,7 @@ window.FrontierFieldDock=(()=>{
  function bind(host){
   host.querySelector('[data-fd-close]')?.addEventListener('click',()=>close());
   if(sheet==='team'){
-   host.addEventListener('pointerdown',e=>{const el=e.target.closest('[data-fd-op]');if(!el||el.disabled||!FrontierRecruitUI144.safe())return;drag={id:el.dataset.fdOp,x:e.clientX,y:e.clientY,pointer:e.pointerId,ghost:null,src:el}});
+   host.addEventListener('pointerdown',e=>{const el=e.target.closest('[data-fd-op]');if(!el||el.disabled||R().battle)return;drag={id:el.dataset.fdOp,x:e.clientX,y:e.clientY,pointer:e.pointerId,ghost:null,src:el}});
    host.addEventListener('click',e=>{const el=e.target.closest('button[data-fd-op]');if(!el||drag?.moved)return;const u=g().roster.find(x=>x.id===el.dataset.fdOp);if(u)setFormation(u.id,u.active?'reserve':'active')});
   }
   if(sheet==='curio')host.addEventListener('click',e=>{const el=e.target.closest('[data-fd-curio]');if(!el)return;curioFocus=curioFocus===el.dataset.fdCurio?null:el.dataset.fdCurio;mount(document.querySelector('.screen-combat-actions'))});
@@ -121,9 +121,7 @@ window.FrontierFieldDock=(()=>{
   if(zoom){const b=document.createElement('button');b.type='button';b.className='fd-pack-edit';b.textContent='編輯幹員背包';b.onclick=()=>FrontierPack.open();zoom.replaceWith(b)}
   const hint=host.querySelector('.bag-ux-hint');if(hint)hint.textContent='雙指縮放 · 空白處移動 · 長按查看 · 拖近保險箱存入';
   const fit=()=>{if(!host.isConnected)return;FrontierViewZoom.change('bag','fit');
-   // 保險箱只有 2×2～3×3，維持原尺寸（不跟著聯合背包縮小），太寬時才縮到剛好。
-   const safe=host.querySelector('.bag-ux-safe'),stage=safe?.querySelector('.bag-canvas-stage31'),canvas=stage?.firstElementChild;
-   if(canvas){const z=Math.min(1,(safe.clientWidth-4)/Math.max(1,canvas.offsetWidth));canvas.style.transform='scale('+z+')';stage.style.width=canvas.offsetWidth*z+'px';stage.style.height=canvas.offsetHeight*z+'px'}};requestAnimationFrame(()=>requestAnimationFrame(fit));
+};requestAnimationFrame(()=>requestAnimationFrame(fit));
   return host}}
  /* 戰鬥上限：任何走法（每層一路走到底）累計作戰（普通／緊急／首領）不超過 10 場。
     在所有路線模組處理完後執行；只把非必戰、非首領的普通／緊急作戰改成不期而遇。 */
@@ -159,7 +157,20 @@ window.FrontierFieldDock=(()=>{
   const cards=[...grid.children].filter(c=>c.matches('[data-field-product],.store-card'));if(cards.length<=10)return;
   const keep=cards.filter(c=>c.classList.contains('region75-key')||c.matches('.store-alternative'));const regular=cards.filter(c=>!keep.includes(c));
   regular.slice(Math.max(0,10-keep.length)).forEach(c=>c.remove())}
- const prior=render;render=function(...args){const out=prior(...args);try{decorate();keyHints();merchantLimit()}catch(error){console.error(error)}return out};
+ /* 長按說明放不下時自動縮小字級，直到完整顯示（最小 9px）。 */
+ function fitInspection(el){let size=12;el.style.removeProperty('--fd-fit');for(let i=0;i<8&&el.scrollHeight>el.clientHeight+1&&size>9;i++){size-=.5;for(const p of el.querySelectorAll('p,li,span,div'))p.style.fontSize=size+'px';el.querySelector('b')&&(el.querySelector('b').style.fontSize=Math.max(11,size+1.5)+'px')}}
+ new MutationObserver(list=>{for(const r of list)for(const n of r.addedNodes)if(n.nodeType===1&&n.matches?.('.hold-inspection'))requestAnimationFrame(()=>fitInspection(n))}).observe(document.body,{childList:true});
+ /* 戰鬥：①首領機制產生的我方單位（如奎隆的尼盧火）常駐顯示在我方區；②被封鎖／繳械／暈眩的幹員頭像加上交叉鎖鏈。 */
+ const chains='<svg class="fd-chains" viewBox="0 0 40 40" aria-hidden="true"><g fill="none" stroke-linecap="round"><path d="M5 5 L35 35" stroke="#1b1b1b" stroke-width="7"/><path d="M35 5 L5 35" stroke="#1b1b1b" stroke-width="7"/><path d="M5 5 L35 35" stroke="#c9ced3" stroke-width="4" stroke-dasharray="5 3"/><path d="M35 5 L5 35" stroke="#c9ced3" stroke-width="4" stroke-dasharray="5 3"/></g></svg>';
+ function lockReason(b,a){const t=b.turn||0,m=b.region75;if(m?.caged&&m.caged===a.uid)return '繭籠封鎖：無法行動，擊破繭籠可解除';if((a.disarmed75||0)>=t||(a.attackLockedTurn||0)>=t)return '繳械：本回合無法打攻擊牌（仍可治療與防護）';if((a.stunnedTurn||0)>=t)return '暈眩：本回合無法出牌';return null}
+ function battleMarks(){const r=R(),b=r?.battle;if(!b||page!=='run')return;
+  for(const row of document.querySelectorAll('.v113-actor-row[data-operator-uid]')){const a=r.team.find(x=>x.uid===row.dataset.operatorUid);row.querySelector('.fd-lock')?.remove();const why=a&&lockReason(b,a);if(!why)continue;const id=row.querySelector('.v113-actor-identity');if(!id)continue;const mark=document.createElement('div');mark.className='fd-lock';mark.dataset.battleStatus=why;mark.setAttribute('aria-label',why);mark.innerHTML=chains;const img=id.querySelector('img.avatar')||id.querySelector('img');id.append(mark);if(img){const ir=img.getBoundingClientRect(),pr=(mark.offsetParent||id).getBoundingClientRect();Object.assign(mark.style,{left:(ir.left-pr.left)+'px',top:(ir.top-pr.top)+'px',width:img.offsetWidth+'px',height:img.offsetHeight+'px',right:'auto',bottom:'auto'})}}
+  const last=[...document.querySelectorAll('.v113-actor-row')].at(-1);document.querySelectorAll('.fd-ally-row').forEach(n=>n.remove());
+  const allies=(b.friendly75||[]).filter(a=>!a.exited&&a.hp>0);if(!last||!allies.length)return;
+  for(const f of allies){const row=document.createElement('section');row.className='fd-ally-row';const tip='尼盧火（我方機構）：HP '+f.hp+'/'+f.max+'。用治療牌治到滿即可熄滅；第 '+f.expires75+' 回合仍未熄滅會爆炸，全隊受傷並削弱攻擊最高的幹員。場上每盞尼盧火使奎隆受到的物法傷害降低 20%。';row.dataset.battleStatus=tip;row.setAttribute('aria-label',tip);row.innerHTML='<img src="assets/battle-fire75.svg" alt=""><span class="fd-ally-bar"><i style="width:'+Math.round(f.hp/f.max*100)+'%"></i></span><b>尼盧火 '+f.hp+'/'+f.max+'</b><small>第'+f.expires75+'回合爆炸</small>';last.after(row)}}
+ let packSyncing=false;
+ function packRoster(){if(packSyncing||!window.FrontierPack?.needsRosterSync?.())return;if(FrontierRuntime.busy){setTimeout(packRoster,300);return}packSyncing=true;setTimeout(async()=>{try{await FrontierRuntime.perform('pack-roster-sync',()=>{FrontierPack.syncRoster();save();return true})}finally{packSyncing=false}render()},0)}
+ const prior=render;render=function(...args){const out=prior(...args);try{decorate();keyHints();merchantLimit();battleMarks();packRoster()}catch(error){console.error(error)}return out};
  window.addEventListener('resize',()=>{if(sheet)redraw()});
  return{toggle,close,decorate,keyHints,keycardsFor,capBattles,get sheet(){return sheet}};
 })();

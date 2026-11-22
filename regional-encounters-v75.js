@@ -37,7 +37,7 @@ globalThis.FrontierRegional75=(()=>{
   if(['harold','kjerag','frostnova','mandragora','minimalist'].includes(kind))addDevice(s,boss,kind==='harold'?'緊急供暖器':kind==='kjerag'?'雪線暖爐':kind==='mandragora'?'脆裂石柱':kind==='minimalist'?'無人機干擾樁':'耐寒熱源',kind);
   if(kind==='harold')addDevice(s,boss,'緊急供暖器・副爐',kind,1);
   if(kind==='dukare'){s.enemies=[boss];addDevice(s,boss,'反巫術變位炸彈',kind);boss.damageType='arts';}
-  if(kind==='duet'){const partnerId=newUid(s),partner={...structuredClone(boss),id:partnerId,uid:partnerId,species:'enemy_1103_wdkght',name:'凋零騎士・共戰',boss:false,regionBoss:true,elite:true,tacticsBoss:undefined,hp:Math.floor(boss.max*.65),max:Math.floor(boss.max*.65),knightPartner75:boss.uid,damageType:'arts'};s.enemies=[boss,partner];boss.knightPartner75=partner.uid;}
+  if(kind==='duet'){const partnerId=newUid(s),partner={...structuredClone(boss),id:partnerId,uid:partnerId,species:'enemy_1513_dekght_2',image:'enemy_1513_dekght_2',name:'凋零騎士',boss:false,regionBoss:true,elite:true,tacticsBoss:undefined,hp:Math.floor(boss.max*.65),max:Math.floor(boss.max*.65),knightPartner75:boss.uid,damageType:'arts'};s.enemies=[boss,partner];boss.knightPartner75=partner.uid;}
   if(kind==='quintus')addExtra(s,boss,'limb',2);
   if(kind==='soul'){s.enemies=[boss];boss.tacticsBoss=undefined;addExtra(s,boss,'portal',2);}
   if(kind==='quilon'){addFire(s,boss);addFire(s,boss);s.region75.nextLotus=.75;}
