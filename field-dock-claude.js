@@ -178,11 +178,11 @@ window.FrontierFieldDock=(()=>{
   const x=e.extra75;if(!x)return null;
   const map={lotus:['托生蓮座','存活時'+bn+'無敵：擊破解除','擊破解除無敵'],portal:['幽影門扉','擊破：'+bn+'損失 10% HP','擊破 首領-10%'],limb:['深海肢體','擊破：'+bn+'損失 6% HP','擊破 首領-6%'],cage:['繭籠','囚禁幹員無法出牌：擊破解救','擊破解救幹員'],vortex:['魂靈渦流',(e.extraDue75?'第'+e.extraDue75+'回合':'')+'回流：'+bn+'回復 8%，先擊破',(e.extraDue75?left(e.extraDue75)+' 回合後':'')+'回血'],crystal:['結晶區塊','每塊使'+bn+'減傷 25%：擊破或用消除樁清除','首領減傷25%'],experiment:m.kind==='carnival'?['活性實驗體','擊殺計分：搶在首領前擊殺','搶先擊殺']:['活性實驗體','分擔'+bn+'一半受傷：先清除再集火','分擔首領傷害']};
   return map[x]||[e.name,'機制單位','機制單位']}
- function mechTags(){const r=R(),b=r?.battle;if(!b?.region75||page!=='run')return;const cards=[...document.querySelectorAll('.enemy-card[data-enemy-id]')],crowded=cards.length>=3;
+ function mechTags(){const r=R(),b=r?.battle;if(!b?.region75||page!=='run')return;const cards=[...document.querySelectorAll('.enemy-card[data-enemy-id]')],crowded=true;/* 卡片一律只放短說明，完整內容看長按。 */
   for(const card of cards){const e=b.enemies.find(x=>x.id===card.dataset.enemyId);card.querySelector('.fd-mech-tag')?.remove();if(!e||e.hp<=0)continue;
    let tag=mechTag(b,e),warn=false;const isBoss=e.uid===b.region75.bossUid;
    if(!tag&&isBoss){const k=b.region75.kind,blocked=FrontierRegional75.blocked({...b},e),stRaw=window.FrontierRegionStatus75?.(b,b.region75),st=stRaw&&!/^第 \d+ 回合$/.test(stRaw)?stRaw:'';
-    if(blocked){warn=true;const why={quilon:'先擊破托生蓮座',faust:'第 1 回合隱匿，先處理護衛',soul:'無法直接傷害：擊破門扉',sami:'等充能露出破綻'}[k]||'先處理場上機制';tag=['無敵',why+(st?'（'+st+'）':''),st||why]}
+    if(blocked){warn=true;const why={quilon:'先擊破托生蓮座',faust:'第 1 回合隱匿，先處理護衛',soul:'無法直接傷害：擊破門扉',sami:'等充能露出破綻'}[k]||'先處理場上機制';tag=['無敵',why+(st?'（'+st+'）':''),why]}
     else{const alive=b.enemies.filter(x=>x.hp>0&&!x.exited),half=e.hp/e.max<=.5;
      const hint={awaken:'實驗體 '+alive.filter(x=>x.extra75==='experiment').length+' 隻存活時本體只受一半傷害',bigugly:'倒下後彈出駕駛員，兩回合內須擊倒',deer:half?'已過半血：物理／法術再減半，改用真傷':'半血後物理／法術傷害減半',degen:'突進命中者下回合繳械；先破韌可阻止',faust:'每 3 回合紫箭強化：留護盾與減傷',kazimierz:'公布的裁決類型減傷 55%：改用另一類型或挑戰反轉',mouse:'沙塵輪流瞄準 HP 上限最高／最低的幹員',pursuer:'每損 25% HP 預告自我泯滅：跨血線前先上盾',saint:'單發重擊後下一回合換彈'}[k];
      if(st)tag=['首領機制',st+(hint?'：'+hint:''),st];else if(hint)tag=['首領機制',hint,hint.split(/[：，；]/)[0]]}}
