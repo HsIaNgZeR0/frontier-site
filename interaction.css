@@ -56,3 +56,10 @@ button,input,select{min-height:44px}button.small{min-height:44px}.play-card{touc
 .card-ghost{left:0!important;top:0!important;transform:translate3d(var(--ghost-x,-200px),var(--ghost-y,-200px),0) translate(-50%,-65%) rotate(-4deg) scale(.78)!important;will-change:transform}
 
 .hand .card-play-pending{pointer-events:none!important;opacity:.46!important}
+
+.visual-dispatch-people{display:grid;grid-template-columns:repeat(auto-fit,minmax(52px,1fr));gap:8px}
+.visual-dispatch-people .dispatch-portrait{display:grid;place-items:center;position:relative;min-height:52px;padding:4px;aspect-ratio:1}
+.dispatch-portrait img{width:100%;height:100%;min-height:0;object-fit:contain}
+.dispatch-portrait b{display:none;position:absolute;inset:2px 2px auto auto;background:#d6ed81;color:#18210d;padding:0 4px;border-radius:4px}
+.dispatch-portrait[aria-pressed=true]{border-color:#d6ed81;background:#3b4c33}
+.dispatch-portrait[aria-pressed=true] b{display:block}

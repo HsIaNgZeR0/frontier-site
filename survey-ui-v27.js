@@ -36,14 +36,25 @@ window.FrontierSurveyV27=(()=>{
  const saveBefore=save;save=function(...args){normalize();return saveBefore(...args)};
  const start=startRun;startRun=function(){if(choice&&(!E.ensure(db).tickets[choice.key]||db.contracts?.mode==='simulation'&&db.contracts.selected?.length)){toast('請確認定向券數量；模擬行動請選不使用。');return}const before=R();start();if(R()&&R()!==before&&!R().result){R().surveyRules27=27;if(choice)db=E.apply(db,{id:crypto.randomUUID(),seq:E.ensure(db).seq+1,at:Date.now(),type:'focus',run:R().number,key:choice.key,families:choice.families},c);normalize();save();render()}};
  function bonusTicket(item,key){const d=c.definitions[item.itemId];if(d?.balance?.forge141||d?.category!=='material'||![4,5,6].includes(d.rarity)||E.hash(key)%21!==0)return null;const color={4:'blue',5:'silver',6:'gold'}[d.rarity];return{itemId:'survey_focus_'+color,qty:1}}
- function sealedDrops(){const r=R();if(!r||r.result||r.contract?.mode==='simulation')return;for(const box of [...(r.itemCargo||[]),r.event?.box,r.event?.rows?.find(x=>x.type==='container')?.instance].filter(Boolean)){const s=box.sealed;if(!s||s.surveyDrops27)continue;s.surveyDrops27=true;if(box.origin?.at<loadedAt)continue;s.contents=s.contents.map((item,i)=>bonusTicket(item,r.number+':'+box.uid+':'+i+':'+db.rng.seed)||item)}}
+ function prepareSealedDrop(box){
+  const r=R(),sealed=box?.sealed;
+  if(!r||r.result||r.contract?.mode==='simulation'||!sealed||sealed.surveyDrops27)return;
+  sealed.surveyDrops27=true;
+  if(box.origin?.at<loadedAt)return;
+  sealed.contents=sealed.contents.map((item,i)=>bonusTicket(item,r.number+':'+box.uid+':'+i+':'+db.rng.seed)||item);
+ }
+ function sealedDrops(){
+  const r=R();
+  if(!r||r.result)return;
+  for(const box of [...(r.itemCargo||[]),r.event?.box,r.event?.rows?.find(x=>x.type==='container')?.instance])prepareSealedDrop(box);
+ }
  const check=checkBattle;checkBattle=function(){const r=R(),b=r?.battle,eligible=b&&!b.surveyDrop27&&r.hp>0&&b.enemies.every(e=>e.hp<=0),prior=eligible?{...r.field.materials}:null;if(eligible){b.surveyDrop27=true;r.surveyRules27=27;r.surveyBattles27??={};const key=b.incomeKey||r.number+':'+b.operatorBattleId;r.surveyBattles27[key]??={kills:b.enemies.filter(e=>e.hp<=0&&!e.captured&&!e.summoned75&&!e.extra75&&!e.device75&&!e.mechanicRemoved).length+(b.region75?.summonedKills||0),captures:b.enemies.filter(e=>e.captured&&!e.summoned75).length+(b.region75?.summonedCaptures||0)}}const result=check();if(eligible&&R()===r&&!r.result&&r.reward&&r.contract?.mode!=='simulation'){for(const [id,qty]of Object.entries(r.field.materials)){if(qty<=(prior[id]||0))continue;const drop=bonusTicket({itemId:id},r.number+':battle:'+b.incomeKey+':'+id+':'+db.rng.seed);if(!drop)continue;r.field.materials[id]--;r.itemCargo.push(FrontierInventory.create(drop.itemId,1,{source:'survey27.drop',run:r.number}));const review=r.reward.lootReview?.items;if(review){const index=review.findIndex(x=>x.itemId===id&&x.qty>0);if(index>=0&&--review[index].qty===0)review.splice(index,1);review.push(drop)}}FrontierGrid.sync();save();render()}return result};
  const end=endRun;endRun=function(...args){const r=R();normalize();end(...args);if(R()===r&&r?.result&&E.settle(db)){const record=db.statistics?.raids.find(x=>x.number===r.number);if(record)record.surveyPoints27=r.surveySettlement27.points;save();render()}};
  const renderBefore=render;render=function(){sealedDrops();normalize();renderBefore();prep();const r=R(),host=document.querySelector('.screen-workspace-body')||document.querySelector('#app');if(r?.result&&r.surveySettlement27&&host&&!host.querySelector('.survey-result'))host.insertAdjacentHTML('afterbegin','<section class="panel survey-result"><b>調查點數 +'+r.surveySettlement27.points+'</b><p>基礎 '+r.surveySettlement27.base+' · 難度倍率 '+r.surveySettlement27.multiplier+' · 累積持有 '+E.ensure(db).balance+'</p><button data-survey-open>前往調查點數商店</button></section>')};
  const valid=validSave;validSave=s=>valid(s)&&E.valid(s);
  document.addEventListener('change',event=>{if(event.target.id!=='survey-focus-ticket')return;const key=event.target.value;event.target.value=choice?.key||'';if(!key){choice=null;render()}else chooseFamilies(key)});
  document.addEventListener('click',event=>{const b=event.target.closest('[data-survey-open],[data-survey-back],[data-survey-recycle],[data-survey-period],[data-survey-buy],[data-survey-pack],[data-survey-redeem],[data-survey-unpack]');if(!b||b.disabled)return;if(b.hasAttribute('data-survey-open')){opened=true;go('shop');now().catch(()=>{})}else if(b.hasAttribute('data-survey-back')){opened=false;FrontierRecycleUIV19.setTab('shop')}else if(b.hasAttribute('data-survey-recycle')){opened=false;FrontierRecycleUIV19.setTab('recycle')}else if(b.dataset.surveyPeriod){section=b.dataset.surveyPeriod;render()}else if(b.dataset.surveyBuy)transact('buy',{section,product:b.dataset.surveyBuy},FrontierRuntime.purchaseScroll(b));else if(b.dataset.surveyPack)choosePack(b.dataset.surveyPack);else if(b.dataset.surveyRedeem){const [key,family]=b.dataset.surveyRedeem.split(':');transact('pack',{key,family})}else if(b.dataset.surveyUnpack)transact('unpack',{uid:b.dataset.surveyUnpack})});
- return{selection:()=>choice,clearFocus:()=>{choice=null;render()},shop,prep,normalize,transact,chooseFamilies,choosePack,packDescription};
+ return{selection:()=>choice,clearFocus:()=>{choice=null;render()},shop,prep,normalize,prepareSealedDrop,transact,chooseFamilies,choosePack,packDescription};
 })();
 
 

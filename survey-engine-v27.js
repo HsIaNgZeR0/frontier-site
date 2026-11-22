@@ -12,6 +12,23 @@ globalThis.FrontierSurveyEngineV27=(()=>{
  function rows(section,state,at=Date.now(),catalog={definitions}){const factor={month:1.2,week:1.8,permanent:2.7}[section];if(!factor)return [];const limited=section!=='permanent',monthly=section==='month',out=[];
   const add=(id,name,kind,qty,cost,limit,item)=>{const m=Math.ceil(cost*1.2/5)*5,w=neat(m*1.5);out.push({id,name,kind,qty,cost:section==='month'?m:section==='week'?w:neat(w*1.5),limit:limited?limit:null,item})};
   const forgePrices=section==='month'?{3:25,4:80,5:240,6:720}:section==='week'?{3:35,4:110,5:330,6:990}:{3:55,4:170};for(const [tier,price]of Object.entries(forgePrices))out.push({id:'forge-permit-'+tier,name:({3:'綠',4:'藍',5:'銀',6:'金'}[tier])+'色鍛造許可憑證',kind:'material',item:'forge_permit_t'+tier,qty:1,cost:price,limit:section==='month'?{3:40,4:20,5:10,6:3}[tier]:section==='week'?{3:20,4:10,5:3,6:1}[tier]:null});
+  if(limited){
+   const access=Object.values(catalog.definitions).filter(d=>d.category==='searchTool');
+   // 房卡保底：每週 5 張（全綠以上、至少 3 張藍以上）；每月 5 張（全藍以上、至少 3 張銀以上）。
+   // 抽選權重沿用房卡規則（高一階出現、金卡減半），售價按高一階定價。
+   const locks=globalThis.FrontierSearchLocks174,ladder={3:180,4:320,5:550,6:900};
+   if(locks){const period=stockKey(section,at);
+    for(const id of locks.keycardStock(i=>hash(period+':keycard:'+i)/4294967296,monthly?{count:5,floor:4,premium:3,premiumRarity:5}:{count:5,floor:3,premium:3,premiumRarity:4})){
+     const d=catalog.definitions['search174_'+id];if(d)add(d.id,d.name,'rotating',1,locks.shopPrice(id,ladder),1,d.id);
+    }}
+   for(const type of ['T','B']) for(const tier of [3,4,5,6]){
+    const pool=access.filter(d=>d.rarity===tier&&d.effect?.id.startsWith(type));
+    if(!pool.length)continue;
+    const period=stockKey(section,at);
+    const picks=monthly?pool:[pool[hash(period+':search:'+type+tier)%pool.length]];
+    for(const d of picks) add(d.id,d.name,'rotating',1,{3:180,4:320,5:550,6:900}[tier],monthly&&type==='T'?2:1,d.id);
+   }
+  }
   if(limited){add('pull','尋訪憑證','pull',1,600,monthly?10:3);add('silver-pack','銀色材料自選包','silverPack',1,150,monthly?10:2);add('blue-pack','藍色材料自選包','bluePack',1,60,monthly?20:5)}
   add('lmd','龍門幣','lmd',10000,600,monthly?5:1);add('carbon','碳','material',50,150,monthly?10:2,'base_carbon');
   for(const [i,cost]of [50,120,250].entries())add('manual'+(i+1),'專精教材'+(i+1),'material',1,cost,(monthly?[10,5,3]:[5,3,1])[i],'mastery_manual_'+(i+1));

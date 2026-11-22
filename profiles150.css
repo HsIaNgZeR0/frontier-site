@@ -40,9 +40,17 @@
 .command148-hud .command-exp-copy small{font-size:9px;letter-spacing:0}
 .command148-hud .command-exp-copy em{font-size:9px;color:#f4ce84}
 
-#modal .recruit147-candidates{grid-template-rows:repeat(var(--recruit-rows,6),72px)!important;gap:5px 8px!important;padding-block:3px!important}
+#modal .recruit147-candidates{grid-template-rows:repeat(var(--recruit-rows,6),80px)!important;gap:5px 8px!important;padding-block:3px!important}
 #modal:has(.recruit147) .screen-simple-dialog{padding-block:6px!important}
 #modal .recruit147>.recruit146-subhead{margin:0 0 4px!important;padding-block:0!important;min-height:34px}
 #modal .recruit147-footer{min-height:44px;padding:4px 8px!important}
-#modal .recruit147-card .recruit147-name{top:22px}
+#modal .recruit147-candidates{grid-auto-columns:min(100%,330px);mask-image:none}
+#modal .recruit147-card{clip-path:none;border-radius:4px}
+#modal .recruit147-card .recruit147-name{left:82px;right:52px;top:23px;bottom:auto;font-size:14px;line-height:1.15}
+#modal .recruit147-card .recruit147-stage{left:82px;right:52px;white-space:normal}
+#modal .recruit147-card .recruit147-cost{right:5px;width:42px;top:24px}
+#modal .recruit147-card .recruit147-cost b{font-size:16px;margin-left:0}
+#modal .recruit147-card .recruit147-portrait{left:18px;width:62px;height:calc(100% - 6px);object-fit:contain;object-position:center bottom;mask-image:none}
+#modal:has(.recruit147) .screen-simple-dialog{overflow-y:auto!important}
+#modal .recruit147-actions select{display:block!important}
 #modal .recruit147-card .recruit147-stage{bottom:4px}

@@ -33,6 +33,16 @@ window.FrontierRewards139=(()=>{
   }
   return event.campChoices139;
  }
+ const canHide=r=>Number(r?.alert)>0&&!r.alertShelters174?.includes(r.expedition?.layer);
+ function hideAtCamp(){
+  const r=R();
+  if(r?.event?.type!=='camp'||r.event.reward139||!canHide(r))return;
+  (r.alertShelters174??=[]).push(r.expedition.layer);
+  const before=r.alert;r.alert=Math.max(0,before-8);
+  (r.alertLedger??=[]).push({key:r.expedition.current+':hide',before,after:r.alert,reason:'安全角落隱匿'});
+  toast('警戒降低 '+(before-r.alert));
+  completeNode();
+ }
  function camp(action){
   const r=R();if(r?.event?.type!=='camp'||!r.equipment139||r.event.reward139||!campChoices(r).includes(action))return;
   if(action==='module'||action==='curio'){
@@ -57,7 +67,7 @@ window.FrontierRewards139=(()=>{
   const spent=campSpent(r,kind);
   $('#app').innerHTML=runHeader()+'<section class="panel reward139-stage"><h1>安全的角落</h1><p>'+(spent?'本處休整已完成。':'這項休整沒有可選獎勵。')+'</p><button class="primary" onclick="FrontierRewards139.recoverCamp()">'+(spent?'返回路線':'返回休整選項')+'</button></section>';
   return;
- }const rows=[['heal','恢復幹員生命','存活幹員各恢復23%最大HP。'],['module','選擇局內增幅模組','三選一；可在此處安裝或卸下模組。'],['environment',environmentLabel(),'不改變已完成節點或掉落。'],['currency','獲得局內貨幣','取得 '+(18+Math.min(12,(r.expedition?.layer||0)*2))+' 源石碇，可向詭異行商購物。'],['curio','選擇一項收藏品','從三件尚未持有的戰術收藏品中選擇。'],['survey','勘探點數 +1','辨識前方路線，或通過一條橫向捷徑。'],['cleanse','解除全員異常狀態','清除所有可解除的異常；不重置技能代價或劇情限制。']];$('#app').innerHTML=runHeader()+'<section class="panel event-panel reward139-stage"><small>PRTS / SAFE CORNER</small><h1>安全的角落</h1><p>選擇一項休整後繼續。配置模組本身不消耗此處獎勵。</p><button onclick="FrontierEquipmentUI139.manage()">配置增幅模組</button><div class="reward139-options">'+rows.filter(([id])=>campChoices(r).includes(id)).map(([id,name,text])=>card(name,text,"FrontierRewards139.camp('"+id+"')")).join('')+'</div></section>'};
+ }const rows=[['heal','恢復幹員生命','存活幹員各恢復23%最大HP。'],['module','選擇局內增幅模組','三選一；可在此處安裝或卸下模組。'],['environment',environmentLabel(),'不改變已完成節點或掉落。'],['currency','獲得局內貨幣','取得 '+(18+Math.min(12,(r.expedition?.layer||0)*2))+' 源石碇，可向詭異行商購物。'],['curio','選擇一項收藏品','從三件尚未持有的戰術收藏品中選擇。'],['survey','勘探點數 +1','辨識前方路線，或通過一條橫向捷徑。'],['cleanse','解除全員異常狀態','清除所有可解除的異常；不重置技能代價或劇情限制。']];$('#app').innerHTML=runHeader()+'<section class="panel event-panel reward139-stage"><small>PRTS / SAFE CORNER</small><h1>安全的角落</h1><p>選擇一項休整後繼續。配置模組本身不消耗此處獎勵。</p><button onclick="FrontierEquipmentUI139.manage()">配置增幅模組</button><div class="reward139-options">'+(canHide(r)?card('隱匿休整','警戒 −8，每層限一次。使用後離開安全角落。','FrontierRewards139.hideAtCamp()'):'')+rows.filter(([id])=>campChoices(r).includes(id)).map(([id,name,text])=>card(name,text,"FrontierRewards139.camp('"+id+"')")).join('')+'</div></section>'};
  function takeModule(key,id){FrontierEquipmentUI139.claim(key,id);if(R().reward?.strategy?.stage==='module')FrontierStrategy.finish();else if(R().event?.reward139==='module'&&(key===campKey(R(),'module')||R().event.surveySupply16&&key.startsWith('camp:'+R().event.room16+':')))completeNode()}
  const claim=FrontierCurios.claim;FrontierCurios.claim=function(...args){const camp=R()?.event?.reward139==='curio';claim(...args);if(camp&&!R().curios.offers.length)completeNode()};const decline=FrontierCurios.decline;FrontierCurios.decline=function(...args){const camp=R()?.event?.reward139==='curio';decline(...args);if(camp&&!R().curios.offers.length)completeNode()};
 
@@ -79,5 +89,5 @@ window.FrontierRewards139=(()=>{
  let finished139=null;const priorCheck139=checkBattle;checkBattle=function(...args){const prior=finished139;finished139=R()?.battle||null;try{return priorCheck139(...args)}finally{finished139=prior}};
  const make=makeReward;makeReward=function(...args){const r=R(),battle=r?.battle||finished139,battleId=battle?.operatorBattleId,layer=r?.expedition?.layer||0;const result=make(...args);if(r?.reward&&battle)r.reward.combatType59=battle.type;if(!r?.equipment139||!r.reward||!battleId)return result;const f=r.equipment139.flags;f.awardedBattles139??=[];if(f.awardedBattles139.includes(battleId))return result;f.awardedBattles139.push(battleId);f.autoModuleDrops139??=[];const floorKey='floor:'+layer,eliteKey=battle.type==='elite'?'elite:'+f.autoModuleDrops139.filter(x=>x.startsWith('elite:')).length:null,key=!f.autoModuleDrops139.includes(floorKey)?floorKey:eliteKey&&f.autoModuleDrops139.filter(x=>x.startsWith('elite:')).length<2?eliteKey:null;if(key){FrontierEquipmentUI139.offer('automatic:'+r.number+':'+key);const current=R(),o=current.equipment139.offers.find(o=>o.key==='automatic:'+r.number+':'+key);if(o){const id=o.ids[0];FrontierEquipmentUI139.claim(o.key,id);R().reward.moduleDrops139=[id];R().equipment139.flags.autoModuleDrops139.push(key);save();render()}}return result};
  const drawRewards=render;render=function(){drawRewards();const r=R(),review=r?.reward?.lootReview;if(page!=='run'||!r?.equipment139||r.result||!review||review.acknowledged||!r.reward.moduleDrops139?.length)return;const host=document.querySelector('.reward-stage-items');if(host&&!host.querySelector('.module139-drops'))host.insertAdjacentHTML('beforeend','<div class="module139-drops"><p>當趟增幅模組已放入模組包</p>'+r.reward.moduleDrops139.map(id=>'<span>'+FrontierIcons.html(id)+'<b>'+E.defs[id].name+'</b></span>').join('')+'</div>')};
- return{material,environmentLabel,camp,recoverCamp,moduleChoice,curioChoice,takeModule};
+ return{hideAtCamp,material,environmentLabel,camp,recoverCamp,moduleChoice,curioChoice,takeModule};
 })();

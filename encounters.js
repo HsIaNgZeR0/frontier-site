@@ -4,7 +4,16 @@ window.FrontierEncounters=(()=>{
  Object.assign(FrontierAdventure.events,{gift_choice:{id:'gift_choice',title:'得償所願',choice:'三份封存物資，只能帶走一份。'},gift_exchange:{id:'gift_exchange',title:'失與得',choice:'交出一件已持有的收藏品或詞條，隨機交換同類未持有品項。'}});
  function pool(tier){const region=R()?.expedition.regionId;return Object.values(catalog).filter(d=>!d.retired&&d.rarity===tier&&!relics.some(r=>r.id===d.id)&&['material','medicine','equipment','collection','record'].includes(d.category)&&(!d.collection_id||d.region===region))}
  function reward(tier){let rows=pool(tier);if(!rows.length)rows=pool(Math.max(1,tier-1));let d=pick(rows);if(window.FrontierTrail?.seenCollection(d.id)&&random()<.96){const mats=Object.values(catalog).filter(x=>!x.retired&&x.category==='material'&&x.rarity===Math.min(6,tier));if(mats.length)d=pick(mats)}return{itemId:d.id,qty:1}}
- const oldStart=startRun;startRun=function(){const before=R();oldStart();if(R()===before||!R()?.tools)return;for(const layer of R().expedition.layers)for(const row of layer.rows)for(const n of row)if(!n.storyEvent&&!['boss','camp'].includes(n.type)&&random()<.07){n.type='event';n.risk=0;n.storyEvent=random()<.5?'gift_choice':'gift_exchange'}save();render()};
+ const oldStart=startRun;startRun=function(){
+  const before=R();oldStart();
+  const r=R(),e=r?.expedition;if(r===before||!r?.tools||!e)return;
+  for(const [index,nodes] of e.layers.entries()){
+   const eventId=index%2?'gift_exchange':'gift_choice';
+   const candidates=nodes.rows.flat().filter(n=>n.type==='event'&&!n.storyEvent&&!n.earlySpecial&&!n.requiredCombat);
+   if(candidates.length)pick(candidates).storyEvent=eventId;
+  }
+  save();render();
+ };
  const oldEnter=FrontierExpedition.enterNode;FrontierExpedition.enterNode=function(id){oldEnter(id);const e=R()?.event;if(e?.type!=='frontierEvent')return;if(e.id==='gift_choice'&&!e.gifts)e.gifts=giftOffers();if(e.id==='gift_exchange')prepareExchange(e);save();render()};
  const giftOffers=()=>Array.from({length:3},()=>reward(2+rnd(3)));
  function openGift(){R().event={type:'frontierEvent',id:'gift_choice',claimed:false,gifts:giftOffers()};save();render();}
