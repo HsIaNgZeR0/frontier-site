@@ -245,6 +245,8 @@ window.FrontierContainers=(()=>{
   });
  }
  const selectedAccess={keys:[],tools:[]};
+ /* 權限卡匣記在存檔：裝上後一直保留，直到房卡用盡或玩家主動取下。 */
+ function syncKeys(){const saved=db.searchKeyRing174;if(!Array.isArray(saved))return;const have=new Set(accessCandidates('keys').map(i=>i.uid));selectedAccess.keys=saved.filter(uid=>have.has(uid));if(selectedAccess.keys.length!==saved.length)db.searchKeyRing174=[...selectedAccess.keys]}
  function accessCandidates(kind){
   return db.inventory.items.filter(item=>{
    const d=accessDefinition(item);
@@ -252,7 +254,7 @@ window.FrontierContainers=(()=>{
   });
  }
  function accessPrep(){
-  const capacity=locks.keyRingLimit(db),keys=accessCandidates('keys');
+  syncKeys();const capacity=locks.keyRingLimit(db),keys=accessCandidates('keys');
   const lock='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2"/></svg>';
   const tools=accessCandidates('tools').filter(i=>selectedAccess.tools.includes(i.uid));
   // 權限卡匣：固定格數的房卡欄位；開鎖裝置：不設格數的攜帶區，點整個區塊選擇。
@@ -265,7 +267,7 @@ window.FrontierContainers=(()=>{
  }
  function pickAccess(kind){
   if(!Object.hasOwn(selectedAccess,kind))return;
-  const keys=kind==='keys',capacity=locks.keyRingLimit(db);
+  syncKeys();const keys=kind==='keys',capacity=locks.keyRingLimit(db);
   if(keys&&!capacity)return;
   const candidates=accessCandidates(kind),selected=selectedAccess[kind];
   modal(keys?'選擇房卡':'選擇開鎖裝置／炸藥','<p>'+(keys?'最多 '+capacity+' 張，每款可帶一張。':'開鎖裝置用來開容器；炸藥在沒有房卡時破門。兩者都占背包空間，炸藥最多攜帶一件。')+'</p><div class="search174-access-picker">'+candidates.map(item=>'<label title="'+esc(catalog[item.itemId].name)+'"><input type="checkbox" data-search174-load value="'+esc(item.uid)+'" aria-label="'+esc(catalog[item.itemId].name)+'" '+(selected.includes(item.uid)?'checked':'')+'>'+FrontierIcons.access(item)+'</label>').join('')+'</div>'+(!candidates.length?'<p>目前沒有可攜帶的物品。</p>':''),'<button class="primary" onclick="FrontierContainers.confirmAccess(&quot;'+kind+'&quot;)">確認攜帶</button>');
@@ -282,11 +284,13 @@ window.FrontierContainers=(()=>{
   const items=accessCandidates(kind).filter(item=>checked.has(item.uid));
   if(!checkAccess(kind==='keys'?items:[],kind==='tools'?items:[]))return;
   selectedAccess[kind]=items.map(i=>i.uid);
+  if(kind==='keys'){db.searchKeyRing174=[...selectedAccess.keys];try{save()}catch{}}
   closeModal();
   const panel=document.querySelector('.search174-prep');
   if(panel)panel.outerHTML=accessPrep();
  }
  function prepareAccess(){
+  syncKeys();
   const keys=accessCandidates('keys').filter(i=>selectedAccess.keys.includes(i.uid));
   const tools=accessCandidates('tools').filter(i=>selectedAccess.tools.includes(i.uid));
   return checkAccess(keys,tools)?{keys,tools}:null;
