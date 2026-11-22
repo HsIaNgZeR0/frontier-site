@@ -122,7 +122,37 @@ window.FrontierFieldDock=(()=>{
    const safe=host.querySelector('.bag-ux-safe'),stage=safe?.querySelector('.bag-canvas-stage31'),canvas=stage?.firstElementChild;
    if(canvas){const z=Math.min(1,(safe.clientWidth-4)/Math.max(1,canvas.offsetWidth));canvas.style.transform='scale('+z+')';stage.style.width=canvas.offsetWidth*z+'px';stage.style.height=canvas.offsetHeight*z+'px'}};requestAnimationFrame(()=>requestAnimationFrame(fit));
   return host}}
- const prior=render;render=function(...args){const out=prior(...args);try{decorate()}catch(error){console.error(error)}return out};
+ /* 戰鬥上限：任何走法（每層一路走到底）累計作戰（普通／緊急／首領）不超過 10 場。
+    在所有路線模組處理完後執行；只把非必戰、非首領的普通／緊急作戰改成不期而遇。 */
+ const isBattle=n=>['battle','elite','boss'].includes(n.type);
+ function layerMax(layer){let prev=new Map();for(let row=0;row<layer.rows.length;row++){const next=new Map();for(const n of layer.rows[row]){const src=row===0?[{v:0,path:[]}]:layer.rows[row-1].filter(p=>p.links?.includes(n.id)).map(p=>prev.get(p.id)).filter(Boolean);if(!src.length)continue;const best=src.reduce((a,b)=>b.v>a.v?b:a);next.set(n.id,{v:best.v+(isBattle(n)?1:0),path:[...best.path,n]})}prev=next}return [...prev.values()].reduce((a,b)=>!a||b.v>a.v?b:a,null)||{v:0,path:[]}}
+ function capBattles(e,limit=10){
+  for(let guard=0;guard<60;guard++){
+   const maxes=e.layers.map(layerMax),total=maxes.reduce((n,x)=>n+x.v,0);if(total<=limit)return total;
+   const order=maxes.map((m,i)=>[m,i]).sort((a,b)=>b[0].v-a[0].v);let changed=false;
+   for(const [m,li] of order){
+    const pick=m.path.filter(n=>isBattle(n)&&n.type!=='boss'&&!n.requiredCombat&&!(li===0&&n.row===0)).sort((a,b)=>(a.type==='elite')-(b.type==='elite'))[0];
+    if(pick){pick.type='event';pick.risk=0;pick.battleCapped=true;changed=true;break}
+   }
+   if(!changed)return total;
+  }
+ }
+ /* 塵封之所：出發時預定每個搜索房間，讓地圖揭露節點類型後就能看到需要的房卡。 */
+ const h32=s=>{let n=2166136261;for(const c of String(s))n=Math.imul(n^c.charCodeAt(0),16777619);return n>>>0};
+ function assignRooms(r){const e=r.expedition,high=e.mode==='highrisk';let last=0;
+  for(const [li,layer] of e.layers.entries())for(const row of layer.rows)for(const n of row){if(!['search','container'].includes(n.type)||Number.isInteger(n.room180))continue;
+   const pool=Array.from({length:20},(_,i)=>i+1).filter(id=>!high||(li===0?id<=13:li===1?id<=16:id!==14)&&id!==last);n.room180=pool[h32(r.number+':'+n.id+':room')%pool.length];last=n.room180}}
+ // 能開門的房卡；沒有任何房卡能開的房間（如祭儀庫）改列可用的開鎖裝置。
+ function keycardsFor(room){const L=window.FrontierSearchLocks174;if(!L||!room)return [];const keys=Object.keys(L.catalog).filter(id=>L.catalog[id].key&&L.keyFits({room,core:false},L.catalog[id].key));if(keys.length)return keys;const lock=L.roomLock(room,'preview');return ['T1','T2','T3','T4'].filter(id=>L.toolFits(lock,id))}
+ function keyHints(){const e=R()?.expedition;if(!e||page!=='run')return;
+  const byId=new Map(e.layers.flatMap(l=>l.rows.flat()).map(x=>[x.id,x]));
+  // 只有節點類型已揭露（不是「?」）時才顯示。
+  for(const el of document.querySelectorAll('.ui-route-node[data-route-id]:not(.route-type-unknown)')){if(el.querySelector('.fd-keyhint'))continue;
+   const n=byId.get(el.dataset.routeId);if(!n||!['search','container'].includes(n.type)||!['search','container'].includes(FrontierTrail.nodeKind(n)))continue;const keys=keycardsFor(n?.room180);if(!keys.length)continue;
+   const hint=document.createElement('span');hint.className='fd-keyhint';hint.setAttribute('aria-label','可開門房卡：'+keys.map(id=>FrontierSearchLocks174.catalog[id].name).join('、'));
+   hint.innerHTML=keys.slice(0,3).map(id=>'<img src="assets/search174/'+id+'.png" alt="" draggable="false">').join('')+(keys.length>3?'<b>+'+(keys.length-3)+'</b>':'');el.append(hint)}}
+ if(typeof startRun==='function'){const start=startRun;startRun=function(...args){const before=R();const out=start(...args);const r=R();if(r&&r!==before&&r.expedition){try{if(r.expedition.mode==='standard'&&!r.expedition.battleCap149)r.expedition.battleCap149=capBattles(r.expedition);assignRooms(r);save();render()}catch(error){console.error(error)}}return out}}
+ const prior=render;render=function(...args){const out=prior(...args);try{decorate();keyHints()}catch(error){console.error(error)}return out};
  window.addEventListener('resize',()=>{if(sheet)redraw()});
- return{toggle,close,decorate,get sheet(){return sheet}};
+ return{toggle,close,decorate,keyHints,keycardsFor,capBattles,get sheet(){return sheet}};
 })();

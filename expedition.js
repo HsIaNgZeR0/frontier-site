@@ -20,7 +20,7 @@ window.FrontierExpedition=(()=>{
   for(let row=0;row<counts[layer];row++){
    const boss=mode==='standard'&&[2,4].includes(layer)&&row===counts[layer]-1,width=boss?1:2+rnd(4),slots=boss?[2]:width===2?[0,4]:width===3?[0,2,4]:width===4?[0,...shuffle([1,2,3]).slice(0,2).sort(),4]:[0,1,2,3,4];
    const rowTypes=new Map(),searchAnchor=mode==='highrisk'?(row+layer)%width:-1;
-   const fixed=boss?'boss':mode!=='highrisk'&&layer===0&&row===0?'battle':mode==='standard'&&(layer===0&&row===counts[layer]-1||layer===3&&row===Math.floor(counts[layer]/2))?'camp':null;
+   const fixed=boss?'boss':mode!=='highrisk'&&layer===0&&row===0?'battle':mode==='standard'&&layer===0&&row===counts[layer]-1?'merchant':mode==='standard'&&layer===3&&row===Math.floor(counts[layer]/2)?'camp':null;
    rows.push(slots.map((lane,index)=>{
     const pool=index===searchAnchor?['search']:weighted;
     const searchLimit=mode==='highrisk'?(width>=4?2:1)-Number(index<searchAnchor):1;

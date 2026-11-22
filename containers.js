@@ -158,7 +158,8 @@ window.FrontierContainers=(()=>{
   const visitedRooms=run.expedition.searchRooms180??=[];
   const fresh=roomPool.filter(id=>!visitedRooms.includes(id));
   const alternatives=roomPool.filter(id=>id!==visitedRooms.at(-1));
-  const room=pick(fresh.length?fresh:alternatives);
+  // 出發時已預定房間（地圖上可預先看到所需房卡）就使用預定房間；舊局維持隨機。
+  const room=Number.isInteger(node.room180)&&roomPool.includes(node.room180)?node.room180:pick(fresh.length?fresh:alternatives);
   visitedRooms.push(room);
 
   const themes=['industrial','industrial','medical','medical','industrial','industrial','intelligence','intelligence','armory','armory','industrial','intelligence','medical','biological','armory','armory','biological','relic','relic','relic'];

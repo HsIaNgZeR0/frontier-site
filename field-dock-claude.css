@@ -52,3 +52,8 @@
 /* 關閉的視窗一律隱藏（避免招募頁樣式 display:flex!important 讓已關閉的視窗殘留在畫面上） */
 dialog#modal:not([open]){display:none!important}
 
+
+/* 塵封之所：節點上方顯示可開門的房卡 */
+.ui-route-node .fd-keyhint{position:absolute;left:50%;top:-16px;transform:translateX(-50%);display:flex;gap:1px;align-items:center;padding:1px 3px;background:#0c171ce6;border:1px solid #d4eb9666;border-radius:3px;pointer-events:none;z-index:3;white-space:nowrap}
+.ui-route-node .fd-keyhint img{width:14px;height:14px;object-fit:contain}
+.ui-route-node .fd-keyhint b{font-size:9px;color:#d4eb96;font-weight:500}
