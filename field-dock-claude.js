@@ -167,8 +167,26 @@ window.FrontierFieldDock=(()=>{
   for(const row of document.querySelectorAll('.v113-actor-row[data-operator-uid]')){const a=r.team.find(x=>x.uid===row.dataset.operatorUid);row.querySelector('.fd-lock')?.remove();const why=a&&lockReason(b,a);if(!why)continue;const id=row.querySelector('.v113-actor-identity');if(!id)continue;const mark=document.createElement('div');mark.className='fd-lock';mark.dataset.battleStatus=why;mark.setAttribute('aria-label',why);mark.innerHTML=chains;const img=id.querySelector('img.avatar')||id.querySelector('img');id.append(mark);if(img){const ir=img.getBoundingClientRect(),pr=(mark.offsetParent||id).getBoundingClientRect();Object.assign(mark.style,{left:(ir.left-pr.left)+'px',top:(ir.top-pr.top)+'px',width:img.offsetWidth+'px',height:img.offsetHeight+'px',right:'auto',bottom:'auto'})}}
   const last=[...document.querySelectorAll('.v113-actor-row')].at(-1);document.querySelectorAll('.fd-ally-row').forEach(n=>n.remove());
   const allies=(b.friendly75||[]).filter(a=>!a.exited&&a.hp>0);if(!last||!allies.length)return;
-  for(const f of allies){const row=document.createElement('section');row.className='fd-ally-row';const tip='尼盧火（我方機構）：HP '+f.hp+'/'+f.max+'。用治療牌治到滿即可熄滅；第 '+f.expires75+' 回合仍未熄滅會爆炸，全隊受傷並削弱攻擊最高的幹員。場上每盞尼盧火使奎隆受到的物法傷害降低 20%。';row.dataset.battleStatus=tip;row.setAttribute('aria-label',tip);row.innerHTML='<img src="assets/battle-fire75.svg" alt=""><span class="fd-ally-bar"><i style="width:'+Math.round(f.hp/f.max*100)+'%"></i></span><b>尼盧火 '+f.hp+'/'+f.max+'</b><small>第'+f.expires75+'回合爆炸</small>';last.after(row)}}
- /* 戰術獎勵「精簡牌組／戰術研習」：用實際卡面列出全部卡牌（每列 3 張，可上下捲動），點卡即選擇。 */
+  let anchor=last;for(const f of allies){const row=document.createElement('section');row.className='fd-ally-row';const tip='尼盧火（我方機構）：HP '+f.hp+'/'+f.max+'。用治療牌治到滿即可熄滅；第 '+f.expires75+' 回合仍未熄滅會爆炸，全隊受傷並削弱攻擊最高的幹員。場上每盞尼盧火使奎隆受到的物法傷害降低 20%。';row.dataset.battleStatus=tip;row.setAttribute('aria-label',tip);const pct=f.hp<=1?0:Math.round(f.hp/f.max*100),left=Math.max(0,f.expires75-b.turn);row.innerHTML='<img src="assets/battle-fire75.svg" alt=""><span class="fd-ally-bar" aria-label="治療進度 '+pct+'%"><i style="width:'+pct+'%"></i></span><b>尼盧火 · 治療進度 '+(f.hp<=1?0:f.hp)+'/'+f.max+'</b><small>'+(left<=0?'本回合結束爆炸':'剩 '+left+' 回合爆炸')+'<br><em>拖治療牌治滿即熄滅</em></small>';anchor.after(row);anchor=row}}
+ /* Boss 機制單位：卡片下方說明「這是什麼、該怎麼處理」，首領無敵時標出原因。
+    回傳 [標題, 完整說明, 短說明]；敵人多時只顯示短說明，完整內容在長按與 title。 */
+ function mechTag(b,e){const m=b.region75||{},boss=b.enemies.find(x=>x.uid===m.bossUid),bn=boss?.name?.split(/[，,・「」“”]/).filter(Boolean)[0]||'首領',left=n=>Math.max(0,(n||0)-b.turn);
+  if(e.pilotDue75)return['駕駛員','第'+e.pilotDue75+'回合自爆：全隊受 90 法術傷害，之前擊倒',left(e.pilotDue75)+' 回合後自爆'];
+  if(e.uid!==m.bossUid&&boss&&e.regionBoss&&m.kind==='duet')return[e.name,boss.hp>0?'與'+bn+'並存：任一方倒下，另一方攻擊 +50%':'搭檔已倒下：攻擊 +50%',boss.hp>0?'搭檔倒下會暴怒':'暴怒 攻擊+50%'];
+  if(e.bloodblade75)return['凝血之刃','回流倒數 '+left(e.bladeDue)+' 回合：擊破可阻止'+bn+'回復 10%',left(e.bladeDue)+' 回合後回血'];
+  if(e.device75){const d=e.device75,act=d.litUntil>=b.turn;if(act)return[e.name,'已啟動至第'+d.litUntil+'回合','已啟動'];return d.kind==='dukare'?[e.name,'攻擊它推進 '+d.charge+'/'+d.threshold+'（每回合也會自動 +1）','攻擊推進 '+d.charge+'/'+d.threshold]:[e.name,'攻擊它累積充能 '+d.charge+'/'+d.threshold+'，充滿後啟動','攻擊充能']}
+  const x=e.extra75;if(!x)return null;
+  const map={lotus:['托生蓮座','存活時'+bn+'無敵：擊破解除','擊破解除無敵'],portal:['幽影門扉','擊破：'+bn+'損失 10% HP','擊破 首領-10%'],limb:['深海肢體','擊破：'+bn+'損失 6% HP','擊破 首領-6%'],cage:['繭籠','囚禁幹員無法出牌：擊破解救','擊破解救幹員'],vortex:['魂靈渦流',(e.extraDue75?'第'+e.extraDue75+'回合':'')+'回流：'+bn+'回復 8%，先擊破',(e.extraDue75?left(e.extraDue75)+' 回合後':'')+'回血'],crystal:['結晶區塊','每塊使'+bn+'減傷 25%：擊破或用消除樁清除','首領減傷25%'],experiment:m.kind==='carnival'?['活性實驗體','擊殺計分：搶在首領前擊殺','搶先擊殺']:['活性實驗體','分擔'+bn+'一半受傷：先清除再集火','分擔首領傷害']};
+  return map[x]||[e.name,'機制單位','機制單位']}
+ function mechTags(){const r=R(),b=r?.battle;if(!b?.region75||page!=='run')return;const cards=[...document.querySelectorAll('.enemy-card[data-enemy-id]')],crowded=cards.length>=3;
+  for(const card of cards){const e=b.enemies.find(x=>x.id===card.dataset.enemyId);card.querySelector('.fd-mech-tag')?.remove();if(!e||e.hp<=0)continue;
+   let tag=mechTag(b,e),warn=false;const isBoss=e.uid===b.region75.bossUid;
+   if(!tag&&isBoss){const k=b.region75.kind,blocked=FrontierRegional75.blocked({...b},e),stRaw=window.FrontierRegionStatus75?.(b,b.region75),st=stRaw&&!/^第 \d+ 回合$/.test(stRaw)?stRaw:'';
+    if(blocked){warn=true;const why={quilon:'先擊破托生蓮座',faust:'第 1 回合隱匿，先處理護衛',soul:'無法直接傷害：擊破門扉',sami:'等充能露出破綻'}[k]||'先處理場上機制';tag=['無敵',why+(st?'（'+st+'）':''),st||why]}
+    else{const alive=b.enemies.filter(x=>x.hp>0&&!x.exited),half=e.hp/e.max<=.5;
+     const hint={awaken:'實驗體 '+alive.filter(x=>x.extra75==='experiment').length+' 隻存活時本體只受一半傷害',bigugly:'倒下後彈出駕駛員，兩回合內須擊倒',deer:half?'已過半血：物理／法術再減半，改用真傷':'半血後物理／法術傷害減半',degen:'突進命中者下回合繳械；先破韌可阻止',faust:'每 3 回合紫箭強化：留護盾與減傷',kazimierz:'公布的裁決類型減傷 55%：改用另一類型或挑戰反轉',mouse:'沙塵輪流瞄準 HP 上限最高／最低的幹員',pursuer:'每損 25% HP 預告自我泯滅：跨血線前先上盾',saint:'單發重擊後下一回合換彈'}[k];
+     if(st)tag=['首領機制',st+(hint?'：'+hint:''),st];else if(hint)tag=['首領機制',hint,hint.split(/[：，；]/)[0]]}}
+   if(!tag)continue;const el=document.createElement('div');el.className='fd-mech-tag'+(warn?' is-warn':'')+(crowded?' is-short':'');el.title=tag[0]+'：'+tag[1];el.setAttribute('aria-label',el.title);el.innerHTML='<b>'+esc(tag[0])+'</b><span>'+esc(crowded?tag[2]:tag[1])+'</span>';(card.querySelector('.v113-enemy-vital')?.parentNode||card).append(el)}} /* 戰術獎勵「精簡牌組／戰術研習」：用實際卡面列出全部卡牌（每列 3 張，可上下捲動），點卡即選擇。 */
  function deckPicker(){const r=R(),s=r?.reward?.strategy;if(!s||!['remove','upgrade'].includes(s.stage)||typeof cardHtml!=='function')return;
   const body=document.querySelector('#app .screen-workspace-body')||document.querySelector('#app');if(!body||body.querySelector('.fd-card-grid'))return;
   for(const b of body.querySelectorAll('button'))if(/開啟卡牌列表/.test(b.textContent))b.remove();
@@ -236,7 +254,7 @@ window.FrontierFieldDock=(()=>{
   const done=()=>{fx.classList.add('out');setTimeout(()=>fx.remove(),220)};fx.querySelector('.fd-rfx-skip').onclick=done;fx.addEventListener('click',e=>{if(e.target===fx)done()});document.body.append(fx);setTimeout(()=>{if(fx.isConnected)done()},2400)}
  let packSyncing=false;
  function packRoster(){if(packSyncing||!window.FrontierPack?.needsRosterSync?.())return;if(FrontierRuntime.busy){setTimeout(packRoster,300);return}packSyncing=true;setTimeout(async()=>{try{await FrontierRuntime.perform('pack-roster-sync',()=>{FrontierPack.syncRoster();save();return true})}finally{packSyncing=false}render()},0)}
- const prior=render;render=function(...args){const out=prior(...args);try{decorate();keyHints();merchantLimit();battleMarks();packRoster();deckPicker();curioDrops();merchantTicketCard();alertHud();eventAlertNote();campAlertOption();recruitFx();if(R()?.event?.type==='fieldMerchant'){setTimeout(merchantLimit,60);setTimeout(merchantLimit,300)}}catch(error){console.error(error)}return out};
+ const prior=render;render=function(...args){const out=prior(...args);try{decorate();keyHints();merchantLimit();battleMarks();mechTags();packRoster();deckPicker();curioDrops();merchantTicketCard();alertHud();eventAlertNote();campAlertOption();recruitFx();if(R()?.event?.type==='fieldMerchant'){setTimeout(merchantLimit,60);setTimeout(merchantLimit,300)}}catch(error){console.error(error)}return out};
  window.addEventListener('resize',()=>{if(sheet)redraw()});
  return{toggle,close,decorate,keyHints,keycardsFor,capBattles,get sheet(){return sheet}};
 })();
