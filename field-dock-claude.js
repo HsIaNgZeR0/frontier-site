@@ -153,7 +153,7 @@ window.FrontierFieldDock=(()=>{
   const byId=new Map(e.layers.flatMap(l=>l.rows.flat()).map(x=>[x.id,x]));
   // 只有節點類型已揭露（不是「?」）時才顯示。
   for(const el of document.querySelectorAll('.ui-route-node[data-route-id]:not(.route-type-unknown)')){if(el.querySelector('.fd-keyhint'))continue;
-   const n=byId.get(el.dataset.routeId);if(!n||!['search','container'].includes(n.type)||!['search','container'].includes(FrontierTrail.nodeKind(n)))continue;const keys=keycardsFor(n?.room180);if(!keys.length)continue;
+   const n=byId.get(el.dataset.routeId);if(!n||!['search','container'].includes(n.type)||!['search','container'].includes(FrontierTrail.nodeKind(n)))continue;/* v605：勘探視野要能看到該節點的下一排，才預告所需房卡 */const SI=window.FrontierSurveyIndex16;if(SI&&R().survey16&&SI.visibility(R(),{id:'fd-probe:'+n.id,layer:n.layer,row:n.row+1})!=='known')continue;const keys=keycardsFor(n?.room180);if(!keys.length)continue;
    const hint=document.createElement('span');hint.className='fd-keyhint';hint.setAttribute('aria-label','可開門房卡：'+keys.map(id=>FrontierSearchLocks174.catalog[id].name).join('、'));
    hint.innerHTML=keys.slice(0,3).map(id=>'<img src="assets/search174/'+id+'.png" alt="" draggable="false">').join('')+(keys.length>3?'<b>+'+(keys.length-3)+'</b>':'');el.append(hint)}}
  if(typeof startRun==='function'){const start=startRun;startRun=function(...args){const before=R();const out=start(...args);const r=R();if(r&&r!==before&&r.expedition){try{if(r.expedition.mode==='standard'&&!r.expedition.battleCap149)r.expedition.battleCap149=capBattles(r.expedition);assignRooms(r);save();render()}catch(error){console.error(error)}}return out}}

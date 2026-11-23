@@ -21,7 +21,7 @@ globalThis.FrontierSurveyEngineV27=(()=>{
     for(const id of locks.keycardStock(i=>hash(period+':keycard:'+i)/4294967296,monthly?{count:5,floor:4,premium:3,premiumRarity:5}:{count:5,floor:3,premium:3,premiumRarity:4})){
      const d=catalog.definitions['search174_'+id];if(d)add(d.id,d.name,'rotating',1,locks.pointBase(id),1,d.id);
     }}
-   for(const type of ['T','B']) for(const tier of [3,4,5,6]){
+   for(const type of ['T','B','S']) for(const tier of [3,4,5,6]){
     const pool=access.filter(d=>d.rarity===tier&&d.effect?.id.startsWith(type));
     if(!pool.length)continue;
     const period=stockKey(section,at);

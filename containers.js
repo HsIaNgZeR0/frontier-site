@@ -318,32 +318,52 @@ window.FrontierContainers=(()=>{
  }
  const canSearchExterior=scene=>[1,2,3,5,7,8,11,13,14,19,20].includes(scene.lock?.room);
  const easyDoor=scene=>!scene.lock||scene.lock.level===1||scene.lock.room>=19;
+ /* v605 開門：只能用對應房卡、兩種炸藥（或沒有房卡可開的房間用開鎖裝置）；偵查儀可在開門前看鎖。 */
+ const lockKindNames={mechanical:'機械鎖',electronic:'電子鎖',military:'軍規鎖',research:'研究封印'};
+ function noKeyRoom(scene){return !Object.values(locks.catalog).some(d=>d.key&&locks.keyFits({room:scene.lock.room,core:false},d.key))}
+ function doorOpeners(scene){return accessItems(R()).filter(row=>{const d=locks.catalog[row.id];if(d.key)return fitsAccess(scene.lock,row);if(row.id[0]==='T')return noKeyRoom(scene)&&fitsAccess(scene.lock,row);return false})}
+ function doorNeeds(scene){const ids=Object.keys(locks.catalog).filter(id=>locks.catalog[id].key&&locks.keyFits({room:scene.lock.room,core:false},locks.catalog[id].key));return ids.length?ids:['T1','T2','T3','T4'].filter(id=>locks.toolFits(scene.lock,id))}
+ function breachParams(scene,run,row,preferred){return {lock:scene.lock,inventory:[row],ledger:run.breachLedger174||[],sector:run.expedition.layer,actions:1,targets:scene.targets.map((t,order)=>({id:t.box.uid,rarity:catalog[t.box.itemId].rarity,order})),device:row.id,preferred}}
+ function targetNeeds(scene,target){
+  const ids=Object.keys(locks.catalog).filter(id=>id[0]==='T'||locks.catalog[id].key);
+  if(target.core)return {label:'核心權限鎖',ids:ids.filter(id=>fitsAccess(target.core,{id,uses:1,cost:1}))};
+  const rule=objectRule(target);
+  if(!rule?.kind)return {label:rule?.name||'無鎖',ids:[],free:true};
+  const lock={...scene.lock,...rule,core:false};
+  const kn=lockKindNames[rule.kind]||'';return {label:(rule.name&&rule.name!==kn?rule.name+' · ':'')+kn+' Lv.'+rule.level,ids:['T1','T2','T3','T4'].filter(id=>locks.toolFits(lock,id)),force:rule.force};
+ }
+ function scoutReport(scene){
+  const carried=new Set(accessItems(R()).filter(r=>r.uses>=r.cost).map(r=>r.id));
+  return '<div class="search605-scout"><b>偵查結果</b>'+scene.targets.map((t,i)=>{const need=targetNeeds(scene,t),name=scene.lock?.targetNames?.[i]||catalog[t.box.itemId].name;
+   return '<p><span>'+['左前','右前','左後','右後'][i]+' · '+esc(name)+'</span><small>'+esc(need.label)+'</small>'+(need.free?'<em>不需開鎖裝置</em>':'<span class="search605-need">'+need.ids.map(id=>'<i class="'+(carried.has(id)?'have':'')+'" title="'+esc(locks.catalog[id].name)+(carried.has(id)?'（已攜帶）':'（未攜帶）')+'"><img src="assets/search174/'+id+'.png" alt="'+esc(locks.catalog[id].name)+'"></i>').join('')+'</span>'+(need.ids.some(id=>carried.has(id))?'<em class="ok">已攜帶可用裝置</em>':'<em class="warn">未攜帶'+(need.force?'，只能強拆（+'+need.force+' 警戒、暗格可能損毀）':'')+'</em>'))+'</p>'}).join('')+'</div>';
+ }
  function openSearchDoor(method="careful",uid=null,preferred=null){
   const run=R(),scene=searchScene();
   if(!scene||scene.open||scene.active!==null||scene.focus!==-1)return;
   const items=accessItems(run);
   const row=items.find(x=>x.item.uid===uid);
-  let amount=2,reason='解除隔離門',plan;
+  let amount=0,reason='',plan;
+  if(method==='scout'){
+   if(!row||row.id!=='S1'||row.uses<1||scene.scouted605)return;
+   consumeAccess(run,row);scene.scouted605=true;applyAlert(run,run.expedition.current+':scout',1,'偵查隔離門');save();render();showSearchDoor();return;
+  }
   if(method==='access'){
-   if(!row||!accessOption(scene,row))return;
+   if(!row||!doorOpeners(scene).some(x=>x.item.uid===row.item.uid))return;
    amount=locks.tools[row.id]?.alert||0;reason=locks.catalog[row.id].name;
   }else if(method==='breach'){
-   if(!row||!scene.lock||run.expedition.mode!=='highrisk')return;
-   const params={lock:scene.lock,inventory:items,ledger:run.breachLedger174||[],sector:run.expedition.layer,
-     actions:run.tools?1:0,targets:scene.targets.map((t,order)=>({id:t.box.uid,rarity:catalog[t.box.itemId].rarity,order})),
-     device:row.id,preferred};
+   if(!row||!scene.lock||!['B1','B2'].includes(row.id))return;
+   const params={...breachParams(scene,run,row,preferred),inventory:items};
    if(!locks.breachPlan({...params,roll:0}))return;
    plan=locks.breachPlan({...params,roll:random()});
    amount=plan.alert;reason=locks.catalog[row.id].name;
   }else if(method==='exterior'){
    if(!canSearchExterior(scene))return;
-   scene.outerOnly174=true;amount=0;reason='僅搜外圍';
-  }else if(method==='forced'){if(easyDoor(scene))return;amount=6+2*scene.lock.level;reason='強行開門'}
-  else if(method!=='careful'||!easyDoor(scene))return;
+   scene.outerOnly174=true;reason='僅搜外圍';
+  }else if(method!=='careful'||scene.lock)return;
   if((method==='access'||method==='breach')&&row)consumeAccess(run,row);
   if(plan){
    (run.breachLedger174??=[]).push(plan.receipt);
-   run.tools.searchActions++;
+   if(run.tools)run.tools.searchActions=(run.tools.searchActions||0)+1;
    for(const t of scene.targets)if(plan.destroyed.includes(t.box.uid))t.status='destroyed';
    if(plan.intercept)run.pendingBreachIntercept=true;
   }
@@ -354,34 +374,34 @@ window.FrontierContainers=(()=>{
  function showSearchDoor(){
   const scene=searchScene();
   if(!scene||scene.open)return;
-  modal('開啟區域隔離門','<div class="search174-door-options">'+doorActions(scene)+'</div>',
+  modal('開啟區域隔離門',(scene.scouted605?scoutReport(scene):'')+'<div class="search174-door-options search605-door">'+doorActions(scene)+'</div>',
    '<button onclick="closeModal()">返回</button>');
  }
+ function chooseBreach(uid){
+  const run=R(),scene=searchScene(),row=accessItems(run).find(x=>x.item.uid===uid);if(!scene||scene.open||!row)return;
+  const params=breachParams(scene,run,row,null),names=['左前','右前','左後','右後'];
+  modal('定向切割：選擇犧牲區域','<p>選定的區域會被切毀；另有 40% 機率波及 1 個鄰近區域。</p><div class="search174-door-options">'+params.targets.map((t,i)=>{const ok=locks.breachPlan({...params,preferred:t.id,roll:0});return '<button '+(ok?'':'disabled ')+'onclick="FrontierContainers.openSearchDoor(&quot;breach&quot;,'+esc(JSON.stringify(uid))+','+esc(JSON.stringify(t.id))+')">'+names[i]+' · '+esc(scene.lock?.targetNames?.[i]||'容器')+'</button>'}).join('')+'</div>','<button onclick="FrontierContainers.showSearchDoor()">返回</button>');
+ }
+ function doorOption(row,title,cost,penalty,onclick,disabled){
+  const icon=row?FrontierIcons.access(row.item):'';
+  return '<button class="search605-opt" '+(disabled?'disabled ':'')+'onclick="'+onclick+'"><span class="search605-ic" aria-hidden="true">'+icon+'</span><span class="search605-tx"><b>'+esc(title)+'</b><small>'+cost+'</small><em>'+penalty+'</em></span></button>';
+ }
  function doorActions(scene){
-  const buttons=[easyDoor(scene)?
-   '<button class="primary" onclick="FrontierContainers.openSearchDoor()">解除隔離門 · +2 警戒 · 容器保全</button>':
-   '<button class="primary" onclick="FrontierContainers.openSearchDoor(&quot;forced&quot;)">強行開門 · +'+(6+2*scene.lock.level)+' 警戒 · 容器保全</button>'];
-  if(!scene.lock)return buttons.join('');
-  if(canSearchExterior(scene))buttons.push('<button onclick="FrontierContainers.openSearchDoor(&quot;exterior&quot;)">只搜外圍 · 不加警戒 · 放棄門後容器</button>');
-  for(const row of accessItems(R())){
-   if(['B1','B2'].includes(row.id)&&R().expedition.mode==='highrisk'){
-    const run=R(),args=esc(JSON.stringify(row.item.uid));
-    const targets=scene.targets.map((t,order)=>({id:t.box.uid,rarity:catalog[t.box.itemId].rarity,order}));
-    const preferred=row.id==='B2'?targets.map(t=>t.id):[null];
-    for(const id of preferred){
-     const plan=locks.breachPlan({lock:scene.lock,inventory:[row],ledger:run.breachLedger174||[],sector:run.expedition.layer,
-       actions:run.tools?1:0,targets,device:row.id,preferred:id,roll:0});
-     if(!plan)continue;
-     const detail=id?' · 指定'+['左前','右前','左後','右後'][targets.findIndex(t=>t.id===id)]+'區，毀損該區物資；40% 波及鄰近物資':' · 毀損最高階箱，保留 1–2 箱';
-     buttons.push('<button onclick="FrontierContainers.openSearchDoor(&quot;breach&quot;,'+args+','+esc(JSON.stringify(id))+')"><span aria-hidden="true">'+FrontierIcons.access(row.item)+'</span>'+esc(locks.catalog[row.id].name)+detail+' · 消耗 1 件 · 警戒 ＋'+plan.alert+(plan.intercept?' · 追兵攔截':'')+'</button>');
-    }
-    continue;
-   }
-   if(!accessOption(scene,row))continue;
-   const args=esc(JSON.stringify(row.item.uid));
-   buttons.push('<button onclick="FrontierContainers.openSearchDoor(&quot;access&quot;,'+args+')"><span aria-hidden="true">'+FrontierIcons.html(row.item.itemId)+'</span>'+esc(locks.catalog[row.id].name)+' · '+useText(row)+' · 警戒 ＋'+(locks.tools[row.id]?.alert||0)+' · 容器保全</button>');
+  if(!scene.lock)return '<button class="primary" onclick="FrontierContainers.openSearchDoor()">解除隔離門</button>';
+  const run=R(),items=accessItems(run),out=[],keys=doorOpeners(scene),need=doorNeeds(scene),toolRoom=noKeyRoom(scene);
+  for(const row of keys)out.push(doorOption(row,'用'+locks.catalog[row.id].name+'打開','預計消耗 '+row.cost+' 點（剩 '+row.uses+' 點）'+(locks.tools[row.id]?.alert?' · 警戒 +'+locks.tools[row.id].alert:''),'代價：只扣點數；容器全數保全，但不額外給物資。門後容器仍可能需要開鎖裝置。',"FrontierContainers.openSearchDoor(&quot;access&quot;,"+esc(JSON.stringify(row.item.uid))+")"));
+  if(!keys.length)out.push('<p class="search605-miss">未攜帶可開此門的'+(toolRoom?'開鎖裝置':'房卡')+'。需要：'+need.map(id=>'<img src="assets/search174/'+id+'.png" alt="" title="'+esc(locks.catalog[id].name)+'">'+esc(locks.catalog[id].name)).join('、')+'</p>');
+  const info={B1:['爆破藥包','消耗 1 件 · 警戒 +25（本局第二次 +40，並引來追兵）','代價：炸毀較稀有的容器，房內只留 1～2 箱；每局最多爆破 2 次。'],B2:['定向切割炸藥','消耗 1 件 · 警戒 +18（本局第二次 +30，並引來追兵）','代價：自選 1 區容器犧牲，40% 再波及 1 區；每局限用 1 次。']};
+  for(const id of ['B1','B2']){
+   const row=items.find(r=>r.id===id&&r.uses>0),d=locks.catalog[id];
+   let why='';if(!row)why='（未攜帶）';else if(!(id==='B1'?scene.lock.breachable:scene.lock.precisionBreachable))why='（此門無法爆破）';else if(!locks.breachPlan({...breachParams(scene,run,row,id==='B2'?scene.targets[0].box.uid:null),roll:0})&&!(id==='B2'&&scene.targets.some(t=>locks.breachPlan({...breachParams(scene,run,row,t.box.uid),roll:0}))))why='（本局爆破額度已用完）';
+   const click=!row?'':id==='B1'?"FrontierContainers.openSearchDoor(&quot;breach&quot;,"+esc(JSON.stringify(row.item.uid))+")":"FrontierContainers.chooseBreach("+esc(JSON.stringify(row.item.uid))+")";
+   out.push(doorOption(row||{item:{itemId:'search174_'+id}},'用'+info[id][0]+'炸開'+why,info[id][1],info[id][2],click,!!why));
   }
-  return buttons.join('');
+  const scout=items.find(r=>r.id==='S1'&&r.uses>0);
+  if(!scene.scouted605)out.push(doorOption(scout||{item:{itemId:'search174_S1'}},'啟用'+locks.catalog.S1.name+(scout?'':'（未攜帶）'),'消耗 1 件 · 警戒 +1 · 不開門','代價：用掉偵查儀；可看到門後每個容器需要的開鎖裝置等級，再決定要不要開。',scout?"FrontierContainers.openSearchDoor(&quot;scout&quot;,"+esc(JSON.stringify(scout.item.uid))+")":'',!scout));
+  if(canSearchExterior(scene))out.push('<button onclick="FrontierContainers.openSearchDoor(&quot;exterior&quot;)">只搜外圍 · 不加警戒 · 放棄門後容器</button>');
+  return out.join('');
  }
  function consumeAccess(run,row){
   const def=locks.catalog[row.id];
@@ -389,7 +409,7 @@ window.FrontierContainers=(()=>{
    /* v604 點數制：依難度扣點，並發放權限獎勵素材 */
    const left=Math.max(0,row.uses-row.cost);
    row.item.searchPoints604=left;row.item.searchUses174=Math.ceil(left/locks.maxPoints(row.id)*def.uses);
-   grantAccessBonus(run,row);
+   if(row.id[0]==='T')grantAccessBonus(run,row);/* v605：房卡只保全容器，不另給物資 */
   }else row.item.searchUses174=row.uses-1;
   const uid=row.item.uid;
   if(!(row.points?row.item.searchPoints604:row.item.searchUses174)&&!run.searchKeys174?.includes(uid))run.itemCargo=run.itemCargo.filter(i=>i.uid!==uid);
@@ -764,5 +784,5 @@ window.FrontierContainers=(()=>{
  const oldValid=validSave;validSave=function(v){let copy=v;if(v.run?.event?.type==='sealedContainer')copy={...v,run:{...v.run,event:null}};if(!oldValid(copy))return false;const back=v.run?.boxReturn;if(back&&(back.version!==1||typeof back.uid!=='string'||v.run.event?.type!=='sealedContainer'||v.run.event.box?.uid!==back.uid||v.run.battle||v.run.reward||v.run.expedition?.current))return false;const boxes=[...(v.inventory?.items||[]),...(v.run?.itemCargo||[]),...(v.run?.grid?.groundItems||[]),...(v.run?.event?.box?[v.run.event.box]:[]),...(v.run?.secureGrid?.items||[]).filter(x=>x.kind==='equipment').map(x=>x.instance)].filter(x=>catalog[x.itemId]?.category==='container');return boxes.every(box=>{const s=box.sealed;return FrontierInventory.valid(box)&&s?.version===1&&(s.searchedInField===undefined||typeof s.searchedInField==='boolean')&&qualities[s.quality]&&Number.isInteger(s.tier)&&s.tier>=2&&s.tier<=7&&Array.isArray(s.contents)&&s.contents.length>=(s.equipmentRetired139===2?0:catalog[box.itemId].balance?.surveyEquipment?1:2)&&s.contents.length<=(box.itemId===grand?16:6)&&(!catalog[box.itemId].balance?.surveyEquipment||((s.contents.length===1||s.equipmentRetired139===2&&s.contents.length===0)&&s.tier===catalog[box.itemId].rarity&&s.contents.every(i=>catalog[i.itemId]?.category==='equipment'&&catalog[i.itemId].rarity===s.tier)))&&s.contents.every(i=>catalog[i.itemId]&&Number.isInteger(i.qty)&&i.qty>=1&&i.qty<=catalog[i.itemId].stack)&&Number.isInteger(s.revealed)&&s.revealed>=0&&s.revealed<=s.contents.length&&Array.isArray(s.claimed)&&s.claimed.length===s.contents.length&&s.claimed.every(x=>typeof x==='boolean')})};
  let touch=null;document.addEventListener('pointerdown',e=>{if(e.target.closest?.('#box-packet'))touch={id:e.pointerId,y:e.clientY}});document.addEventListener('pointerup',e=>{if(!touch||touch.id!==e.pointerId)return;const delta=touch.y-e.clientY;touch=null;if(delta>45)FrontierRuntime.perform('box-swipe',()=>reveal())});document.addEventListener('pointercancel',()=>touch=null);
  ensure();FrontierInventory.validateCatalog();
- return{qualities,searchSceneView,renderLoot,canCollectAccess,specialContainment,takeRitualSignal,faceSearchGuard,leaveSearchScene,unlockSearchCore,accessPrep,pickAccess,confirmAccess,prepareAccess,finishAccess,searchCount,focusSearch,showSearchDoor,openSearchDoor,chooseSearchFamily,packSealedSearch,unsealCarried,inspectSearchTarget,prepareObject,beginSceneSearch,suspendSearchBox,returnToSearchScene,highRiskTier,highRiskDrop,ensure,day,week,quality,qualityLabel,reward,create,drop,grand,chooseCarried,carriedBoxes,carriedBox,returnToBag,openNode,openBase,openCarried,closeCarried,currentBox,reveal,take,takeAll,carry,leave,boxView,baseView,studyCore};
+ return{qualities,searchSceneView,renderLoot,canCollectAccess,specialContainment,takeRitualSignal,faceSearchGuard,leaveSearchScene,unlockSearchCore,accessPrep,pickAccess,confirmAccess,prepareAccess,finishAccess,searchCount,focusSearch,showSearchDoor,openSearchDoor,chooseBreach,chooseSearchFamily,packSealedSearch,unsealCarried,inspectSearchTarget,prepareObject,beginSceneSearch,suspendSearchBox,returnToSearchScene,highRiskTier,highRiskDrop,ensure,day,week,quality,qualityLabel,reward,create,drop,grand,chooseCarried,carriedBoxes,carriedBox,returnToBag,openNode,openBase,openCarried,closeCarried,currentBox,reveal,take,takeAll,carry,leave,boxView,baseView,studyCore};
 })();

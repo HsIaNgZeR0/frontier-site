@@ -19,7 +19,7 @@ rows.unshift({id:"first-aid149",item:"med_aid_t3",qty:1,cost:5,limit:10});if((ha
   const seed=hash(F.ensure().week),rows=oldWeekly().filter(r=>r.id!=='ticket');
   const week=F.ensure().week;
   // 黃票只刷金、銀品質的房卡與開鎖裝置（不賣炸藥）；開鎖裝置依銀／金物品權重抽一件。
-  const w=L().shopTierWeight;rows.push(priced(unit(week+':tool')*(w[5]+w[6])<w[5]?'T3':'T4',yellowLadder));
+  const w=L().shopTierWeight;rows.push(priced(unit(week+':tool')*(w[5]+w[6])<w[5]?'T3':'T4',yellowLadder));rows.push(priced('S1',yellowLadder,2));/* v605 偵查儀：黃票每次刷新上架 2 個 */
   const first=L().pickKeycard(unit(week+':key'),5);rows.push(priced(first,yellowLadder));
   if(seed%4===0){const second=L().pickKeycard(unit(week+':key2'),5,[first]);if(second)rows.push(priced(second,yellowLadder))}
   return rows;
