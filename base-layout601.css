@@ -19,14 +19,15 @@
 .b601-int .al{stroke:var(--rc);stroke-width:1.6;fill:none;opacity:.7}
 .b601-room:focus-visible{outline:2px solid var(--rc);outline-offset:2px}
 /* 名稱標籤：彩色圖示方塊＋右端斜切的深色名稱帶 */
-.b601-head{position:absolute;left:1px;top:1px;height:19px;max-width:calc(100% - 10px);display:flex;align-items:stretch;pointer-events:none;z-index:2}
-.b601-ico{flex:none;width:19px;display:grid;place-items:center;background:var(--rc);color:#141414}
-.b601-ico svg{width:12px;height:12px;fill:currentColor;display:block}
-.b601-name{flex:0 1 auto;min-width:0;padding:0 12px 0 5px;font-size:11.5px;font-weight:700;letter-spacing:.03em;white-space:nowrap;line-height:19px;background:#0b0c0ee6;clip-path:polygon(0 0,100% 0,calc(100% - 8px) 100%,0 100%);text-shadow:0 1px 1px #000}
-.b601-lv{position:absolute;left:4px;top:23px;display:flex;gap:2px;align-items:flex-end;height:10px;z-index:2;padding:1px 2px;background:#0009}
+.b601-head{position:absolute;left:1px;top:1px;height:26px;max-width:calc(100% - 3px);display:flex;align-items:stretch;pointer-events:none;z-index:2}
+.b601-ico{flex:none;width:26px;display:grid;place-items:center;background:var(--rc);color:#141414;box-shadow:inset 0 -2px 0 #0003}
+.b601-ico svg{width:15px;height:15px;fill:currentColor;display:block}
+.b601-txt{flex:0 1 auto;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:1px;padding:0 13px 0 5px;background:#0b0c0eeb;clip-path:polygon(0 0,100% 0,calc(100% - 9px) 100%,0 100%);box-shadow:inset 0 -1px 0 var(--rc)}
+.b601-name{display:block;font-size:11.5px;font-weight:700;letter-spacing:.04em;line-height:13px;white-space:nowrap;text-shadow:0 1px 1px #000}
+.b601-en{display:block;font-size:6px;font-weight:700;letter-spacing:.1em;line-height:7px;white-space:nowrap;color:var(--rc);opacity:.9}
+.b601-lv{position:absolute;left:4px;top:31px;display:flex;gap:2px;align-items:flex-end;height:9px;z-index:2;padding:1px 2px;background:#0009}
 .b601-room i{border-radius:0!important;padding:0!important;margin:0!important;min-width:0!important;flex:none;font-style:normal}
-.b601-lv i{display:block;border:0!important;width:3px;height:10px;background:#f4f4f4}
-.b601-en{position:absolute;right:6px;top:25px;font-size:6.5px;letter-spacing:.08em;color:#fff;opacity:.55;white-space:nowrap;font-weight:700;pointer-events:none;z-index:2}
+.b601-lv i{display:block;border:0!important;width:3px;height:9px;background:#f4f4f4}
 .b601-staff{position:absolute;left:5px;bottom:5px;display:flex;gap:2px;z-index:2}
 .b601-staff i{display:block;width:13px;height:13px;box-sizing:border-box;border:1px solid #ffffff50!important;background:#00000080}
 .b601-staff i.on{border-color:#fff!important;background:linear-gradient(180deg,#ffffff40,#0000 60%),var(--rc)}
@@ -34,12 +35,13 @@
 /* 控制中樞（2×2） */
 .b601-hub{--cut:16px}
 .b601-hub .b601-frame{background:#191b1e}
-.b601-hub .b601-head{height:26px}
-.b601-hub .b601-ico{width:26px}
-.b601-hub .b601-ico svg{width:16px;height:16px}
-.b601-hub .b601-name{font-size:15px;line-height:26px;padding-right:16px}
-.b601-hub .b601-lv{top:31px;left:6px;height:13px}
+.b601-hub .b601-head{height:38px}
+.b601-hub .b601-ico{width:38px}
+.b601-hub .b601-ico svg{width:22px;height:22px}
+.b601-hub .b601-txt{padding:0 18px 0 8px;gap:2px;clip-path:polygon(0 0,100% 0,calc(100% - 13px) 100%,0 100%)}
+.b601-hub .b601-name{font-size:16px;line-height:19px;letter-spacing:.08em}
+.b601-hub .b601-en{font-size:8px;line-height:10px}
+.b601-hub .b601-lv{top:44px;left:6px;height:13px}
 .b601-hub .b601-lv i{width:4px;height:13px}
-.b601-hub .b601-en{font-size:9px;right:20px;top:auto;bottom:8px}
 .b601-lift{z-index:20;filter:drop-shadow(0 0 2px var(--rc)) drop-shadow(0 8px 10px #000)!important;opacity:.95}
 .b601-bad{filter:drop-shadow(0 0 3px #ff5a4f) drop-shadow(0 8px 10px #000)!important}
