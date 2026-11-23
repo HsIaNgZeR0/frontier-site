@@ -70,3 +70,14 @@
 .b601-row-val small{font-size:10px;color:#8ea3aa}
 .b601-row-val b{font-size:17px;font-weight:600;line-height:1.1;font-family:Bahnschrift,'DIN Alternate',sans-serif}
 .b601-row.is-ready .b601-row-val b{color:#d5ef8f}
+/* 同類合併群組 */
+.b601-group{display:grid;gap:2px}
+.b601-ghead{position:relative}
+.b601-count-tag{font-style:normal;font-size:12px;font-weight:700;color:var(--rc);margin-left:2px}
+.b601-chev{flex:none;width:14px;color:#8ea3aa;font-size:12px;transition:transform .15s}
+.b601-group.is-open .b601-chev{transform:rotate(180deg)}
+.b601-gbody{display:grid;gap:2px;padding-left:22px}
+.b601-sub{min-height:40px!important;padding:4px 8px 4px 10px!important;background:#141d22!important;box-shadow:inset 2px 0 0 var(--rc)!important}
+.b601-sub .b601-row-title b{font-size:12px;color:#cfdade}
+.b601-sub .b601-row-main>small{font-size:10.5px}
+.b601-sub .b601-row-val b{font-size:14px}

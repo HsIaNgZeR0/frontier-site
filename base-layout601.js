@@ -1,7 +1,7 @@
 'use strict';
 /* 基建佈局 v601：本家風格長方形房間、指揮中樞 2×2、自由拖動擺放（存於 db.baseLayout601）。 */
 window.FrontierBaseLayout601=(()=>{
- if(!document.querySelector('link[data-b601]')){const l=document.createElement('link');l.rel='stylesheet';l.href='base-layout601.css?v=601f';l.dataset.b601='';document.head.appendChild(l)}
+ if(!document.querySelector('link[data-b601]')){const l=document.createElement('link');l.rel='stylesheet';l.href='base-layout601.css?v=601g';l.dataset.b601='';document.head.appendChild(l)}
  const U=16,COLS=40,ROWS=40,RW=7,RH=4,LV=2;
  const esc=s=>String(s??'').replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));
  // 本家房間造型：色彩、圖示與英文標示。本家沒有的房間沿用模板換色。
@@ -73,8 +73,15 @@ window.FrontierBaseLayout601=(()=>{
   if(r.kind==='workshop')return{line:'即時加工，無需派駐',value:'',unit:'',ready:false,pct:null};
   if(r.kind==='hub')return{line:'可建 '+s.base151.rooms.length+'/'+E.capacity[r.level-1]+' 間',value:'',unit:'',ready:false,pct:null};
   return{line:staff||'待命',value:'',unit:'',ready:false,pct:null}}
- function listHTML(){const s=FrontierBase151.preview?.()||db,E=FrontierBaseEngine,rooms=s.base151.rooms.filter(r=>r.kind!=='medical'&&r.kind!=='hub'&&!E.types[r.kind]?.retired);
-  return rooms.map(r=>{const L=look(r.kind),i=info(s,r);return '<button type="button" class="b601-row'+(i.ready?' is-ready':'')+'" data-row601="'+esc(r.id)+'" style="--rc:'+L.c+'"><span class="b601-row-ico">'+ico[L.t]+'</span><span class="b601-row-main"><span class="b601-row-title"><b>'+esc(E.types[r.kind]?.name||r.kind)+'</b>'+bars(r.level)+'</span><small>'+esc(i.line)+'</small>'+(i.pct!=null?'<span class="b601-row-prog"><i style="width:'+Math.round(i.pct*100)+'%"></i></span>':'')+'</span>'+(i.value?'<span class="b601-row-val"><small>'+i.unit+'</small><b>'+esc(i.value)+'</b></span>':'')+'</button>'}).join('')}
+ /* 同類房間合併成一列（數量、合計待領、最快完成），點開才列出各間。 */
+ const order=['factory','trade','supply','cFactory','cTrade','cSupply','commission','dispatch','personnel','workshop','logistics'],open=new Set();
+ function rowHTML(s,r,sub){const E=FrontierBaseEngine,L=look(r.kind),i=info(s,r);return '<button type="button" class="b601-row'+(sub?' b601-sub':'')+(i.ready?' is-ready':'')+'" data-row601="'+esc(r.id)+'" style="--rc:'+L.c+'">'+(sub?'':'<span class="b601-row-ico">'+ico[L.t]+'</span>')+'<span class="b601-row-main"><span class="b601-row-title"><b>'+(sub?'第'+sub+'間':esc(E.types[r.kind]?.name||r.kind))+'</b>'+bars(r.level)+'</span><small>'+esc(i.line)+'</small>'+(i.pct!=null?'<span class="b601-row-prog"><i style="width:'+Math.round(i.pct*100)+'%"></i></span>':'')+'</span>'+(i.value?'<span class="b601-row-val"><small>'+i.unit+'</small><b>'+esc(i.value)+'</b></span>':'')+'</button>'}
+ function groupHTML(s,kind,rooms){const E=FrontierBaseEngine,L=look(kind),infos=rooms.map(r=>info(s,r)),ready=infos.some(i=>i.ready),staff=E.types[kind]?.kind==='none'?'':'派駐 '+rooms.reduce((n,r)=>n+r.staff.length,0)+'/'+rooms.reduce((n,r)=>n+E.seats(r),0),nums=infos.map(i=>Number(String(i.value).replace(/,/g,''))).filter(Number.isFinite),total=nums.reduce((a,b)=>a+b,0),pcts=infos.map(i=>i.pct).filter(x=>x!=null),best=pcts.length?Math.max(...pcts):null,is=open.has(kind);
+  const line=rooms.length+' 間 · Lv '+rooms.map(r=>r.level).join('／')+(staff?' · '+staff:'');
+  return '<div class="b601-group'+(is?' is-open':'')+'" style="--rc:'+L.c+'"><button type="button" class="b601-row b601-ghead'+(ready?' is-ready':'')+'" data-group601="'+kind+'" aria-expanded="'+is+'"><span class="b601-row-ico">'+ico[L.t]+'</span><span class="b601-row-main"><span class="b601-row-title"><b>'+esc(E.types[kind]?.name||kind)+'</b><em class="b601-count-tag">×'+rooms.length+'</em></span><small>'+esc(line)+'</small>'+(best!=null?'<span class="b601-row-prog"><i style="width:'+Math.round(best*100)+'%"></i></span>':'')+'</span>'+(infos[0].unit?'<span class="b601-row-val"><small>'+infos[0].unit+(nums.length>1?'合計':'')+'</small><b>'+total.toLocaleString()+'</b></span>':'')+'<span class="b601-chev" aria-hidden="true">▾</span></button>'+(is?'<div class="b601-gbody">'+rooms.map((r,k)=>rowHTML(s,r,k+1)).join('')+'</div>':'')+'</div>'}
+ function listHTML(){const s=FrontierBase151.preview?.()||db,E=FrontierBaseEngine,rooms=s.base151.rooms.filter(r=>r.kind!=='medical'&&r.kind!=='hub'&&!E.types[r.kind]?.retired),kinds=[...new Set(rooms.map(r=>r.kind))].sort((a,b)=>(order.indexOf(a)+99)%99-(order.indexOf(b)+99)%99);
+  return kinds.map(k=>{const g=rooms.filter(r=>r.kind===k);return g.length>1?groupHTML(s,k,g):rowHTML(s,g[0],0)}).join('')}
+ document.addEventListener('click',e=>{const g=e.target.closest?.('[data-group601]');if(!g)return;const k=g.dataset.group601;open.has(k)?open.delete(k):open.add(k);const list=document.querySelector('.b601-list');if(list)list.innerHTML=listHTML()});
  const prevView=window.baseView;window.baseView=function(){const out=prevView.apply(this,arguments);try{decorate()}catch(e){console.error(e)}return out};
  /* 拖動：滑鼠立即拖動；觸控長按 350ms 後才進入拖動，期間以 touchmove 阻止頁面捲動。 */
  let drag=null,suppressClick=0;
