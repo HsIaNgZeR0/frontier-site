@@ -97,13 +97,13 @@ function containerRule(itemId){
  return {...structureRules[type],type,name:structureNames[type]};
 }
 const recipeInput={
- // v602 價格校正：點數商店月售價 ÷ 合成成本（素材＋龍門幣）≈ 1.75（藍75／銀120／金≈442點，1點≈69龍門幣）。
- T1:[1,1500,[['polyester',4,2],['iron',3,2]]],
- T2:[2,3000,[['device',4,4],['sugar',3,4]]],
- T3:[3,3000,[['rma',5,4],['device',4,4]]],
- T4:[4,10000,[['gel',6,2],['rock',5,5]]],
- B1:[2,1000,[['rock',4,6],['grindstone',5,3]]],
- B2:[3,10000,[['ketone',6,2],['manganese',5,5]]]
+ // v603 價格校正：合成成本（素材＋龍門幣）÷ 點數商店月售價 ≈ 1.75（合成無購買上限，故較貴；藍75／銀120／金≈442點，1點≈69龍門幣）。
+ T1:[1,3000,[['polyester',4,6],['iron',4,2]]],
+ T2:[2,6000,[['device',5,6],['sugar',4,6]]],
+ T3:[3,15000,[['rma',6,3],['device',5,8]]],
+ T4:[4,40000,[['gel',6,6],['rock',6,4]]],
+ B1:[2,30000,[['rock',5,10],['grindstone',6,2]]],
+ B2:[3,40000,[['ketone',6,6],['manganese',6,4]]]
 };
 // 房卡 K01–K10 開探索房間；開鎖裝置 T1–T4 開容器；炸藥 B1/B2 無房卡時破門。
 function accessKind(id){return id[0]==='K'?'keycard':id[0]==='T'?'lockpick':'explosive'}
