@@ -10,8 +10,6 @@ window.FrontierBaseLayout601=(()=>{
   factory:{c:'#ffc61a',en:'MANUFACTURING',t:'factory'},
   trade:{c:'#1e9fe6',en:'TRADING POST',t:'trade'},
   supply:{c:'#9ccc24',en:'POWER PLANT',t:'power'},
-  medical:{c:'#25c8c2',en:'DORMITORY',t:'dorm'},
-  dorm:{c:'#25c8c2',en:'DORMITORY',t:'dorm'},
   workshop:{c:'#e9a23b',en:'WORKSHOP',t:'workshop'},
   personnel:{c:'#5bb4f0',en:'OFFICE',t:'office'},
   dispatch:{c:'#f2781f',en:'RECEPTION ROOM',t:'reception'},
@@ -19,17 +17,16 @@ window.FrontierBaseLayout601=(()=>{
   cFactory:{c:'#c27cf2',en:'C-MANUFACTURING',t:'factory'},
   cTrade:{c:'#3fd1a0',en:'C-TRADING POST',t:'trade'},
   cSupply:{c:'#e85b7a',en:'C-POWER PLANT',t:'power'},
-  cDorm:{c:'#7d8cf0',en:'C-DORMITORY',t:'dorm'},
   logistics:{c:'#b9a3ff',en:'LOGISTICS',t:'template'}
  };
- const short={factory:'製造站',cFactory:'收容製造',trade:'貿易站',cTrade:'收容貿易',supply:'補給站',cSupply:'收容補給',dispatch:'外勤調度',commission:'委託中心',logistics:'素材調度',personnel:'人事部',workshop:'加工站',dorm:'宿舍',cDorm:'收容宿舍'};
+ const short={factory:'製造站',cFactory:'收容製造',trade:'貿易站',cTrade:'收容貿易',supply:'補給站',cSupply:'收容補給',dispatch:'外勤調度',commission:'委託中心',logistics:'素材調度',personnel:'人事部',workshop:'加工站'};
  const look=k=>looks[k]||{c:'#9aa7ad',en:'FACILITY',t:'template'};
  const size=kind=>kind==='hub'?{w:RW*2,h:RH*2}:{w:RW,h:RH};
  const overlap=(a,b)=>a.x<b.x+b.w&&b.x<a.x+a.w&&a.y<b.y+b.h&&b.y<a.y+a.h;
  const inside=p=>Number.isInteger(p.x)&&Number.isInteger(p.y)&&p.x>=0&&p.y>=0&&p.x+p.w<=COLS&&p.y+p.h<=ROWS;
  function kindOf(s,id){return s?.base151?.rooms?.find(r=>r.id===id)?.kind||(String(id).startsWith('room:hub')?'hub':'')}
  /* 解析完整佈局：存檔中有效的座標優先，其餘依舊 8×8 位置順序放入預設槽位。 */
- function resolve(s){const rooms=(s?.base151?.rooms||[]).filter(r=>r.kind!=='medical'),saved=s?.baseLayout601?.rooms||{},placed=[],out={};
+ function resolve(s){const rooms=(s?.base151?.rooms||[]).filter(r=>r.kind!=='medical'&&!FrontierBaseEngine.types[r.kind]?.retired),saved=s?.baseLayout601?.rooms||{},placed=[],out={};
   const put=(r,p)=>{const box={...p,...size(r.kind),id:r.id};placed.push(box);out[r.id]=box};
   for(const r of rooms){const p=saved[r.id];if(p){const box={x:p.x,y:p.y,...size(r.kind)};if(inside(box)&&!placed.some(b=>overlap(b,box)))put(r,p)}}
   const order=rooms.filter(r=>!out[r.id]).sort((a,b)=>(a.kind==='hub'?-1:0)-(b.kind==='hub'?-1:0)||a.y-b.y||a.x-b.x);
