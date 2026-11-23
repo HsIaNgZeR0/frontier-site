@@ -4,7 +4,7 @@
 window.FrontierContainmentYard=(()=>{
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const BASE='assets/enemy-spine/',UNIT=.12,ELITE=1.15,HOLD_MS=360,NAME_MAX=12,PHASES=2,MAX_ZOOM=3;
- let srcArr=null,mobs=[],raf=0,last=0,yard=null,gl=null,fx=null,shadow=null,bubble=null,focus=null,editing=false,cam={x:0,y:0,z:1},world={w:400,h:700},minZoom=.5;
+ /* 收容區畫面（標題列下方），與上方按鈕分開不重疊 */let stage=null,srcArr=null,mobs=[],raf=0,last=0,yard=null,gl=null,fx=null,shadow=null,bubble=null,focus=null,editing=false,cam={x:0,y:0,z:1},world={w:400,h:700},minZoom=.5;
  const species=new Map(),pointers=new Map(),perf={ms:0,n:0};
  /* 篩選：一區 普通／菁英，二區 普通／閃光／色違，三區 已命名／喜愛（勾了才限制，符合任一即可） */
  const filt={common:true,elite:true,normal:true,shiny:true,color:true,named:false,fav:false};
@@ -33,7 +33,7 @@ window.FrontierContainmentYard=(()=>{
  function region(i){const id=i.origin?.region;return FrontierExpedition.regions.find(r=>r.id===id)?.name||'舊收容檔案'}
  function view(){
   const n=instances().length;
-  return '<section class="yard" aria-label="收容管理場"><canvas class="yard-shadows" aria-hidden="true"></canvas><canvas class="yard-gl" aria-hidden="true"></canvas><canvas class="yard-fx" aria-hidden="true"></canvas><div class="yard-head"><button class="yard-back" data-yard-back aria-label="返回主頁"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><button class="yard-back yard-filter-btn" data-yard-filter-open aria-label="篩選" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 5h16l-6 7.5V19l-4 1.5v-8z"/></svg></button>'+filterHtml()+'<div class="yard-title"><small>CONTAINMENT YARD</small><b>收容管理場</b></div><span class="yard-count">收容個體 '+n+'</span></div>'+(n?'<p class="yard-hint">點擊查看 · 長按拖曳 · 左右滑動 · 雙指縮放</p>':'<p class="yard-empty">尚無收容個體。<br>於遠征中削弱敵人並使用收容裝置，成功撤離後會在這裡出現。</p>')+'<div class="yard-zoom"><button data-yard-zoom="1" aria-label="放大">＋</button><button data-yard-zoom="-1" aria-label="縮小">－</button></div><div class="yard-layer"></div></section>';
+  return '<section class="yard" aria-label="收容管理場"><div class="yard-stage"><canvas class="yard-shadows" aria-hidden="true"></canvas><canvas class="yard-gl" aria-hidden="true"></canvas><canvas class="yard-fx" aria-hidden="true"></canvas><div class="yard-layer"></div></div><div class="yard-head"><button class="yard-back" data-yard-back aria-label="返回主頁"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><button class="yard-back yard-filter-btn" data-yard-filter-open aria-label="篩選" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 5h16l-6 7.5V19l-4 1.5v-8z"/></svg></button>'+filterHtml()+'<div class="yard-title"><small>CONTAINMENT YARD</small><b>收容管理場</b></div><span class="yard-count">收容個體 '+n+'</span></div>'+(n?'<p class="yard-hint">點擊查看 · 長按拖曳 · 左右滑動 · 雙指縮放</p>':'<p class="yard-empty">尚無收容個體。<br>於遠征中削弱敵人並使用收容裝置，成功撤離後會在這裡出現。</p>')+'<div class="yard-zoom"><button data-yard-zoom="1" aria-label="放大">＋</button><button data-yard-zoom="-1" aria-label="縮小">－</button></div></section>';
  }
  /* ---------- Spine 共用渲染 ---------- */
  function makeShader(c){
@@ -81,19 +81,19 @@ window.FrontierContainmentYard=(()=>{
  /* 十個分區 A～J 橫向排列。由 A 開始填，每區先放滿 15～30 隻（數量多時每區平均分擔）才往下一區，避免散布到後段 */
  const ZONES=10;
  function layoutWorld(n){
-  const r=yard.getBoundingClientRect(),caps=[];let left=n;
+  const r=stage.getBoundingClientRect(),caps=[];let left=n;
   for(let z=0;z<ZONES&&left>0;z++){const cap=z===ZONES-1?left:Math.max(15+Math.floor(Math.random()*16),Math.ceil(n/ZONES));caps.push(Math.min(cap,left));left-=caps[z]}
   const peak=Math.max(30,...caps),s=clamp(Math.sqrt(peak/60),1,1.6),zw=Math.round(r.width*s);
   world={w:zw*ZONES,h:Math.round(r.height*s),f:s,zw,caps,used:Math.max(1,caps.length)};
   /* 最多縮到剛好看見一區的上下高度，其他分區用左右滑動查看 */minZoom=Math.min(1,r.height/world.h);
  }
  function spread(n){
-  const m=30,pts=[],h=world.h-m-70;
+  const m=30,pts=[],h=world.h-m-40;
   world.caps.forEach((cap,z)=>{
    const x0=z*world.zw+m,w=world.zw-m*2,cols=Math.max(1,Math.round(Math.sqrt(cap*w/h))),rows=Math.max(1,Math.ceil(cap/cols)),cells=[];
    for(let r=0;r<rows;r++)for(let c=0;c<cols;c++)cells.push([c,r]);
    for(let k=cells.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[cells[k],cells[j]]=[cells[j],cells[k]]}
-   for(const [c,r] of cells.slice(0,cap))pts.push({x:x0+(c+rnd(.15,.85))*w/cols,y:70+(r+rnd(.2,.95))*h/rows,zone:z});
+   for(const [c,r] of cells.slice(0,cap))pts.push({x:x0+(c+rnd(.15,.85))*w/cols,y:40+(r+rnd(.2,.95))*h/rows,zone:z});
   });
   return pts;
  }
@@ -101,19 +101,19 @@ window.FrontierContainmentYard=(()=>{
   stop();yard=document.querySelector('.yard');if(!yard)return;
   const navTop=document.querySelector('#nav')?.getBoundingClientRect().top;if(navTop>0&&navTop<innerHeight)yard.style.bottom=(innerHeight-navTop)+'px';
   const removed=purge();if(removed){yard.querySelector('.yard-count').textContent='收容個體 '+instances().length;toast('已移除 '+removed+' 隻沒有模型的收容個體。')}
-  fx=yard.querySelector('.yard-fx');shadow=yard.querySelector('.yard-shadows');
+  stage=yard.querySelector('.yard-stage');fx=yard.querySelector('.yard-fx');shadow=yard.querySelector('.yard-shadows');
   const list=instances();layoutWorld(list.length);const pts=spread(list.length);cam={x:0,y:world.h/2,z:1,vx:0,vy:0};clampCam();
   mobs=list.map((i,k)=>{const u=FrontierCapture.units[i.species];return{i,v:variantOf(i),sp:null,phase:k%PHASES,zone:pts[k].zone,x:pts[k].x,y:pts[k].y,tx:pts[k].x,ty:pts[k].y,dir:Math.random()<.5?-1:1,mode:'idle',wait:rnd(.2,4),speed:rnd(9,16)*(u.rarity>=3?.9:1),s:UNIT*(u.rarity>=3?ELITE:1)*(i.mutation?1.05:1),hop:0,lift:0,motion:'idle',seed:Math.random()*10}});
   updateCount();loadRuntime().then(ok=>{if(!ok||!yard?.isConnected)return;if(!setupGL()){toast('此裝置不支援 WebGL，無法顯示模型。');return}for(const m of mobs)m.sp=speciesOf(m.i.species);last=0;raf=requestAnimationFrame(tick)});
  }
  function stop(){if(raf)cancelAnimationFrame(raf);raf=0;mobs=[];focus=null;bubble=null;editing=false;gesture=null;pointers.clear();try{ctx?.gl.getExtension('WEBGL_lose_context')?.loseContext()}catch{}ctx=null;renderer=null;assets=null;species.clear()}
  function clampCam(){
-  const vw=yard.clientWidth/cam.z,vh=yard.clientHeight/cam.z;
+  const vw=stage.clientWidth/cam.z,vh=stage.clientHeight/cam.z;
   cam.x=vw>=world.w?world.w/2:clamp(cam.x,vw/2,world.w-vw/2);cam.y=vh>=world.h?world.h/2:clamp(cam.y,vh/2,world.h-vh/2);
  }
- const toWorld=(cx,cy)=>{const r=yard.getBoundingClientRect();return{x:cam.x+(cx-r.left-r.width/2)/cam.z,y:cam.y+(cy-r.top-r.height/2)/cam.z}};
- const toScreen=(x,y)=>({x:(x-cam.x)*cam.z+yard.clientWidth/2,y:(y-cam.y)*cam.z+yard.clientHeight/2});
- function zoomAt(z,sx,sy){const r=yard.getBoundingClientRect();sx??=r.left+r.width/2;sy??=r.top+r.height/2;const before=toWorld(sx,sy);cam.z=clamp(z,minZoom,MAX_ZOOM);const after=toWorld(sx,sy);cam.x+=before.x-after.x;cam.y+=before.y-after.y;clampCam()}
+ const toWorld=(cx,cy)=>{const r=stage.getBoundingClientRect();return{x:cam.x+(cx-r.left-r.width/2)/cam.z,y:cam.y+(cy-r.top-r.height/2)/cam.z}};
+ const toScreen=(x,y)=>({x:(x-cam.x)*cam.z+stage.clientWidth/2,y:(y-cam.y)*cam.z+stage.clientHeight/2});
+ function zoomAt(z,sx,sy){const r=stage.getBoundingClientRect();sx??=r.left+r.width/2;sy??=r.top+r.height/2;const before=toWorld(sx,sy);cam.z=clamp(z,minZoom,MAX_ZOOM);const after=toWorld(sx,sy);cam.x+=before.x-after.x;cam.y+=before.y-after.y;clampCam()}
  /* 個體外框（世界座標）：腳底為 (x,y) */
  function box(m){const b=m.sp?.state==='ready'?m.sp.bounds:{x:-80,y:0,w:160,h:200},w=b.w*m.s,h=(b.y+b.h)*m.s,cx=m.x+(b.x+b.w/2)*m.s*(m.dir>0?-1:1);return{l:cx-w/2,r:cx+w/2,t:m.y-h-m.hop-m.lift,b:m.y+4,cx,w,h}}
  function hit(wx,wy){let best=null;for(const m of mobs){if(!shown(m))continue;const b=box(m);if(wx>=b.l&&wx<=b.r&&wy>=b.t&&wy<=b.b&&(!best||m.y>best.y))best=m}return best}
@@ -133,7 +133,7 @@ window.FrontierContainmentYard=(()=>{
   if(m.hop>0)m.hop=Math.max(0,m.hop-dt*50);
   const held=gesture?.type==='drag'&&gesture.m===m;m.lift+=((held?10:0)-m.lift)*Math.min(1,dt*14);
   if(held||focus===m){m.motion='idle';return}
-  if(m.mode==='idle'){m.motion='idle';m.wait-=dt;if(m.wait<=0){const far=Math.random()<.25,r=far?rnd(90,200):rnd(25,90),a=rnd(0,Math.PI*2);m.tx=clamp(m.x+Math.cos(a)*r,m.zone*world.zw+24,(m.zone+1)*world.zw-24);m.ty=clamp(m.y+Math.sin(a)*r*.6,90,world.h-10);m.mode='walk'}}
+  if(m.mode==='idle'){m.motion='idle';m.wait-=dt;if(m.wait<=0){const far=Math.random()<.25,r=far?rnd(90,200):rnd(25,90),a=rnd(0,Math.PI*2);m.tx=clamp(m.x+Math.cos(a)*r,m.zone*world.zw+24,(m.zone+1)*world.zw-24);m.ty=clamp(m.y+Math.sin(a)*r*.6,50,world.h-10);m.mode='walk'}}
   else{const dx=m.tx-m.x,dy=m.ty-m.y,d=Math.hypot(dx,dy);if(d<1.5){m.mode='idle';m.wait=rnd(1.5,7)}else{const s=Math.min(d,m.speed*dt);m.x+=dx/d*s;m.y+=dy/d*s;if(Math.abs(dx)>.5)m.dir=dx<0?-1:1;m.motion='move'}}
  }
  function sizeCanvas(c,dpr){const w=Math.round(c.clientWidth*dpr),h=Math.round(c.clientHeight*dpr);if(c.width!==w||c.height!==h){c.width=w;c.height=h}return[w,h]}
@@ -158,7 +158,7 @@ window.FrontierContainmentYard=(()=>{
   (sp.sheets??={})[v||'']={sheet,cw,ch,ox,fy:ch-foot,s,durs};
  }
  function draw(dt){
-  const dpr=Math.min(2,devicePixelRatio||1),W=yard.clientWidth,H=yard.clientHeight;if(!W||!H)return;
+  const dpr=Math.min(2,devicePixelRatio||1),W=stage.clientWidth,H=stage.clientHeight;if(!W||!H)return;
   const vl=cam.x-W/2/cam.z-60,vr=cam.x+W/2/cam.z+60,vt=cam.y-H/2/cam.z-20,vb=cam.y+H/2/cam.z+160;
   const vis=mobs.filter(m=>shown(m)&&m.x>vl&&m.x<vr&&m.y>vt&&m.y<vb).sort((a,b)=>a.y-b.y);
   const far=vis.length>60||cam.z<.75;
@@ -234,7 +234,7 @@ window.FrontierContainmentYard=(()=>{
   bubble.innerHTML=(editing?'<form class="yard-rename"><input maxlength="'+NAME_MAX+'" value="'+esc(i.nickname||'')+'" placeholder="'+esc(u.name)+'" aria-label="自訂名稱"><button type="submit">確定</button></form>':'<div class="yard-name"><button class="yard-heart'+(i.favorite?' is-on':'')+'" data-yard-heart aria-pressed="'+!!i.favorite+'" aria-label="喜愛"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7.5-4.6-9-9.2C2 7.4 4.3 4.5 7.4 4.5c2 0 3.6 1.1 4.6 2.7 1-1.6 2.6-2.7 4.6-2.7 3.1 0 5.4 2.9 4.4 6.3-1.5 4.6-9 9.2-9 9.2z"/></svg></button><b>'+esc(nameOf(i))+'</b><button class="yard-pen" data-yard-pen aria-label="自訂名稱"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4"/></svg></button></div>')+(i.nickname?'<small class="yard-species">'+esc(u.name+(V()?.suffix(v)||''))+'</small>':'')+'<dl><dt>收容時間</dt><dd>'+when(i.capturedAt)+'</dd><dt>收容難度</dt><dd>'+difficulty(i)+'</dd><dt>收容地區</dt><dd>'+esc(region(i))+'</dd></dl>';
   if(editing){const input=bubble.querySelector('input');input.focus();input.select()}
  }
- function aim(){const fw=yard.clientWidth,bw=bubble.offsetWidth,bh=bubble.offsetHeight,b=box(focus),top=toScreen(b.cx,b.t),foot=toScreen(b.cx,b.b);let x=top.x-bw/2,y=top.y-bh-10;x=Math.max(8,Math.min(fw-bw-8,x));const below=y<64;if(below)y=foot.y+10;bubble.style.transform='translate3d('+x+'px,'+y+'px,0)';bubble.style.setProperty('--tail',(top.x-x)+'px');bubble.classList.toggle('is-below',below)}
+ function aim(){const fw=stage.clientWidth,bw=bubble.offsetWidth,bh=bubble.offsetHeight,b=box(focus),top=toScreen(b.cx,b.t),foot=toScreen(b.cx,b.b);let x=top.x-bw/2,y=top.y-bh-10;x=Math.max(8,Math.min(fw-bw-8,x));const below=y<8;if(below)y=foot.y+10;bubble.style.transform='translate3d('+x+'px,'+y+'px,0)';bubble.style.setProperty('--tail',(top.x-x)+'px');bubble.classList.toggle('is-below',below)}
  function close(){bubble?.remove();bubble=null;focus=null;editing=false}
  function rename(value){
   const i=focus?.i;if(!i)return;const name=String(value||'').replace(/[\u0000-\u001f<>]/g,'').trim().slice(0,NAME_MAX);
@@ -256,7 +256,7 @@ window.FrontierContainmentYard=(()=>{
   if(!pointers.has(e.pointerId))return;pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(!gesture)return;e.preventDefault();
   if(gesture.type==='pinch'&&pointers.size>=2){const [a,b]=[...pointers.values()],d=Math.hypot(a.x-b.x,a.y-b.y);zoomAt(gesture.z*d/Math.max(1,gesture.d),(a.x+b.x)/2,(a.y+b.y)/2);return}
   if(e.pointerId!==gesture.id)return;
-  if(gesture.type==='drag'){const m=gesture.m,w=toWorld(e.clientX,e.clientY);m.x=clamp(w.x+gesture.off.x,20,world.w-20);m.y=clamp(w.y+gesture.off.y,70,world.h-6);if(Math.abs(e.movementX||0)>1)m.dir=e.movementX<0?-1:1;return}
+  if(gesture.type==='drag'){const m=gesture.m,w=toWorld(e.clientX,e.clientY);m.x=clamp(w.x+gesture.off.x,20,world.w-20);m.y=clamp(w.y+gesture.off.y,40,world.h-6);if(Math.abs(e.movementX||0)>1)m.dir=e.movementX<0?-1:1;return}
   if(Math.hypot(e.clientX-gesture.x,e.clientY-gesture.y)>8){gesture.moved=true;clearTimeout(gesture.timer);gesture.type='pan'}
   if(gesture.type==='pan'){const now=performance.now(),dtp=Math.max(1,now-(gesture.lt||now-16));gesture.vx=(e.clientX-(gesture.lx??gesture.x))/dtp*1000;gesture.vy=(e.clientY-(gesture.ly??gesture.y))/dtp*1000;gesture.lx=e.clientX;gesture.ly=e.clientY;gesture.lt=now;cam.x=gesture.cam.x-(e.clientX-gesture.x)/cam.z;cam.y=gesture.cam.y-(e.clientY-gesture.y)/cam.z;clampCam()}
  }

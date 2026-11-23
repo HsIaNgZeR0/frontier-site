@@ -2,7 +2,8 @@
 body.yard-mode{overflow:hidden}
 body.yard-mode>header{visibility:hidden}
 .yard{position:fixed;inset:0 0 64px 0;z-index:60;overflow:hidden;background:#070b0e;color:#e8eef2;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
-.yard>canvas{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
+.yard-stage{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 92px);bottom:0;overflow:hidden;border-top:1px solid rgba(127,164,182,.25)}
+.yard-stage>canvas{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
 .yard-shadows{background-image:none}
 .yard-layer{position:absolute;inset:0;pointer-events:none}
 .yard-layer>*{pointer-events:auto}
