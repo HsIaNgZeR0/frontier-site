@@ -86,7 +86,7 @@ globalThis.FrontierYan=(()=>{
   if(m.kind==='sui'&&t.yan75==='part'&&loss>0&&b&&living(b)){const n=X.limitLoss(s,b,Math.min(b.hp,loss));b.hp=Math.max(0,b.hp-n);const k=t.part;m.taken[k]=m.taken[k]?.turn===s.turn?{turn:s.turn,n:m.taken[k].n+loss}:{turn:s.turn,n:loss};if(m.taken[k].n>=b.max*.08)m.over[k]=s.turn;if(b.hp<=0)baseAfter(s,b,n,'true',a);}
   if(m.kind==='sui'&&isBoss(s,t)&&loss>0){m.taken.head=m.taken.head?.turn===s.turn?{turn:s.turn,n:m.taken.head.n+loss}:{turn:s.turn,n:loss};if(m.taken.head.n>=t.max*.08)m.over.head=s.turn;}
   if(m.kind==='sui'&&b){for(const p of s.enemies.filter(e=>e.yan75==='part'&&living(e))){p.max=b.max;p.hp=b.hp;}if(living(b)&&!m.allOutDone&&b.hp<=b.max*.35){m.allOutDone=true;m.allOutPending=true;summon(s,b,2,4);}}
-  if(m.kind==='suixiang'&&isBoss(s,t)&&m.yanRevive){delete m.yanRevive;m.form++;resetBoss(t);t.hp=Math.floor(t.max*(m.form===2?.75:.6));t.atk=Math.floor(t.baseAtk75*(1+.15*(m.form-1)));t.damageType=m.form===2?'physical':'arts';m.hiddenTurn=s.turn;m.breath=0;}
+  if(m.kind==='suixiang'&&isBoss(s,t)&&m.yanRevive){delete m.yanRevive;m.form++;resetBoss(t);t.hp=Math.floor(t.max*(m.form===2?.7:.5));t.atk=Math.floor(t.baseAtk75*(1+.15*(m.form-1)));t.damageType=m.form===2?'physical':'arts';m.hiddenTurn=s.turn;m.breath=0;}
   if(m.kind==='chong'&&isBoss(s,t)){if(m.yanRevive){delete m.yanRevive;m.form='water';m.waterUntil=s.turn+2;resetBoss(t);t.hp=Math.max(1,t.hp);}
    else if(loss>0&&m.form==='chaos'){m.hits++;if(m.hits%4===0&&m.sheds<4){m.sheds++;t.atk=Math.floor(t.atk*.88);t.def=Math.floor((t.def||0)*.8);t.res=Math.max(0,(t.res||0)-5);m.blight=Math.min(6,m.blight+1);}}
    else if(loss>0&&m.form==='clarity'&&a&&!m.marks.includes(a.uid))m.marks.push(a.uid);}
@@ -113,7 +113,7 @@ globalThis.FrontierYan=(()=>{
   if(m&&isBoss(s,e)){
    if(m.kind==='suixiang'&&m.hiddenTurn===s.turn)return false;
    if(m.kind==='chong'&&m.form==='water')return false;
-   if(m.kind==='suixiang'&&m.form===3&&m.forms===3){const order=team(s),raw=e.atk*.6*(1+.25*m.breath);order.forEach((a,i)=>{const shields=order.slice(0,i).filter(x=>(x.block||0)>0).length;hurtOne(s,a,raw*Math.max(.4,1-.2*shields),'arts');});m.breath=0;m.lastBreath=s.turn;return false;}}
+   if(m.kind==='suixiang'&&m.form===3&&m.forms===3){const order=team(s),raw=e.atk*.45*(1+.25*m.breath);order.forEach((a,i)=>{const shields=order.slice(0,i).filter(x=>(x.block||0)>0).length;hurtOne(s,a,raw*Math.max(.4,1-.2*shields),'arts');});m.breath=0;m.lastBreath=s.turn;return false;}}
   return baseBeforeEnemy(s,e);};
 
  /* ---------- 首領攻擊 ---------- */
@@ -147,7 +147,7 @@ globalThis.FrontierYan=(()=>{
   if(m.kind==='suixiang'){
    for(const p of s.enemies.filter(e=>e.yan75==='phosphor'&&living(e)&&e.due75<=s.turn)){p.hp=0;p.mechanicRemoved=true;if(m.form<3)b.hp=Math.min(b.max,b.hp+Math.floor(b.max*.05));else m.breath=Math.min(3,m.breath+1);}
    if(s.turn%2===1&&!s.enemies.some(e=>e.yan75==='phosphor'&&living(e)))extra(s,b,'phosphor',{species:'enemy_1211_msfsui',name:'磷火',hp:3,max:3,due75:s.turn+1});
-   if(s.turn>=24)hurtAll(s,30*(s.turn-23),'true');}
+   if(s.turn>=30)hurtAll(s,30*(s.turn-29),'true');}
   if(m.kind==='ya'){m.winter=Math.min(3,(m.winter||0)+1);if(m.phase===1?s.turn%2===0:s.turn%3===0)summon(s,b,m.phase===1&&m.winter>=3?2:1,m.phase===2?2:3);
    if(m.phase===1){const mirage=s.enemies.find(e=>e.yan75==='mirage'&&living(e));if(mirage&&mirage.due75<=s.turn){mirage.hp=0;mirage.mechanicRemoved=true;b.hp=Math.min(b.max,b.hp+Math.floor(b.max*.06));m.teleports=(m.teleports||0)+1;}else if(!mirage&&s.turn%4===1){const hp=Math.max(100,Math.floor(b.max*.08));extra(s,b,'mirage',{species:'frontier75_yan_mirage',name:'蜃景',hp,max:hp,due75:s.turn+2});}}
    else{let clone=s.enemies.find(e=>e.yan75==='wangjing');if(!clone){const hp=Math.max(100,Math.floor(b.max*.35));clone=extra(s,b,'wangjing',{species:'frontier75_yan_wangjing',name:'妄境',hp,max:hp,atk:Math.max(30,Math.floor(b.baseAtk75*.6)),res:b.res||0,intent:'attack',damageType:'arts',action:{kind:'attack',damageType:'arts'}});}
@@ -182,7 +182,7 @@ globalThis.FrontierYan=(()=>{
 
  /* ---------- 說明 ---------- */
  const NOTE={
-  suixiang:'歲相：三個形態（中段首領兩個）。受到隊伍最前與最後一名幹員（上下兩側）的傷害降低40%。\n第一形態【遠山驚雷】：法術攻擊波及共3名幹員。\n第二形態【天墜】：對單體兩次物理傷害，並附加逐次遞增的灼燒。\n第三形態【十方吐納】：對全隊法術傷害；排在前方且帶護盾的幹員，每名使後方幹員受到的傷害降低20%（最多60%）。\n每次被擊倒後隱去一回合，再以下一形態重現（第二形態75%、第三形態60%生命），攻擊提高。\n磷火：場上沒有磷火時，每兩回合出現一團，需3次命中擊破（任何傷害皆只算1次）；未擊破則在下個敵方階段被吸收，第一／二形態恢復5%最大HP，第三形態使【十方吐納】增強25%。\n久戰：第24回合起，每回合結束全隊受到真實傷害，第24回合30點，之後每回合再加30。',
+  suixiang:'歲相：三個形態（中段首領兩個）。受到隊伍最前與最後一名幹員（上下兩側）的傷害降低40%。\n第一形態【遠山驚雷】：法術攻擊波及共3名幹員。\n第二形態【天墜】：對單體兩次物理傷害，並附加逐次遞增的灼燒。\n第三形態【十方吐納】：對全隊法術傷害；排在前方且帶護盾的幹員，每名使後方幹員受到的傷害降低20%（最多60%）。\n每次被擊倒後隱去一回合，再以下一形態重現（第二形態70%、第三形態50%生命），攻擊提高。\n磷火：場上沒有磷火時，每兩回合出現一團，需3次命中擊破（任何傷害皆只算1次）；未擊破則在下個敵方階段被吸收，第一／二形態恢復5%最大HP，第三形態使【十方吐納】增強25%。\n久戰：第30回合起，每回合結束全隊受到真實傷害，第30回合30點，之後每回合再加30。',
   ya:'「睚」：經過之處生成無念之冬，第一形態每兩回合召喚增援（冬意滿3層時一次2名），第二形態每三回合召喚1名。\n第一形態【春生】：每四回合留下蜃景，兩回合內未擊破，「睚」便傳送過去並恢復6%最大HP。\n半血起第二形態：遠程法術攻擊波及2名幹員，並召出妄境。妄境被擊破時「睚」失去15%最大生命；「睚」倒下時妄境消散。\n【裁剪春秋】每第三回合全隊受到35法術傷害，「睚」與妄境交換位置：妄境存活時，下一回合「睚」無法被攻擊；其餘回合【天地如自】全隊受到20法術傷害。',
   chong:'「祟」混沌：每受到4次傷害蛻皮一次（最多4次），攻擊、防禦、法抗降低並污染田地，病害＋1。\n首次生命歸零時化入水中兩回合：無敵、不攻擊並持續召喚敵人，之後以明識形態完整重生。\n明識：攻擊提高30%、物理二連擊、免疫控制；標記所有攻擊過它的幹員，被標記者倒下時病害＋3。\n【如梭】病害達3層時凝成長槍，優先擲向被標記的幹員造成大量法術傷害，並清空病害。\n病害每層每回合使全隊受到6法術傷害。1 AP引水沖刷：清除病害，本回合「祟」受到傷害＋30%；田地無病害時受到傷害＋15%。',
   sui:'歲：首、左爪、右爪、尾共享生命，攻擊任何部位都會扣除歲的生命。\n部位依序施放技能，施放的回合會抬起、無法被攻擊：\n①【十方懟怒】首：法術噴火命中最前方幹員並波及全隊（減半），附加灼燒，同時引爆場上「未熄」。\n②【掩月】【蔽日】雙爪：高額物理爪擊最後方幹員並波及共3人。\n③【天傾地陷】尾：對生命比例最低者連續戳擊三次，擊倒幹員會生成「未熄」。\n④休整：普通法術攻擊。\n單一部位一回合內受到超過8%最大生命的傷害，會抬起脫離戰鬥至回合結束。\n鎮歲柱：以攻擊充能。首柱使歲攻擊－25%並縮小噴火範圍；爪柱使法抗－20並削弱爪擊；尾柱使最大生命－15%並減少戳擊。任何柱子立起前，歲處於全盛，受到的傷害降低30%。\n【柱折維絕】生命首次低於35%時召喚增援，下一次攻擊全隊受到強化衝擊。'};
@@ -204,5 +204,97 @@ globalThis.FrontierYan=(()=>{
   if(m.kind==='chong')return ({chaos:'混沌',water:'化入水中',clarity:'明識'})[m.form]+' · 病害 '+m.blight+' · 蛻皮 '+m.sheds+'/4';
   if(m.kind==='sui')return ['十方懟怒','掩月・蔽日','天傾地陷','休整'][rotation(b)]+' · 鎮歲柱 '+m.pillars.filter(Boolean).length+'/3';return '';}
  function label(m){return m&&({suixiang:'歲相・三形態',ya:'無念之冬',chong:'田地病害',sui:'鎮歲柱'})[m.kind]||'';}
+ /* ================= 大炎普通／菁英敵人：逐種還原原作能力（claude57c） ================= */
+ const fam=e=>String(e?.species||'').replace(/^enemy_/,'').replace(/_\d+$/,''),v2=e=>/_2$/.test(e?.species||'');
+ const POL=['明','晦'],epol=e=>(parseInt(String(e.uid).replace(/\D/g,''),10)||0)%2;
+ const order=s=>(s.team||[]).filter(a=>!a.friendly75);
+ const apol=(s,a)=>((order(s).findIndex(x=>x.uid===a?.uid)+(a?.yanFlip?1:0))%2+2)%2;
+ const blightGet=s=>s.region75?.kind==='chong'?s.region75.blight||0:s.yanBlight||0;
+ const blightAdd=(s,n)=>{if(s.region75?.kind==='chong')s.region75.blight=Math.max(0,Math.min(6,(s.region75.blight||0)+n));else s.yanBlight=Math.max(0,Math.min(6,(s.yanBlight||0)+n));};
+ const SPAWN={'1195_sfyin':['enemy_1196_msfyin',2],'1197_sfshu':['enemy_1198_msfshu',2],'1203_sfhu':['enemy_1204_msfhu',2],'1205_sfpin':['enemy_1206_msfpin',1],'1209_sfden':['enemy_1210_msfden',1],'1199_sfjin':['enemy_1200_msfjin',1],'1201_sfzhi':['enemy_1202_msfzhi',2],'1207_sfji':['enemy_1208_msfji',1],'10050_cjmeat':['enemy_10059_cjgfod',1]};
+ const TAG={'1296_ymknif':'emerge','1300_ymmir':'peeper'};
+ function tag(s){for(const e of s.enemies||[]){const k=TAG[fam(e)];if(k&&!e.mob75)e.mob75={kind:k,round:0};}}
+ function items(s,parent,id,n){if(!units()[id])return;for(let i=0;i<n;i++){if(s.enemies.filter(living).length>=6)return;const hits=units()[id].sourceStats.hp,uid=newUid(s);push(s,{id:uid,uid,species:id,name:units()[id].name,hp:hits,max:hits,atk:0,def:0,res:0,yanItem:true,due75:s.turn+2,intent:'defend',damageType:'none',boss:false,elite:false,action:{kind:'defend',damageType:'none'},mechanicTier:parent.mechanicTier||0});}}
+ // 命中計次：器物
+ const i2=X.intercept;X.intercept=function(s,a,t,raw,type,meta={}){if(t?.yanItem){const n=raw>0&&!meta.equipmentDerived139?1:0;t.hp=Math.max(0,t.hp-n);if(t.hp<=0)t.mechanicRemoved=true;return {raw,damage:n,absorbed:0,hpLoss:n,hp:t.hp,block:0,poiseBreakValue:0};}return i2(s,a,t,raw,type,meta);};
+ const l2=X.limitLoss;X.limitLoss=function(s,t,loss){if(t?.yanItem)return Math.min(loss,1,t.hp);return l2(s,t,loss);};
+ // 受到傷害
+ const b2=X.beforeDamage;X.beforeDamage=function(s,t,raw,type,a){tag(s);let n=b2(s,t,raw,type,a);if(!t||t.device75||n<=0)return n;const k=fam(t);let f=1;
+  if(['1199_sfjin','1392_dhshld'].includes(k))f*=1.25;if(['10052_cjshld','1125_spshld'].includes(k))f*=1.3;
+  if(['1126_spslme','1127_sptrkg'].includes(k)&&a&&apol(s,a)!==epol(t))f*=.5;
+  if(['1390_dhsbr','1395_dhxts'].includes(k)&&blightGet(s)>0)f*=.6;
+  if(k==='1299_ymkilr'&&s.turn===1)f*=.4;
+  if(t.yanVeilTurn===s.turn)f*=.5;
+  return Math.max(0,Math.floor(n*f));};
+ // 攻擊
+ const n2=X.incoming;X.incoming=function(s,e,victim,raw,special=false){tag(s);const r={...n2(s,e,victim,raw,special)};const k=fam(e);
+  if(k==='1129_spklr'&&victim&&apol(s,victim)!==epol(e))r.raw=Math.floor(r.raw*1.6);
+  if(k==='1207_sfji'){e.yanBlades??=v2(e)?4:3;if(e.yanBlades>0){e.yanBlades--;e.atk=Math.floor(e.atk*1.1);r.raw=Math.floor(r.raw*1.25);}}
+  if(k==='1299_ymkilr'&&s.turn>=2&&!e.yanAmbushed){e.yanAmbushed=true;r.raw=Math.floor(r.raw*1.6);}
+  if(['1301_ymcnon'].includes(k)&&(victim?.block||0)>0)r.raw=Math.floor(r.raw*1.3);
+  if(k==='1395_dhxts'&&(victim?.block||0)>0)r.raw=Math.floor(r.raw*1.5);
+  if(k==='1391_dhbow'){e.damageType=blightGet(s)>0?'arts':'physical';}
+  if(k==='1393_dhele'){r.splash=Math.max(r.splash||0,3);e.damageType=blightGet(s)>0?'arts':'physical';}
+  if(k==='10056_cjfish'&&victim)r.raw=Math.floor(r.raw*(1+.1*Math.max(0,order(s).findIndex(x=>x.uid===victim.uid))));
+  if(k==='10165_tjggb'){r.raw=Math.floor(r.raw*.45);r.hits75=3;r.splash=0;}
+  if(victim?.yanMark>0){victim.yanMark--;r.raw=Math.floor(r.raw*1.15);}
+  return r;};
+ // 目標
+ const t2=X.target;X.target=function(s,e,list){const k=fam(e);
+  if(['1124_spbow','1129_spklr'].includes(k)){const opp=list.filter(a=>apol(s,a)!==epol(e));if(opp.length)return opp[0];}
+  if(['1301_ymcnon','10165_tjggb'].includes(k))return list.slice().sort((a,b)=>(b.block||0)-(a.block||0))[0];
+  if(k==='10056_cjfish')return list.at(-1);
+  if(k==='2104_dycast')return list.slice().sort((a,b)=>a.hp/a.max-b.hp/b.max)[0];
+  return t2(s,e,list);};
+ // 命中後
+ const h2=X.afterHit;X.afterHit=function(s,e,a,special,loss){h2(s,e,a,special,loss);if(!a)return;const k=fam(e);
+  if(k==='2103_dykens'){e.yanTalisman??=3;if(e.yanTalisman>0){e.yanTalisman--;a.yanMark=Math.min(3,(a.yanMark||0)+1);}}
+  if(k==='2104_dycast')a.yanMark=Math.min(3,(a.yanMark||0)+1);
+  if(k==='1205_sfpin'&&loss>0){e.yanHits=(e.yanHits||0)+1;if(e.yanHits%3===0){e.yanBurn=Math.min(3,(e.yanBurn||0)+1);globalThis.FrontierMedicine?.inflict(a,'burn',e.yanBurn);}}
+  if(k==='1128_spmage'&&special)a.yanFlip=!a.yanFlip;
+  if(k==='1393_dhele'&&blightGet(s)>0)blightAdd(s,1);};
+ // 敵方階段開始：光環、隱匿、密語儀、操戈、蓄力
+ const g2=X.begin;X.begin=function(s){tag(s);const st=s.yanState??={};const fresh=st.turn!==s.turn;g2(s);if(!fresh)return;st.turn=s.turn;
+  for(const e of s.enemies.filter(x=>living(x)&&!x.yanItem)){const k=fam(e),others=s.enemies.filter(x=>x!==e&&living(x)&&!x.yanItem&&!x.device75);
+   if(k==='10054_cjhot'){delete e.skipNextOrdinaryAction;e.statuses=(e.statuses||[]).filter(x=>!['stun','sleep','freeze'].includes(x.id));for(const a of team(s)){hurtOne(s,a,v2(e)?20:15,'arts');globalThis.FrontierMedicine?.inflict(a,'burn',1);}}
+   if(k==='1209_sfden'&&s.turn%2===0)for(const o of others)o.yanVeilTurn=s.turn+1;
+   if(k==='1297_ymflag'&&s.turn>=2&&!e.yanFlagDone){e.yanFlagDone=true;for(const o of others)o.atk=Math.floor(o.atk*(v2(e)?1.2:1.15));}
+   if(k==='10164_tjgxb'&&s.turn>=2&&!e.yanJoined){const ally=others.filter(o=>(o.yanBuffs||0)<3).sort((a,b)=>b.atk-a.atk)[0];if(ally){e.yanJoined=true;ally.yanBuffs=(ally.yanBuffs||0)+1;ally.atk+=Math.floor(e.atk*.5);ally.def=(ally.def||0)+(v2(e)?15:10);ally.res=(ally.res||0)+5;e.hp=0;e.mechanicRemoved=true;}}
+   if(k==='1128_spmage'&&s.turn%2===0&&!e.special){e.special={id:'yan:'+e.uid+':'+s.turn,kind:'charge',due:s.turn+1,threshold:Math.max(100,Math.floor(e.max*.2)),damage:0,control:0,points:2+(e.mechanicTier||0)*2,solved:false};if(e.action){e.action.breakable=true;e.action.breakWindow=true;}}}};
+ // 倒下：器物、爆炸、病害、乘客
+ const d2=X.afterDamage;X.afterDamage=function(s,t,loss,type,a){d2(s,t,loss,type,a);if(!t||t.hp>0||t.yanDead||t.mechanicRemoved||t.yanItem||t.captured)return;t.yanDead=true;const k=fam(t),sp=SPAWN[k];
+  if(sp){const id=sp[0]+(v2(t)&&units()[sp[0]+'_2']?'_2':'');items(s,t,id,k==='1207_sfji'?Math.max(1,Math.min(2,t.yanBlades??3)):sp[1]);}
+  if(k==='1203_sfhu'){for(const x of team(s)){hurtOne(s,x,v2(t)?50:35,'arts');x.regionalAttackWeaken=true;}}
+  if(k==='1126_spslme'){const strong=s.enemies.some(o=>o!==t&&living(o)&&fam(o)==='1126_spslme'&&epol(o)!==epol(t));hurtAll(s,strong?60:30,'arts');}
+  if(k==='1390_dhsbr')blightAdd(s,1);if(k==='1392_dhshld')blightAdd(s,2);
+  if(k==='1302_ymtro'&&units().enemy_1296_ymknif)for(let i=0;i<2&&s.enemies.filter(living).length<6;i++){const uid=newUid(s),hp=Math.max(100,Math.floor(t.max*.3));push(s,{id:uid,uid,species:'enemy_1296_ymknif',name:'山海眾散兵',hp,max:hp,atk:Math.max(30,Math.floor(t.atk*.5)),def:0,res:0,intent:'attack',damageType:'physical',boss:false,elite:false,action:{kind:'attack',damageType:'physical'},mechanicTier:t.mechanicTier||0});}};
+ // 回合結束：病害、器物散去
+ const r2=X.afterRound;X.afterRound=function(s){const st=s.yanState??={};const fresh=st.after!==s.turn;r2(s);if(!fresh)return;st.after=s.turn;
+  for(const e of s.enemies)if(e.yanItem&&living(e)&&e.due75<=s.turn){e.hp=0;e.mechanicRemoved=true;}
+  if(s.region75?.kind!=='chong'&&s.yanBlight>0){hurtAll(s,s.yanBlight*5,'arts');s.yanBlight--;}};
+ const e2=X.beforeEnemy;X.beforeEnemy=function(s,e){if(e?.yanItem)return false;return e2(s,e);};
+ const p2=X.plan;X.plan=function(s){tag(s);p2(s);for(const e of s.enemies)if(e.yanItem){e.intent='defend';if(e.action)e.action={...e.action,kind:'defend',damageType:'none'};}};
+ const BLURB={
+  '1298_ymmonk':'山海眾冒矢者：重甲前鋒，頂著箭雨推進（原作無特殊能力）。','1295_ymph':'諦獸：成群撲咬，同伴越多越兇（原作無特殊能力，以群獵表現）。',
+  '1123_spsbr':'「阿咬」：器倀撲咬（原作無特殊能力）。','1122_sphond':'「小躁」：迅捷的器倀，搶先出手（原作無特殊能力）。',
+  '1124_spbow':'「匕現」：優先攻擊與自身明晦屬性相反的幹員。','1126_spslme':'「得意」：只與同屬性者纏鬥——受到相反屬性幹員的傷害減半；倒下爆炸，全隊30法術傷害，場上另有相反屬性的「得意」時爆炸加倍。',
+  '1127_sptrkg':'「遮目」：只與同屬性者纏鬥——受到相反屬性幹員的傷害減半。','1128_spmage':'「妒」：每兩回合蓄力，可破韌；蓄力命中會使目標的明晦屬性互換。',
+  '1129_spklr':'「盛怒」：優先攻擊相反屬性的幹員，對其攻擊提高60%。','1125_spshld':'「偷閒」：使自身更容易受到攻擊，受到傷害＋30%。',
+  '1195_sfyin':'磨礱：被擊倒後散落瑞印。','1197_sfshu':'俗心：被擊倒後散落卷軸。','1203_sfhu':'烹泉：被擊倒時爆炸，全隊法術傷害並使下一張攻擊牌威力降低（攻速下降）；散落茶器。',
+  '1205_sfpin':'青花：每第三次命中施加逐次遞增的灼燒；被擊倒後散落花瓶。','1209_sfden':'清明：偶數回合使其他敵人下一回合隱匿，受到傷害減半；被擊倒後散落燈盤。',
+  '1199_sfjin':'身觀：更容易被攻擊，受到傷害＋25%；被擊倒後散落銅鏡。','1201_sfzhi':'墨浪：被擊倒後散落鎮紙。','1207_sfji':'沉沙：每次攻擊消耗一枚斷刃，攻擊永久提高；倒下時未用完的斷刃化為矛頭。',
+  '1296_ymknif':'山海眾遊勇：首回合自戰場出現，受到傷害－60%；偶數回合佔據天災工事，攻擊波及1人。','1297_ymflag':'山海眾傳令手：第2回合部署山海密語儀，其他敵人攻擊提高。',
+  '1299_ymkilr':'山海眾頭目：首回合隱匿，受到傷害－60%；隱匿解除後的第一次攻擊＋60%。','1300_ymmir':'山海眾司魅人：每兩回合鎖定攻擊最高的幹員蓄力，可破韌；命中後攻擊永久＋20%。',
+  '1301_ymcnon':'「破堅」：優先攻擊護盾最高（位於天災工事上）的幹員，對有護盾者攻擊＋30%。','1302_ymtro':'「履平沙」：載著山海眾的戰車；被擊倒時放出2名乘客。',
+  '1390_dhsbr':'穢：被擊倒後污染田地（病害＋1）；田地有病害時隱匿，受到傷害－40%。','1391_dhbow':'蝕：田地有病害時攻擊改為法術傷害。',
+  '1395_dhxts':'田鼷：會咬壞阻流閥——攻擊有護盾的幹員＋50%；田地有病害時隱匿，受到傷害－40%。','1392_dhshld':'骯：更容易受到攻擊，受到傷害＋25%；被擊倒後嚴重污染田地（病害＋2）。',
+  '1393_dhele':'玷：攻擊濺射，波及共3人；田地有病害時改為法術傷害，命中再污染田地。',
+  '10050_cjmeat':'饔：被擊倒後留下飲啄。','10053_cjman':'丑言：以遠程武器攻擊。','10056_cjfish':'「面子」：把隊伍最後方的幹員拖到面前，越靠後失衡傷害越高（每個位置＋10%）。',
+  '10054_cjhot':'鼎沸：每個敵方階段對全隊造成法術傷害並施加灼燒；免疫暈眩與停頓。','10052_cjshld':'「果腹」：更容易受到攻擊，受到傷害＋30%。',
+  '10164_tjgxb':'操戈：第2回合起靠近同伴後消失，把自身部分攻擊、防禦、法抗交給攻擊最高的同伴（每名同伴至多3次）。','10165_tjggb':'挽弓：三連擊（每擊45%），優先攻擊護盾最高（站在字格上）的幹員。',
+  '2103_dykens':'平劍客：攜帶3張便符，攻擊使目標附著便符；附著便符的幹員下一次受到的攻擊＋15%。','2104_dycast':'靳天師：從超遠距離瞄準生命比例最低的幹員，造成法術傷害並發出便符。'};
+ const i3=X.detail;X.detail=function(s,e){const k=fam(e);if(e?.yanItem)return (units()[e.species]?.name||'器物')+'：不攻擊，剩餘 '+e.hp+' 次命中；第'+e.due75+'回合結束時散去。';
+  if(BLURB[k]){const pol=['sp'].some(p=>/^\d+_sp/.test(k))?'\n明晦屬性：'+POL[epol(e)]+'（幹員依隊伍順序明、晦交替）':'';const extra=k==='1207_sfji'?'\n剩餘斷刃：'+(e.yanBlades??(v2(e)?4:3)):k==='2103_dykens'?'\n剩餘便符：'+(e.yanTalisman??3):'';return BLURB[k]+pol+extra+(blightGet(s)&&/^\d+_dh/.test(k)?'\n目前病害：'+blightGet(s):'');}
+  return i3(s,e);};
  return {KINDS,status,label,rotation,lifted};
 })();

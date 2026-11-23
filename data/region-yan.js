@@ -36,6 +36,8 @@
   frontier75_yan_mirage:unit('frontier75_yan_mirage','蜃景','“睚”',1,[1,0,0,0],{image:'enemy_1538_ymmons',source:'enemy_1538_ymmons',text:'【春生】留下的蜃景；兩回合內未擊破，「睚」便傳送至此並恢復6%最大HP。'}),
   frontier75_yan_wangjing:unit('frontier75_yan_wangjing','妄境','“睚”',3,[1,0,0,0],{image:'enemy_1538_ymmons',source:'enemy_1538_ymmons',ranged:true,text:'【秋榮】召出的妄境，與「睚」相似；「睚」倒下時消散，妄境被擊破時「睚」失去部分最大生命。'})
  };
+ for(const[id,name,wiki,hits]of [['enemy_1196_msfyin','木製瑞印','木制瑞印',2],['enemy_1196_msfyin_2','紅木瑞印','红木瑞印',3],['enemy_1198_msfshu','小說卷軸','小说卷轴',2],['enemy_1198_msfshu_2','詩畫卷軸','诗画卷轴',3],['enemy_1200_msfjin','青銅鏡','青铜镜',3],['enemy_1200_msfjin_2','黃銅鏡','黄铜镜',4],['enemy_1202_msfzhi','木製鎮紙','木制镇纸',2],['enemy_1202_msfzhi_2','紅木鎮紙','红木镇纸',3],['enemy_1204_msfhu','青瓷茶器','青瓷茶器',2],['enemy_1204_msfhu_2','彩瓷茶器','彩瓷茶器',3],['enemy_1206_msfpin','青瓷花瓶','青瓷花瓶',3],['enemy_1206_msfpin_2','彩瓷花瓶','彩瓷花瓶',4],['enemy_1208_msfji','銅矛頭','铜矛头',3],['enemy_1208_msfji_2','鐵矛頭','铁矛头',4],['enemy_1210_msfden','銅燈盤','铜灯盘',3],['enemy_1210_msfden_2','鐵燈盤','铁灯盘',4],['enemy_10059_cjgfod','飲啄','饮啄',2],['enemy_10060_cjbfod','無謂','无谓',3]])
+  u[id]=unit(id,name,wiki,1,[hits,0,0,0],{text:'器倀倒下後散落的器物（原作攻擊為0）。不攻擊，需 '+hits+' 次命中擊破，兩回合後自行散去。'});
  for(const[k,v]of Object.entries(u))E.units[k]=v;
  RO.yan={source:'將進酒 / 登臨意 / 懷黍離 / 歲的界園志異',
   common:['enemy_1298_ymmonk','enemy_1123_spsbr','enemy_1124_spbow','enemy_1195_sfyin','enemy_2103_dykens','enemy_2104_dycast','enemy_10053_cjman'],
