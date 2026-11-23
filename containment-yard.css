@@ -1,7 +1,7 @@
 /* 收容管理場：單一 WebGL 畫布繪製全部模型，陰影／星芒各一層 2D 畫布 */
 body.yard-mode{overflow:hidden}
 body.yard-mode>header{visibility:hidden}
-.yard{position:fixed;inset:0 0 64px 0;z-index:60;overflow:hidden;background:radial-gradient(120% 70% at 50% 100%,#1d2b33 0%,#10171c 55%,#0a0f13 100%);color:#e8eef2;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.yard{position:fixed;inset:0 0 64px 0;z-index:60;overflow:hidden;background:#070b0e;color:#e8eef2;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 .yard>canvas{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
 .yard-shadows{background-image:none}
 .yard-layer{position:absolute;inset:0;pointer-events:none}

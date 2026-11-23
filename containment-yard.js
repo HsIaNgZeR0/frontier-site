@@ -33,7 +33,7 @@ window.FrontierContainmentYard=(()=>{
  function region(i){const id=i.origin?.region;return FrontierExpedition.regions.find(r=>r.id===id)?.name||'舊收容檔案'}
  function view(){
   const n=instances().length;
-  return '<section class="yard" aria-label="收容管理場"><canvas class="yard-shadows" aria-hidden="true"></canvas><canvas class="yard-gl" aria-hidden="true"></canvas><canvas class="yard-fx" aria-hidden="true"></canvas><div class="yard-head"><button class="yard-back" data-yard-back aria-label="返回主頁"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><button class="yard-back yard-filter-btn" data-yard-filter-open aria-label="篩選" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 5h16l-6 7.5V19l-4 1.5v-8z"/></svg></button>'+filterHtml()+'<div class="yard-title"><small>CONTAINMENT YARD</small><b>收容管理場</b></div><span class="yard-count">收容個體 '+n+'</span></div>'+(n?'<p class="yard-hint">點擊查看 · 長按拖曳 · 雙指縮放</p>':'<p class="yard-empty">尚無收容個體。<br>於遠征中削弱敵人並使用收容裝置，成功撤離後會在這裡出現。</p>')+'<div class="yard-zoom"><button data-yard-zoom="1" aria-label="放大">＋</button><button data-yard-zoom="-1" aria-label="縮小">－</button></div><div class="yard-layer"></div></section>';
+  return '<section class="yard" aria-label="收容管理場"><canvas class="yard-shadows" aria-hidden="true"></canvas><canvas class="yard-gl" aria-hidden="true"></canvas><canvas class="yard-fx" aria-hidden="true"></canvas><div class="yard-head"><button class="yard-back" data-yard-back aria-label="返回主頁"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><button class="yard-back yard-filter-btn" data-yard-filter-open aria-label="篩選" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 5h16l-6 7.5V19l-4 1.5v-8z"/></svg></button>'+filterHtml()+'<div class="yard-title"><small>CONTAINMENT YARD</small><b>收容管理場</b></div><span class="yard-count">收容個體 '+n+'</span></div>'+(n?'<p class="yard-hint">點擊查看 · 長按拖曳 · 左右滑動 · 雙指縮放</p>':'<p class="yard-empty">尚無收容個體。<br>於遠征中削弱敵人並使用收容裝置，成功撤離後會在這裡出現。</p>')+'<div class="yard-zoom"><button data-yard-zoom="1" aria-label="放大">＋</button><button data-yard-zoom="-1" aria-label="縮小">－</button></div><div class="yard-layer"></div></section>';
  }
  /* ---------- Spine 共用渲染 ---------- */
  function makeShader(c){
@@ -80,7 +80,7 @@ window.FrontierContainmentYard=(()=>{
  /* ---------- 場地 ---------- */
  function layoutWorld(n){
   const r=yard.getBoundingClientRect(),f=clamp(Math.sqrt(n/100),1,3.3);
-  world={w:Math.round(r.width*f),h:Math.round(r.height*f),f};
+  /* 橫向至少 3 個螢幕寬，手指左右滑動瀏覽 */world={w:Math.round(r.width*Math.max(3,f)),h:Math.round(r.height*f),f};
   minZoom=Math.min(.6,1/f);
  }
  function spread(n){
@@ -95,7 +95,7 @@ window.FrontierContainmentYard=(()=>{
   const navTop=document.querySelector('#nav')?.getBoundingClientRect().top;if(navTop>0&&navTop<innerHeight)yard.style.bottom=(innerHeight-navTop)+'px';
   const removed=purge();if(removed){yard.querySelector('.yard-count').textContent='收容個體 '+instances().length;toast('已移除 '+removed+' 隻沒有模型的收容個體。')}
   fx=yard.querySelector('.yard-fx');shadow=yard.querySelector('.yard-shadows');
-  const list=instances();layoutWorld(list.length);cam={x:world.w/2,y:Math.min(world.h/2,yard.clientHeight/2),z:1};clampCam();
+  const list=instances();layoutWorld(list.length);cam={x:world.w/2,y:Math.min(world.h/2,yard.clientHeight/2),z:1,vx:0,vy:0};clampCam();
   const pts=spread(list.length);
   mobs=list.map((i,k)=>{const u=FrontierCapture.units[i.species];return{i,v:variantOf(i),sp:null,phase:k%PHASES,x:pts[k].x,y:pts[k].y,tx:pts[k].x,ty:pts[k].y,dir:Math.random()<.5?-1:1,mode:'idle',wait:rnd(.2,4),speed:rnd(9,16)*(u.rarity>=3?.9:1),s:UNIT*(u.rarity>=3?ELITE:1)*(i.mutation?1.05:1),hop:0,lift:0,motion:'idle',seed:Math.random()*10}});
   updateCount();loadRuntime().then(ok=>{if(!ok||!yard?.isConnected)return;if(!setupGL()){toast('此裝置不支援 WebGL，無法顯示模型。');return}for(const m of mobs)m.sp=speciesOf(m.i.species);last=0;raf=requestAnimationFrame(tick)});
@@ -119,6 +119,7 @@ window.FrontierContainmentYard=(()=>{
   /* 存檔物件可能被重新載入替換；以 uid 重新連結，名牌／愛心／篩選才會跟上 */
   if(db.capture?.instances!==srcArr){srcArr=db.capture?.instances;const map=new Map((srcArr||[]).map(i=>[i.uid,i]));for(const m of mobs){const i=map.get(m.i.uid);if(i){m.i=i;m.v=variantOf(i)}}updateCount()}
   for(const m of mobs)step(m,dt);
+  if(!gesture&&(Math.abs(cam.vx)>5||Math.abs(cam.vy)>5)){cam.x-=cam.vx*dt/cam.z;cam.y-=cam.vy*dt/cam.z;const k=Math.exp(-dt*4);cam.vx*=k;cam.vy*=k;const bx=cam.x,by=cam.y;clampCam();if(cam.x!==bx)cam.vx=0;if(cam.y!==by)cam.vy=0}
   const t0=performance.now();draw(dt);perf.ms=perf.ms*.9+(performance.now()-t0)*.1;perf.n++;if(bubble&&focus)aim();
   raf=requestAnimationFrame(tick);
  }
@@ -165,7 +166,7 @@ window.FrontierContainmentYard=(()=>{
   }
   // 陰影、光環（遠景時連模型一起畫在這層）
   const [sw,sh]=sizeCanvas(shadow,dpr),s2=shadow.getContext('2d'),k=dpr*cam.z,ox=dpr*(W/2-cam.x*cam.z),oy=dpr*(H/2-cam.y*cam.z);
-  s2.setTransform(1,0,0,1,0,0);s2.clearRect(0,0,sw,sh);s2.setTransform(k,0,0,k,ox,oy);
+  s2.setTransform(1,0,0,1,0,0);s2.clearRect(0,0,sw,sh);s2.setTransform(k,0,0,k,ox,oy);floor(s2);
   for(const m of vis){const b=box(m),rw=Math.max(5,b.w*.34)*(1-m.lift/30);s2.fillStyle='rgba(0,0,0,.38)';s2.beginPath();s2.ellipse(m.x,m.y,rw,rw*.28,0,0,Math.PI*2);s2.fill();
    if(m.v){const hh=m.v==='color'?V().hue(m.i.species)+20:46,a=m.v==='shiny'?.32+.12*Math.sin(clock*3+m.seed):.28,gr=s2.createRadialGradient(m.x,m.y,0,m.x,m.y,rw*1.8);gr.addColorStop(0,'hsla('+hh+',95%,68%,'+a+')');gr.addColorStop(1,'hsla('+hh+',95%,68%,0)');s2.fillStyle=gr;s2.beginPath();s2.ellipse(m.x,m.y,rw*1.8,rw*.6,0,0,Math.PI*2);s2.fill()}}
   g.viewport(0,0,w,h);g.clearColor(0,0,0,0);g.clear(g.COLOR_BUFFER_BIT);
@@ -188,6 +189,26 @@ window.FrontierContainmentYard=(()=>{
   /* 已命名個體常駐名牌（固定字級，不隨縮放） */
   f2.setTransform(dpr,0,0,dpr,0,0);
   for(const m of vis){if(!m.i.nickname||focus===m)continue;const b=box(m),p=toScreen(b.cx,b.t);if(p.x<-90||p.x>W+90||p.y<-20||p.y>H+30)continue;tag(f2,p.x,p.y-9,m)}
+ }
+ /* 收容設施地板：金屬地磚圖樣＋分區標線＋邊界警示帶，全部在世界座標，會跟著滑動 */
+ let tile=null;
+ function makeTile(){const t=document.createElement('canvas'),S=160;t.width=t.height=S;const c=t.getContext('2d');
+  c.fillStyle='#141d23';c.fillRect(0,0,S,S);
+  for(const [x,y] of [[0,0],[80,0],[0,80],[80,80]]){const g=c.createLinearGradient(x,y,x+80,y+80);g.addColorStop(0,'#1a252c');g.addColorStop(1,'#121a1f');c.fillStyle=g;c.fillRect(x+2,y+2,76,76);c.fillStyle='rgba(140,180,200,.06)';c.fillRect(x+2,y+2,76,1)}
+  c.fillStyle='rgba(0,0,0,.45)';c.fillRect(0,79,S,2);c.fillRect(79,0,2,S);c.fillRect(0,0,S,1);c.fillRect(0,0,1,S);
+  c.fillStyle='rgba(150,190,210,.18)';for(const [x,y] of [[6,6],[74,6],[6,74],[74,74],[86,6],[154,6],[86,74],[154,74],[6,86],[74,86],[6,154],[74,154],[86,86],[154,86],[86,154],[154,154]]){c.beginPath();c.arc(x,y,1.4,0,7);c.fill()}
+  return t}
+ function floor(c){
+  tile??=makeTile();const W=world.w,H=world.h;
+  c.fillStyle=c.createPattern(tile,'repeat');c.fillRect(0,0,W,H);
+  /* 分區：每個螢幕寬一區，畫地面標線與區號 */
+  const zw=W/Math.max(1,Math.round(W/(yard.clientWidth||375)));let n=0;
+  for(let x=0;x<W-1;x+=zw){c.strokeStyle='rgba(242,194,48,.22)';c.lineWidth=3;c.setLineDash([18,12]);if(x>0){c.beginPath();c.moveTo(x,70);c.lineTo(x,H-10);c.stroke()}c.setLineDash([]);
+   c.save();c.globalAlpha=.07;c.fillStyle='#bfe3f2';c.font='900 '+Math.round(zw*.38)+'px system-ui,sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText(String.fromCharCode(65+n%26),x+zw/2,H/2);c.restore();
+   c.strokeStyle='rgba(127,164,182,.14)';c.lineWidth=2;c.beginPath();c.ellipse(x+zw/2,H*.62,zw*.32,zw*.12,0,0,7);c.stroke();n++}
+  /* 邊界警示帶 */
+  c.save();c.beginPath();c.rect(0,0,W,H);c.rect(10,10,W-20,H-20);c.clip('evenodd');for(let i=-H;i<W+H;i+=28){c.fillStyle=(i/28)%2?'#f2c230':'#16130a';c.beginPath();c.moveTo(i,0);c.lineTo(i+14,0);c.lineTo(i+14-H,H);c.lineTo(i-H,H);c.fill()}c.restore();
+  c.strokeStyle='rgba(0,0,0,.6)';c.lineWidth=2;c.strokeRect(10,10,W-20,H-20);
  }
  function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.lineTo(x+w-r,y);c.quadraticCurveTo(x+w,y,x+w,y+r);c.lineTo(x+w,y+h-r);c.quadraticCurveTo(x+w,y+h,x+w-r,y+h);c.lineTo(x+r,y+h);c.quadraticCurveTo(x,y+h,x,y+h-r);c.lineTo(x,y+r);c.quadraticCurveTo(x,y,x+r,y);c.closePath()}
  function tag(c,x,y,m){
@@ -222,7 +243,7 @@ window.FrontierContainmentYard=(()=>{
   if(pointers.size===2){if(gesture?.timer)clearTimeout(gesture.timer);if(gesture?.type==='drag')gesture.m.hop=6;const [a,b]=[...pointers.values()];gesture={type:'pinch',d:Math.hypot(a.x-b.x,a.y-b.y),z:cam.z};return}
   if(pointers.size>2)return;
   const w=toWorld(e.clientX,e.clientY),m=hit(w.x,w.y);
-  gesture={type:'press',id:e.pointerId,x:e.clientX,y:e.clientY,m,cam:{...cam},moved:false};
+  cam.vx=0;cam.vy=0;gesture={type:'press',id:e.pointerId,x:e.clientX,y:e.clientY,m,cam:{...cam},moved:false};
   if(m)gesture.timer=setTimeout(()=>{if(gesture?.m!==m||gesture.moved)return;gesture.type='drag';gesture.off={x:m.x-w.x,y:m.y-w.y};if(bubble)close();navigator.vibrate?.(15)},HOLD_MS);
  }
  function move(e){
@@ -231,12 +252,13 @@ window.FrontierContainmentYard=(()=>{
   if(e.pointerId!==gesture.id)return;
   if(gesture.type==='drag'){const m=gesture.m,w=toWorld(e.clientX,e.clientY);m.x=clamp(w.x+gesture.off.x,20,world.w-20);m.y=clamp(w.y+gesture.off.y,70,world.h-6);if(Math.abs(e.movementX||0)>1)m.dir=e.movementX<0?-1:1;return}
   if(Math.hypot(e.clientX-gesture.x,e.clientY-gesture.y)>8){gesture.moved=true;clearTimeout(gesture.timer);gesture.type='pan'}
-  if(gesture.type==='pan'){cam.x=gesture.cam.x-(e.clientX-gesture.x)/cam.z;cam.y=gesture.cam.y-(e.clientY-gesture.y)/cam.z;clampCam()}
+  if(gesture.type==='pan'){const now=performance.now(),dtp=Math.max(1,now-(gesture.lt||now-16));gesture.vx=(e.clientX-(gesture.lx??gesture.x))/dtp*1000;gesture.vy=(e.clientY-(gesture.ly??gesture.y))/dtp*1000;gesture.lx=e.clientX;gesture.ly=e.clientY;gesture.lt=now;cam.x=gesture.cam.x-(e.clientX-gesture.x)/cam.z;cam.y=gesture.cam.y-(e.clientY-gesture.y)/cam.z;clampCam()}
  }
  function up(e){
   if(!pointers.has(e.pointerId))return;pointers.delete(e.pointerId);const g=gesture;if(!g)return;
   if(g.type==='pinch'){if(pointers.size===0)gesture=null;else{const [id,p]=[...pointers.entries()][0];gesture={type:'pan',id,x:p.x,y:p.y,cam:{...cam},moved:true}}return}
   if(e.pointerId!==g.id)return;clearTimeout(g.timer);gesture=null;
+  if(g.type==='pan'){const fresh=performance.now()-(g.lt||0)<80;cam.vx=fresh?clamp(g.vx||0,-2500,2500):0;cam.vy=fresh?clamp(g.vy||0,-2500,2500):0;return}
   if(g.type==='drag'){const m=g.m;m.hop=8;m.mode='idle';m.wait=rnd(1,3);m.tx=m.x;m.ty=m.y;return}
   if(g.type!=='press'||e.type==='pointercancel')return;
   if(!g.m){if(bubble)close();return}

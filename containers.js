@@ -420,7 +420,7 @@ window.FrontierContainers=(()=>{
  function grantAccessBonus(run,row){
   const value=locks.accessBonusValue(row.id,run);if(!(value>0)||!run.field?.materials)return;
   const families=run.focus27?.families?.length?run.focus27.families:Object.keys(FrontierProgress.families);
-  let gold=Math.floor(value+1e-9),rest=value-gold,silver=Math.floor(rest/.4+1e-9);rest-=silver*.4;let blue=Math.floor(rest/.16+1e-9);rest-=blue*.16;if(random()<rest/.16)blue++;
+  const SV=locks.SILVER_VALUE,BV=locks.BLUE_VALUE;let gold=Math.floor(value+1e-9),rest=value-gold,silver=Math.floor(rest/SV+1e-9);rest-=silver*SV;let blue=Math.floor(rest/BV+1e-9);rest-=blue*BV;if(random()<rest/BV)blue++;
   const got=[];
   for(const [tier,count] of [[6,gold],[5,silver],[4,blue]])for(let i=0;i<count;i++){const id=FrontierProgress.materialId(pick(families),tier);run.field.materials[id]=(run.field.materials[id]||0)+1;got.push(id)}
   (run.accessBonus604??=[]).push({id:row.id,cost:row.cost,value:Math.round(value*100)/100,items:got});
