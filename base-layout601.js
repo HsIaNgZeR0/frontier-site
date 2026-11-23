@@ -1,7 +1,7 @@
 'use strict';
 /* 基建佈局 v601：本家風格長方形房間、指揮中樞 2×2、自由拖動擺放（存於 db.baseLayout601）。 */
 window.FrontierBaseLayout601=(()=>{
- if(!document.querySelector('link[data-b601]')){const l=document.createElement('link');l.rel='stylesheet';l.href='base-layout601.css?v=601e';l.dataset.b601='';document.head.appendChild(l)}
+ if(!document.querySelector('link[data-b601]')){const l=document.createElement('link');l.rel='stylesheet';l.href='base-layout601.css?v=601f';l.dataset.b601='';document.head.appendChild(l)}
  const U=16,COLS=40,ROWS=40,RW=7,RH=4,LV=2;
  const esc=s=>String(s??'').replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));
  // 本家房間造型：色彩、圖示與英文標示。本家沒有的房間沿用模板換色。
@@ -59,14 +59,29 @@ window.FrontierBaseLayout601=(()=>{
  /* 名稱過長時縮小字級而非截斷為「…」。 */
  function fit(root){for(const b of root.querySelectorAll('.b601-room:not(.b601-hub) .b601-name,.b601-status')){let f=parseFloat(getComputedStyle(b).fontSize);while(b.scrollWidth>b.clientWidth+.5&&f>5){f-=.5;b.style.fontSize=f+'px'}}}
  function board(){const s=FrontierBase151.preview?.()||db,lay=resolve(s);return '<div class="b601-board" style="width:'+COLS*U+'px;height:'+ROWS*U+'px">'+(s.base151.rooms||[]).filter(r=>lay[r.id]).map(r=>roomHTML(s,r,lay[r.id])).join('')+'</div>'}
- function decorate(){const old=document.querySelector('.base151-board');if(!old||!db.base151||!FrontierBaseEngine.modern(db))return;old.classList.add('b601-host');old.innerHTML=board();fit(old);const hint=[...document.querySelectorAll('.base151-shell .tiny')].find(p=>p.textContent.includes('拖動'));if(hint)hint.textContent='雙指縮放 · 長按房間後拖動擺放 · 點按管理'}
+ function decorate(){const old=document.querySelector('.base151-board');if(!old||!db.base151||!FrontierBaseEngine.modern(db))return;old.classList.add('b601-host');old.innerHTML=board();fit(old);const hint=[...document.querySelectorAll('.base151-shell .tiny')].find(p=>p.textContent.includes('拖動'));if(hint)hint.textContent='雙指縮放 · 長按拖動房間 · 點按管理';const intro=[...document.querySelectorAll('.base151-shell>.tiny')].find(p=>p.textContent.includes('無人派駐'));if(intro)intro.textContent='無人也會生產，派駐可加速；離線時間照常結算，沒有每日上限。';const list=document.querySelector('.base151-room-list');if(list){list.classList.add('b601-list');list.innerHTML=listHTML()}}
+ document.addEventListener('click',e=>{const el=e.target.closest?.('[data-row601]');if(el)FrontierBase151.room(el.dataset.row601)});
+ /* 底部房間清單：每列「色塊＋名稱＋等級直槓｜一句重點｜右側關鍵數字」，生產類附進度條。 */
+ const hm=ms=>{const m=Math.max(0,Math.ceil(ms/60000));return m>=60?Math.floor(m/60)+'時'+(m%60?m%60+'分':''):m+'分'};
+ function info(s,r){const E=FrontierBaseEngine,c={definitions:FrontierInventory.definitions,recipes:FrontierInventory.recipes,units:FrontierCapture.units},p=E.recipe(r),pend=Object.values(r.pending||{}).reduce((n,x)=>n+x,0),staff=E.types[r.kind]?.kind==='none'?'':'派駐 '+r.staff.length+'/'+E.seats(r);
+  if(['trade','cTrade'].includes(r.kind))return{line:'訂單 '+r.orders.length+'/32'+(staff?' · '+staff:''),value:r.income?r.income.toLocaleString():'0',unit:'待領',ready:r.income>0,pct:p?Math.min(1,r.work/p.time):null};
+  if(r.kind==='commission'){const q=s.base151.special_commissions;return{line:q.active.length>=4?'欄位已滿，請先領取':'下張約 '+(p?hm(Math.max(0,p.time-r.work)/(E.rate(s,r,c)||1)):'—')+(staff?' · '+staff:''),value:q.active.length+'/4',unit:'委託',ready:false,pct:p?Math.min(1,r.work/p.time):null}}
+  if(p){const rate=E.rate(s,r,c)||1;return{line:'下次 '+hm(Math.max(0,p.time-r.work)/rate)+(staff?' · '+staff:''),value:String(pend),unit:'待領',ready:pend>0,pct:Math.min(1,r.work/p.time)}}
+  if(r.kind==='personnel')return{line:'增加公開招募欄位',value:E.publicSlots(s)+'/4',unit:'招募欄',ready:false,pct:null};
+  if(r.kind==='dispatch')return{line:'提供外派隊位'+(staff?' · '+staff:''),value:String([1,1,2,2,3][r.level-1]),unit:'隊位',ready:false,pct:null};
+  if(r.kind==='logistics')return{line:'白／綠／藍素材同階交換',value:'',unit:'',ready:false,pct:null};
+  if(r.kind==='workshop')return{line:'即時加工，無需派駐',value:'',unit:'',ready:false,pct:null};
+  if(r.kind==='hub')return{line:'可建 '+s.base151.rooms.length+'/'+E.capacity[r.level-1]+' 間',value:'',unit:'',ready:false,pct:null};
+  return{line:staff||'待命',value:'',unit:'',ready:false,pct:null}}
+ function listHTML(){const s=FrontierBase151.preview?.()||db,E=FrontierBaseEngine,rooms=s.base151.rooms.filter(r=>r.kind!=='medical'&&r.kind!=='hub'&&!E.types[r.kind]?.retired);
+  return rooms.map(r=>{const L=look(r.kind),i=info(s,r);return '<button type="button" class="b601-row'+(i.ready?' is-ready':'')+'" data-row601="'+esc(r.id)+'" style="--rc:'+L.c+'"><span class="b601-row-ico">'+ico[L.t]+'</span><span class="b601-row-main"><span class="b601-row-title"><b>'+esc(E.types[r.kind]?.name||r.kind)+'</b>'+bars(r.level)+'</span><small>'+esc(i.line)+'</small>'+(i.pct!=null?'<span class="b601-row-prog"><i style="width:'+Math.round(i.pct*100)+'%"></i></span>':'')+'</span>'+(i.value?'<span class="b601-row-val"><small>'+i.unit+'</small><b>'+esc(i.value)+'</b></span>':'')+'</button>'}).join('')}
  const prevView=window.baseView;window.baseView=function(){const out=prevView.apply(this,arguments);try{decorate()}catch(e){console.error(e)}return out};
  /* 拖動：滑鼠立即拖動；觸控長按 350ms 後才進入拖動，期間以 touchmove 阻止頁面捲動。 */
  let drag=null,suppressClick=0;
  const blockTouch=e=>{if(drag?.active&&e.cancelable)e.preventDefault()};
  document.addEventListener('touchmove',blockTouch,{passive:false,capture:true});
  function end(){if(!drag)return;clearTimeout(drag.timer);drag.el.classList.remove('b601-lift','b601-bad');drag.el.style.transform='';drag=null}
- document.addEventListener('pointerdown',e=>{const el=e.target.closest?.('[data-room601]');if(!el||e.button>0)return;const b=el.closest('.b601-board');drag={el,b,id:el.dataset.room601,pid:e.pointerId,sx:e.clientX,sy:e.clientY,active:false,t0:e.timeStamp,touch:e.pointerType!=='mouse'};
+ document.addEventListener('pointerdown',e=>{const el=e.target.closest?.('[data-room601]');if(!el||e.button>0)return;const b=el.closest('.b601-board');if(!b)return;drag={el,b,id:el.dataset.room601,pid:e.pointerId,sx:e.clientX,sy:e.clientY,active:false,t0:e.timeStamp,touch:e.pointerType!=='mouse'};
   if(drag.touch)drag.timer=setTimeout(()=>{if(drag){drag.active=true;el.classList.add('b601-lift');navigator.vibrate?.(15)}},350)},true);
  document.addEventListener('pointermove',e=>{const d=drag;if(!d||e.pointerId!==d.pid)return;const dx=e.clientX-d.sx,dy=e.clientY-d.sy;
   if(!d.active){if(d.touch&&e.timeStamp-d.t0>=350){clearTimeout(d.timer);d.active=true;d.el.classList.add('b601-lift')}else{if(Math.hypot(dx,dy)<8)return;if(d.touch){end();return}d.active=true}d.el.classList.add('b601-lift')}
