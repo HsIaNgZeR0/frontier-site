@@ -12,7 +12,8 @@ window.FrontierEndings=(()=>{
   victoria:['中止命令','失聯近衛長','戰地封條','鋼鐵行軍隊','解除近衛包圍','送出停火密令'],
   iberia:['潮汐譜','沉默瞭望官','裂紋燈芯','逐光集群','登上斷橋瞭望台','重燃離岸燈塔'],
   sami:['逆風羅盤','冰原迷途者','無影拓片','無影林地','護送定位信標','解讀無影拓片'],
-  kazdel:['殘響錄音','失名傳令者','斷齒盟印','契約代行者','奪回傳令陣地','裁定盟印的歸屬']
+  kazdel:['殘響錄音','失名傳令者','斷齒盟印','契約代行者','奪回傳令陣地','裁定盟印的歸屬'],
+  yan:['司歲台殘卷','玉門蜃影','無病害的稻種','田間化物','追索「睚」的蜃景','引水沖刷病田']
  };
  const definitions=Object.fromEntries(Object.entries(regions).map(([id,row],i)=>[id,{
   fate:{key:row[0],boss:FrontierEnemyData.units[FrontierRegionalRoster[id].bosses.fate.id].name,trial:row[4],steps:i%3===1?['fight','report']:['fight'],profile:i%4},
@@ -30,9 +31,10 @@ window.FrontierEndings=(()=>{
   victoria:['中止命令抵達近衛隊，前線的信號燈換成撤退色，失聯部隊得以歸隊。','停火密令順利送達，鋼鐵行軍在街口止步，醫療車隊先通過街道。'],
   iberia:['瞭望台的鏡面轉向海面，最後一班船避開了潮汐譜上標記的黑水。','離岸燈塔重新點燃。逐光集群退回礁石外，岸上的漁船終於敢回港。'],
   sami:['定位信標穿過風雪，把迷途者的路線留給下一支搜救隊。','拓片對準樹影時，林道第一次有了固定方向。歸途的腳印沒有消失。'],
-  kazdel:['傳令者的錄音播放完畢，前哨明白那道延續多年的命令早已撤銷。','盟印的保管權交由倖存者共同裁定，代行者簽下的舊契約就此失效。']
+  kazdel:['傳令者的錄音播放完畢，前哨明白那道延續多年的命令早已撤銷。','盟印的保管權交由倖存者共同裁定，代行者簽下的舊契約就此失效。'],
+  yan:['蜃景散去，玉門的天災工事重新點亮烽燧。司歲台的殘卷記下「睚」這一次的去向。','清水流過田畦，病害退去，新的稻種在祟消散的地方發了芽。']
  };
- for(const [id,d]of Object.entries(FrontierRegionDesign75.regions))definitions[id].fourth={key:d.key,boss:d.boss,trial:d.trial,steps:({lungmen:['intel','fight'],siesta:['fight','intel'],sargon:['pay','fight'],siracusa:['pay','fight'],columbia:['intel','fight'],victoria:['fight','pay'],iberia:['intel','fight']})[id]||['fight','report'],profile:0};
+ for(const [id,d]of Object.entries(FrontierRegionDesign75.regions))definitions[id].fourth={key:d.key,boss:d.boss,trial:d.trial,steps:({lungmen:['intel','fight'],siesta:['fight','intel'],sargon:['pay','fight'],siracusa:['pay','fight'],columbia:['intel','fight'],victoria:['fight','pay'],iberia:['intel','fight'],yan:['fight','intel']})[id]||['fight','report'],profile:0};
  const labels={fate:'二結局',exchange:'三結局',fourth:'四結局'};
  const eventIds={fate:'ending_fate_entry',exchange:'ending_exchange_entry',follow:'ending_followup'};
  for(const id of Object.values(eventIds))FrontierAdventure.events[id]={id,title:'命運分歧',choice:'接續故事線索'};

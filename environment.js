@@ -1,6 +1,6 @@
 'use strict';
 window.FrontierEnvironment=(()=>{
- const definitions={chernobog:{id:'originium_pollution',name:'源石污染',max:6,thresholds:[3,5],counter:'營地去污、淨化戰術補給；污染3以上治療效率降低10%。'},lungmen:{id:'wanted',name:'通緝',max:5,thresholds:[3,5],counter:'情報交涉可降低通緝；3星起盤查，4星起行商限制交易。'},siesta:{id:'heat',name:'火山熱壓',max:6,thresholds:[3,5],counter:'營地冷卻、抗灼戰術補給；熱壓3起戰鬥出現灼熱地形。'},sargon:{id:'water',name:'飲水補給',max:6,thresholds:[2,0],counter:'每3站消耗1份；缺水使部分未知支線暫不可辨識，可在營地補水，不會封死主路。'},kazimierz:{id:'exposure',name:'賽事曝光',max:5,thresholds:[3,5],counter:'可選擇公開挑戰或保持低調；曝光3以上勝利額外外勤點，也吸引挑戰者。'},kjerag:{id:'cold',name:'寒冷',max:6,thresholds:[3,5],counter:'3起首回合少1能量；5起每回合上限少1，最低2。營地取暖與抗寒戰術補給可降低。'},siracusa:{id:'families',name:'家族關係',max:5,thresholds:[3],counter:'幫助家族累積信任、得罪則累積敵意；信任影響行商價格，敵意3起敵方先鋒必定出手，攻擊提高2。'},columbia:{id:'interference',name:'設施干擾',max:3,thresholds:[2,3],counter:'干擾2以上，敵方先鋒開場獲得4點護盾；營地駭入或淨化可解除。'},victoria:{id:'frontline',name:'戰線',max:2,thresholds:[-1,1],counter:'支援物資使戰線前進，撤離危地則後退；戰線影響補給和敵人意圖。'},iberia:{id:'tide',name:'潮汐',max:3,thresholds:[1,3],counter:'每2次探索行動推進潮汐；2～3階段封閉右側可選淺灘，主路保留。高潮戰鬥有神經侵蝕；燈塔、營地可處理，暫停不推進。'},sami:{id:'collapse',name:'坍縮',max:12,thresholds:[4,8,12],counter:'4起未知節點，8起首回合卡牌干擾，12起追擊意圖。營地穩定與淨化可降低。'},kazdel:{id:'echoes',name:'戰場殘響',max:6,thresholds:[2,4],counter:'契約由事件自願接受：獲得15%出牌傷害加成並加入負面牌。普通通關不必簽約。'}};
+ const definitions={chernobog:{id:'originium_pollution',name:'源石污染',max:6,thresholds:[3,5],counter:'營地去污、淨化戰術補給；污染3以上治療效率降低10%。'},lungmen:{id:'wanted',name:'通緝',max:5,thresholds:[3,5],counter:'情報交涉可降低通緝；3星起盤查，4星起行商限制交易。'},siesta:{id:'heat',name:'火山熱壓',max:6,thresholds:[3,5],counter:'營地冷卻、抗灼戰術補給；熱壓3起戰鬥出現灼熱地形。'},sargon:{id:'water',name:'飲水補給',max:6,thresholds:[2,0],counter:'每3站消耗1份；缺水使部分未知支線暫不可辨識，可在營地補水，不會封死主路。'},kazimierz:{id:'exposure',name:'賽事曝光',max:5,thresholds:[3,5],counter:'可選擇公開挑戰或保持低調；曝光3以上勝利額外外勤點，也吸引挑戰者。'},kjerag:{id:'cold',name:'寒冷',max:6,thresholds:[3,5],counter:'3起首回合少1能量；5起每回合上限少1，最低2。營地取暖與抗寒戰術補給可降低。'},siracusa:{id:'families',name:'家族關係',max:5,thresholds:[3],counter:'幫助家族累積信任、得罪則累積敵意；信任影響行商價格，敵意3起敵方先鋒必定出手，攻擊提高2。'},columbia:{id:'interference',name:'設施干擾',max:3,thresholds:[2,3],counter:'干擾2以上，敵方先鋒開場獲得4點護盾；營地駭入或淨化可解除。'},victoria:{id:'frontline',name:'戰線',max:2,thresholds:[-1,1],counter:'支援物資使戰線前進，撤離危地則後退；戰線影響補給和敵人意圖。'},iberia:{id:'tide',name:'潮汐',max:3,thresholds:[1,3],counter:'每2次探索行動推進潮汐；2～3階段封閉右側可選淺灘，主路保留。高潮戰鬥有神經侵蝕；燈塔、營地可處理，暫停不推進。'},sami:{id:'collapse',name:'坍縮',max:12,thresholds:[4,8,12],counter:'4起未知節點，8起首回合卡牌干擾，12起追擊意圖。營地穩定與淨化可降低。'},kazdel:{id:'echoes',name:'戰場殘響',max:6,thresholds:[2,4],counter:'契約由事件自願接受：獲得15%出牌傷害加成並加入負面牌。普通通關不必簽約。'},yan:{id:'suimeng',name:'歲夢',max:6,thresholds:[3,5],counter:'交戰與未知路線使歲夢加深；營地與明處事件可回落。3起敵方先鋒開場墨痕護盾，5起敵方全體攻擊提高。'}};
  function current(){const r=R(),s=r?.environment;return s&&(!r.expedition||s.region===r.expedition.regionId)?s:undefined}
  function create(region){return{version:1,rulesVersion:3,region,id:definitions[region].id,value:region==='sargon'?4:['chernobog','siesta','kjerag'].includes(region)?1:0,actions:0,trust:0,hostility:0,front:0,forecasts:[],flags:{}}}
  function adjust(n,reason){const s=current();if(!s)return;s.value=Math.max(0,Math.min(definitions[s.region].max,s.value+n));s.forecasts.push({at:Date.now(),action:s.actions,value:s.value,reason});if(s.forecasts.length>40)s.forecasts.shift()}
@@ -18,7 +18,8 @@ window.FrontierEnvironment=(()=>{
   victoria:'高強度交戰使戰線後退；情報支援與營地休整讓戰線前進。推進時全隊有開場護盾，勝利額外有物資；退卻時敵方先鋒更強。',
   iberia:'每兩次行動切換潮段；搜查深水、緊急作戰會加速，營地整備或燈塔可回到低潮。低潮我方有開場護盾，滿潮敵方有開場護盾，每輪前排累積神經損傷，3 層使下輪 −1 AP。',
   sami:'緊急作戰、異常節點和長時間探索推高坍縮；休整可回落。4 起前方能見度降低，8 起首手一牌多耗 1 AP，12 起敵方攻擊提高。',
-  kazdel:'交戰使殘響升高，緊急作戰增幅更大；情報與營地可平復殘響。4 起敵方先鋒更強，自願簽約仍可換取出牌傷害加成。'
+  kazdel:'交戰使殘響升高，緊急作戰增幅更大；情報與營地可平復殘響。4 起敵方先鋒更強，自願簽約仍可換取出牌傷害加成。',
+  yan:'交戰、緊急作戰與未知路線使歲夢加深，營地休整與明處事件能讓夢境回落。3 起敵方先鋒開場有 40 墨痕護盾、攻擊＋10；5 起敵方全體攻擊＋10，器倀與墨魎躁動。'
  };
  function travelPlan(s,node){
   const combat=['battle','elite','boss','ambush'].includes(node.type),heavy=['elite','boss','ambush'].includes(node.type);
@@ -38,6 +39,7 @@ window.FrontierEnvironment=(()=>{
    case 'iberia':return {tide:true,tick:camp?0:((s.value===Math.floor((s.tideStep||0)/2)?s.tideStep||0:s.value*2)+1+Number(heavy||!!node.searchAction))%8};
    case 'sami':return {delta:camp?-2:merchant?-1:heavy?2:node.hidden||even?1:0};
    case 'kazdel':return {delta:camp?-2:quiet?-1:heavy?2:combat?1:0};
+   case 'yan':return {delta:camp?-2:quiet||merchant?-1:heavy?2:combat||node.hidden?1:0};
   }
  }
  function travelValue(s,plan){
@@ -103,6 +105,8 @@ window.FrontierEnvironment=(()=>{
   if(!lead||!team.length)return;
   if(s.region==='lungmen'&&s.value>=3)lead.atk+=15;
   if(s.region==='kazdel'&&s.value>=4)lead.atk+=15;
+  if(s.region==='yan'&&s.value>=3){lead.block=(lead.block||0)+40;lead.atk+=10;}
+  if(s.region==='yan'&&s.value>=5)b.enemies.forEach(e=>{if(e!==lead)e.atk+=10});
   if(s.region==='kazimierz'&&s.value>=3)lead.atk+=10;
   if(s.region==='siracusa'&&s.hostility>=3)lead.atk+=20;
   if(s.region==='sargon'&&!s.value&&b.hand.length)b.draw.push(b.hand.pop());
@@ -143,6 +147,7 @@ window.FrontierEnvironment=(()=>{
   if(s.rulesVersion>=3){
    if(s.region==='iberia')return ['我方開場＋20盾','','敵方開場＋60盾 · 神經損傷',''][s.value];
    if(s.region==='sargon'&&!s.value)return '缺水 · 開場少抽1張';
+   if(s.region==='yan'&&s.value>=3)return s.value>=5?'先鋒＋40盾 · 敵方全體 ATK＋10':'敵方先鋒＋40盾 · ATK＋10';
    if(s.region==='kazdel'&&s.value>=4)return '敵方先鋒 ATK＋15'+(R().story?.flags.pact?' · 契約已啟用':'');
    if(s.region==='columbia'&&s.value>=2)return (s.value===3?'敵方全隊':'敵方先鋒')+'開場＋40盾';
    if(s.region==='siesta'&&s.value>=3)return s.value>=5?'全隊開場灼燒 · 後續輪流暴露':'全隊開場灼燒';
@@ -161,7 +166,8 @@ window.FrontierEnvironment=(()=>{
    victoria:()=>s.front>0?'開場全隊＋2盾':s.front<0?'敵方先鋒強攻':'',
    iberia:()=>s.value===3?'高潮 · 神經侵蝕':s.value===2?'淺灘封鎖':'',
    sami:()=>s.value>=12?'追擊與卡牌干擾':s.value>=8?'首手一張牌＋1 AP':s.value>=4?'後續節點遮蔽':'',
-   kazdel:()=>R().story?.flags.pact?'契約 · 出牌傷害＋15%':''};
+   kazdel:()=>R().story?.flags.pact?'契約 · 出牌傷害＋15%':'',
+   yan:()=>s.value>=3?'先鋒墨痕護盾':''};
   return effects[s.region]();
  }
  function label(s=current()){
@@ -170,7 +176,7 @@ window.FrontierEnvironment=(()=>{
   return d.name+' · '+state;
  }
  function view(){const s=current();if(!s)return'';const active=effect(s);return `<section class="panel environment-panel"><b>${label(s)}${active?' · '+active:''}</b><p class="tiny muted">${rules(s)}</p>${s.region==='sami'&&s.value>=4?'<p>坍縮範式：遮蔽'+(s.value>=8?'／認知干擾':'')+(s.value>=12?'／追擊':'')+'</p>':''}</section>`}
- function forecast(region){const d=definitions[region],level=db.exploration?.regions[region]?.level||0,brief={chernobog:['工業污染','抗毒／淨化戰術補給；持續治療'],lungmen:['都市盤查','降低通緝的情報事件；預留源石碇'],siesta:['火山熱流','抗灼戰術補給；灼傷減免防護'],sargon:['乾燥沙海','耐力補給；降低負重，營地補水'],kazimierz:['公開賽事','穿甲與破盾攻擊；選擇低調路線'],kjerag:['持續降雪','抗寒戰術補給；防凍護具，注意首回合能量'],siracusa:['家族巡查','交涉情報；避免不必要敵意'],columbia:['設施干擾','淨化與技能冷卻管理'],victoria:['交錯戰線','支援物資；防護與續航'],iberia:['週期潮汐','神經穩定戰術補給；留意高潮接敵'],sami:['異常坍縮','淨化與情報工具；預留營地穩定'],kazdel:['戰場殘響','自願契約的負面牌整理與保命戰術補給']}[region];return `<h3>${d.name}</h3><p>${regionalRules[region]}</p>${level>=2?`<section class="forecast-detail"><b>Lv.2 行前詳報</b><p>預測環境：${brief[0]}<br>建議整備：${brief[1]}</p><p class="tiny">環境依實際探索行動推進，開箱搜索也計入；暫停不推進。營地與戰術補給可處理風險，不會加金紅掉率。</p></section>`:'<p class="tiny muted">地區探索Lv.2可讀取整備與行動規則詳報。</p>'}${level>=5?'<p class="tiny">Lv.5：可尋找高階地區調查，完成後保存專屬觀測檔案。</p>':''}<p class="tiny muted">預報提供環境規則，不揭露寶箱內容或完整隱藏結局條件。</p>`}
+ function forecast(region){const d=definitions[region],level=db.exploration?.regions[region]?.level||0,brief={chernobog:['工業污染','抗毒／淨化戰術補給；持續治療'],lungmen:['都市盤查','降低通緝的情報事件；預留源石碇'],siesta:['火山熱流','抗灼戰術補給；灼傷減免防護'],sargon:['乾燥沙海','耐力補給；降低負重，營地補水'],kazimierz:['公開賽事','穿甲與破盾攻擊；選擇低調路線'],kjerag:['持續降雪','抗寒戰術補給；防凍護具，注意首回合能量'],siracusa:['家族巡查','交涉情報；避免不必要敵意'],columbia:['設施干擾','淨化與技能冷卻管理'],victoria:['交錯戰線','支援物資；防護與續航'],iberia:['週期潮汐','神經穩定戰術補給；留意高潮接敵'],sami:['異常坍縮','淨化與情報工具；預留營地穩定'],kazdel:['戰場殘響','自願契約的負面牌整理與保命戰術補給'],yan:['歲夢侵擾','護盾與灼燒防護；預留營地平復歲夢']}[region];return `<h3>${d.name}</h3><p>${regionalRules[region]}</p>${level>=2?`<section class="forecast-detail"><b>Lv.2 行前詳報</b><p>預測環境：${brief[0]}<br>建議整備：${brief[1]}</p><p class="tiny">環境依實際探索行動推進，開箱搜索也計入；暫停不推進。營地與戰術補給可處理風險，不會加金紅掉率。</p></section>`:'<p class="tiny muted">地區探索Lv.2可讀取整備與行動規則詳報。</p>'}${level>=5?'<p class="tiny">Lv.5：可尋找高階地區調查，完成後保存專屬觀測檔案。</p>':''}<p class="tiny muted">預報提供環境規則，不揭露寶箱內容或完整隱藏結局條件。</p>`}
 
  function enter(node){return window.FrontierCurios?FrontierCurios.withEnvironment(()=>enterBase(node)):enterBase(node)}
 

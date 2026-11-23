@@ -1120,5 +1120,77 @@ window.FrontierCollectionData=[
    "name": "魔王的祭器",
    "source": "https://prts.wiki/w/%E9%AD%94%E7%8E%8B%E7%9A%84%E7%A5%AD%E5%99%A8"
   }
+ },
+ {
+  "id": "collection_t7_13",
+  "name": "墨化殘碑",
+  "region": "yan",
+  "kind": "研",
+  "rarity": 7,
+  "originalSource": "https://prts.wiki/w/%E5%A2%A8%E5%8C%96%E6%AE%8B%E7%A2%91",
+  "originalEvent": "歲的界園志異"
+ },
+ {
+  "id": "collection_t6_37",
+  "name": "封神令",
+  "region": "yan",
+  "kind": "紀",
+  "rarity": 6,
+  "originalSource": "https://prts.wiki/w/%E5%B0%81%E7%A5%9E%E4%BB%A4",
+  "originalEvent": "歲的界園志異"
+ },
+ {
+  "id": "collection_t6_38",
+  "name": "飛錦戰旌",
+  "region": "yan",
+  "kind": "紀",
+  "rarity": 6,
+  "originalSource": "https://prts.wiki/w/%E9%A3%9E%E9%94%A6%E6%88%98%E6%97%8C",
+  "originalEvent": "歲的界園志異"
+ },
+ {
+  "id": "collection_t6_39",
+  "name": "釀山河",
+  "region": "yan",
+  "kind": "貿",
+  "rarity": 6,
+  "originalSource": "https://prts.wiki/w/%E9%85%BF%E5%B1%B1%E6%B2%B3",
+  "originalEvent": "歲的界園志異"
+ },
+ {
+  "id": "collection_t5_51",
+  "name": "《炎國字彙》",
+  "region": "yan",
+  "kind": "研",
+  "rarity": 5,
+  "originalSource": "https://prts.wiki/w/%E3%80%8A%E7%82%8E%E5%9B%BD%E5%AD%97%E6%B1%87%E3%80%8B",
+  "originalEvent": "歲的界園志異"
+ },
+ {
+  "id": "collection_t5_52",
+  "name": "母鼎",
+  "region": "yan",
+  "kind": "研",
+  "rarity": 5,
+  "originalSource": "https://prts.wiki/w/%E6%AF%8D%E9%BC%8E",
+  "originalEvent": "歲的界園志異"
+ },
+ {
+  "id": "collection_t5_53",
+  "name": "商影",
+  "region": "yan",
+  "kind": "貿",
+  "rarity": 5,
+  "originalSource": "https://prts.wiki/w/%E5%95%86%E5%BD%B1",
+  "originalEvent": "歲的界園志異"
+ },
+ {
+  "id": "collection_t5_54",
+  "name": "老者面",
+  "region": "yan",
+  "kind": "紀",
+  "rarity": 5,
+  "originalSource": "https://prts.wiki/w/%E8%80%81%E8%80%85%E9%9D%A2",
+  "originalEvent": "歲的界園志異"
  }
 ];

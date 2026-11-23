@@ -1,7 +1,7 @@
 'use strict';
 window.FrontierInvestigation=(()=>{
  const id='regional_survey';
- const findings={chernobog:'污染不是只在交戰時累積；補給搜索也會延長暴露。',lungmen:'通緝升高時，情報交涉能重新打開交易空間。',siesta:'熱壓與灼燒是兩種風險，降環境與減少身上灼燒需分別處理。',sargon:'沙海補水消耗依實際行動推進，輕裝與營地能延長續航。',kazimierz:'公開挑戰帶來外勤收益，也提高敵人的戰意。',kjerag:'跨層的未知裝置與穩定熱源有關；留下完整研究紀錄，終段可能出現不同訊號。',siracusa:'家族信任與敵意分開記錄；獲得信任不表示敵意會自行消失。',columbia:'設施干擾影響技能節奏；保持一條不依賴連續技能的備用牌路。',victoria:'支援物資能改變戰線，推進有助於開場防護。',iberia:'潮汐由探索行動推進，高潮接戰前先備好神經防護。',sami:'坍縮依接觸與探索推進，情報工具只能辨識路線，不會讓風險消失。',kazdel:'殘響契約可選擇拒絕；普通結局不要求承擔負面牌。'};
+ const findings={chernobog:'污染不是只在交戰時累積；補給搜索也會延長暴露。',lungmen:'通緝升高時，情報交涉能重新打開交易空間。',siesta:'熱壓與灼燒是兩種風險，降環境與減少身上灼燒需分別處理。',sargon:'沙海補水消耗依實際行動推進，輕裝與營地能延長續航。',kazimierz:'公開挑戰帶來外勤收益，也提高敵人的戰意。',kjerag:'跨層的未知裝置與穩定熱源有關；留下完整研究紀錄，終段可能出現不同訊號。',siracusa:'家族信任與敵意分開記錄；獲得信任不表示敵意會自行消失。',columbia:'設施干擾影響技能節奏；保持一條不依賴連續技能的備用牌路。',victoria:'支援物資能改變戰線，推進有助於開場防護。',iberia:'潮汐由探索行動推進，高潮接戰前先備好神經防護。',sami:'坍縮依接觸與探索推進，情報工具只能辨識路線，不會讓風險消失。',kazdel:'殘響契約可選擇拒絕；普通結局不要求承擔負面牌。',yan:'歲夢由交戰與未知路線加深，營地與明處事件可回落；首領機制多與時序有關，留意部位與形態的輪替。'};
  FrontierAdventure.events[id]={id,title:'高階地區調查',choice:'支付6源石碇，完成地區環境觀測並保存永久調查檔案。首次完成獲得2研究情報；不增加戰力或掉率。',effect:'regionalSurvey',family:'',value:6};
  function records(){const e=FrontierAdventure.ensure();return e.investigations??={}}
  function install(){const r=R(),e=r?.expedition;if(!e||e.mode!=='standard'||(db.exploration?.regions[e.regionId]?.level||0)<5)return;const n=e.layers.slice(1).flatMap(l=>l.rows.flat()).find(n=>!n.requiredCombat&&!n.storyEvent&&!n.escortGoal&&['search','container'].includes(n.type)&&n.lane===(e.graphVersion>=2?4:2));if(!n)return;n.type='event';n.risk=0;n.hidden=false;n.storyEvent=id;n.toolRevealed=true;n.toolInfo='Lv.5地區調查：可保存環境觀測檔案。';r.regionalSurvey={version:1,node:n.id,claimed:false}}
