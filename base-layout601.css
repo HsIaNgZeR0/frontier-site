@@ -1,47 +1,53 @@
-/* 基建佈局 v601c：還原本家基建總覽——切角房框、室內剖面、斜角名稱標籤（碰撞仍以長方形判定） */
-.base151-board-wrap{background:#0b0d0f;max-width:100%}
-.base151-board.b601-host{display:block;height:650px;background:#0b0d0f}
-.b601-board{position:relative;display:block;margin:5px;background:#101215;background-image:linear-gradient(#ffffff07 1px,transparent 1px),linear-gradient(90deg,#ffffff07 1px,transparent 1px);background-size:16px 16px}
-.b601-room{--cut:9px;position:absolute;box-sizing:border-box;margin:0!important;padding:0!important;min-height:0!important;display:block;text-align:left;overflow:visible;border:0!important;border-radius:0!important;color:#fff;background:transparent!important;box-shadow:none!important;touch-action:pan-x pan-y;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;filter:drop-shadow(0 2px 0 #000)}
-/* 外框：1px 亮邊＋右上／左下切角 */
-.b601-frame{position:absolute;inset:1px;display:block;overflow:hidden;background:#1c1f22;clip-path:polygon(0 0,calc(100% - var(--cut)) 0,100% var(--cut),100% 100%,var(--cut) 100%,0 calc(100% - var(--cut)))}
-.b601-room::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,#ffffff55,#ffffff22 60%,var(--rc) 60%,var(--rc));clip-path:polygon(0 0,calc(100% - var(--cut)) 0,100% var(--cut),100% 100%,var(--cut) 100%,0 calc(100% - var(--cut)));pointer-events:none}
-.b601-int{position:absolute;inset:0;width:100%;height:100%;display:block}
-.b601-int .w{fill:#26292d}
-.b601-int .c{fill:#16181a}
-.b601-int .g{stroke:var(--rc);stroke-width:2;opacity:.55}
-.b601-int .l{stroke:#ffffff26;stroke-width:1;fill:none}
-.b601-int .p{stroke:#ffffff10;stroke-width:1;fill:none}
-.b601-int .f{fill:#363a3f}
-.b601-int .fl{stroke:#ffffff30;stroke-width:1}
-.b601-int .m{fill:#41464c;stroke:#00000080;stroke-width:.6}
-.b601-int .a{fill:var(--rc);opacity:.7}
-.b601-int .al{stroke:var(--rc);stroke-width:1.6;fill:none;opacity:.7}
-.b601-room:focus-visible{outline:2px solid var(--rc);outline-offset:2px}
-/* 名稱標籤：彩色圖示方塊＋右端斜切的深色名稱帶 */
-.b601-head{position:absolute;left:1px;top:1px;height:26px;max-width:calc(100% - 3px);display:flex;align-items:stretch;pointer-events:none;z-index:2}
-.b601-ico{flex:none;width:26px;display:grid;place-items:center;background:var(--rc);color:#141414;box-shadow:inset 0 -2px 0 #0003}
-.b601-ico svg{width:15px;height:15px;fill:currentColor;display:block}
-.b601-txt{flex:0 1 auto;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:1px;padding:0 13px 0 5px;background:#0b0c0eeb;clip-path:polygon(0 0,100% 0,calc(100% - 9px) 100%,0 100%);box-shadow:inset 0 -1px 0 var(--rc)}
-.b601-name{display:block;font-size:11.5px;font-weight:700;letter-spacing:.04em;line-height:13px;white-space:nowrap;text-shadow:0 1px 1px #000}
-.b601-en{display:block;font-size:6px;font-weight:700;letter-spacing:.1em;line-height:7px;white-space:nowrap;color:var(--rc);opacity:.9}
-.b601-lv{position:absolute;left:4px;top:31px;display:flex;gap:2px;align-items:flex-end;height:9px;z-index:2;padding:1px 2px;background:#0009}
+/* 基建佈局 v601e：依本家基建總覽截圖還原——淺灰網格底板、深色房塊、生產類左側色條、名稱＋直槓、狀態列、人數、分段條（碰撞仍以長方形判定） */
+.base151-board-wrap{background:#dcdcdc;max-width:100%;border-color:#9a9a9a!important}
+.base151-board.b601-host{display:block;height:650px;background:#e2e2e2}
+.b601-board{position:relative;display:block;margin:5px;background-color:#e4e4e4;
+ background-image:
+  linear-gradient(#0000000d 1px,transparent 1px),linear-gradient(90deg,#0000000d 1px,transparent 1px),
+  linear-gradient(#0000000a 1px,transparent 1px),linear-gradient(90deg,#0000000a 1px,transparent 1px);
+ background-size:112px 64px,112px 64px,16px 16px,16px 16px}
+/* 房塊外的淺色槽框 */
+.b601-room{position:absolute;box-sizing:border-box;margin:0!important;padding:3px!important;min-height:0!important;display:block;text-align:left;overflow:visible;border:1px solid #c4c4c4!important;border-radius:0!important;color:#fff;background:#d2d2d2!important;box-shadow:none!important;touch-action:pan-x pan-y;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.b601-frame{position:absolute;inset:3px;display:block;overflow:hidden;background:#2b2b2b;background-image:linear-gradient(#ffffff08 1px,transparent 1px),linear-gradient(90deg,#ffffff08 1px,transparent 1px);background-size:8px 8px;box-shadow:0 1px 2px #0006}
+.b601-room:focus-visible{outline:2px solid #333;outline-offset:1px}
 .b601-room i{border-radius:0!important;padding:0!important;margin:0!important;min-width:0!important;flex:none;font-style:normal}
-.b601-lv i{display:block;border:0!important;width:3px;height:9px;background:#f4f4f4}
-.b601-staff{position:absolute;left:5px;bottom:5px;display:flex;gap:2px;z-index:2}
-.b601-staff i{display:block;width:13px;height:13px;box-sizing:border-box;border:1px solid #ffffff50!important;background:#00000080}
-.b601-staff i.on{border-color:#fff!important;background:linear-gradient(180deg,#ffffff40,#0000 60%),var(--rc)}
-.b601-ready{position:absolute;right:5px;top:5px;width:8px;height:8px;background:#d5ef8f;box-shadow:0 0 6px #d5ef8f;transform:rotate(45deg);z-index:3}
-/* 控制中樞（2×2） */
-.b601-hub{--cut:16px}
-.b601-hub .b601-frame{background:#191b1e}
-.b601-hub .b601-head{height:38px}
-.b601-hub .b601-ico{width:38px}
-.b601-hub .b601-ico svg{width:22px;height:22px}
-.b601-hub .b601-txt{padding:0 18px 0 8px;gap:2px;clip-path:polygon(0 0,100% 0,calc(100% - 13px) 100%,0 100%)}
-.b601-hub .b601-name{font-size:16px;line-height:19px;letter-spacing:.08em}
-.b601-hub .b601-en{font-size:8px;line-height:10px}
-.b601-hub .b601-lv{top:44px;left:6px;height:13px}
-.b601-hub .b601-lv i{width:4px;height:13px}
-.b601-lift{z-index:20;filter:drop-shadow(0 0 2px var(--rc)) drop-shadow(0 8px 10px #000)!important;opacity:.95}
-.b601-bad{filter:drop-shadow(0 0 3px #ff5a4f) drop-shadow(0 8px 10px #000)!important}
+/* 六角形浮水印 */
+.b601-mark{position:absolute;left:4px;top:50%;width:40px;height:46px;transform:translateY(-38%);color:#ffffff14;pointer-events:none}
+.b601-hex{position:absolute;inset:0;width:100%;height:100%}
+.b601-mark .b601-ico{position:absolute;inset:0;display:grid;place-items:center}
+.b601-mark .b601-ico svg{width:20px;height:20px;fill:currentColor}
+/* 生產類左側色條＋外發光 */
+.b601-bar{position:absolute;left:0;top:0;bottom:0;width:8px;background:var(--rc)}
+.b601-prod .b601-frame{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--rc) 55%,transparent),0 1px 2px #0006}
+.b601-prod .b601-head,.b601-prod .b601-status{left:13px}
+.b601-head{position:absolute;left:6px;right:4px;top:5px;display:flex;align-items:center;gap:3px;min-width:0;pointer-events:none}
+.b601-name{display:block;flex:0 1 auto;min-width:0;font-size:12.5px;font-weight:700;line-height:15px;white-space:nowrap;letter-spacing:.02em}
+.b601-lv{display:flex;gap:1.5px;align-items:center;height:10px;flex:none}
+.b601-lv i{display:block;border:0!important;width:2.5px;height:10px;background:#fff;border-radius:1px!important}
+.b601-status{position:absolute;left:6px;right:30px;top:22px;font-size:7.5px;font-weight:700;line-height:9px;white-space:nowrap;color:#9a9a9a;pointer-events:none}
+.b601-prod .b601-status{color:var(--rc)}
+.b601-status.is-ready{color:#d5ef8f}
+.b601-count{position:absolute;right:5px;bottom:8px;display:flex;align-items:flex-end;gap:1px;line-height:1;color:#fff;pointer-events:none}
+.b601-count svg{width:5px;height:10px;fill:#fff;margin-right:1px;margin-bottom:1px}
+.b601-count b{font-size:15px;font-weight:500;font-family:Bahnschrift,'DIN Alternate',sans-serif}
+.b601-count small{font-size:8px;color:#ddd;margin-bottom:1px}
+.b601-seg{position:absolute;left:6px;right:5px;bottom:3px;display:flex;gap:2px;pointer-events:none}
+.b601-prod .b601-seg{left:13px}
+.b601-seg i{display:block;flex:1 1 0!important;height:2px;background:#ffffff55}
+/* 控制中樞：深色插畫底＋置中標題與 VER 版號 */
+.b601-hub .b601-frame{background:#1f1d1b;background-image:radial-gradient(ellipse at 45% 60%,#5a4a3a55,transparent 60%)}
+.b601-tree{position:absolute;inset:0;background:
+ linear-gradient(100deg,transparent 46%,#8a7a6630 46% 49%,transparent 49%),
+ linear-gradient(70deg,transparent 52%,#8a7a6626 52% 54%,transparent 54%),
+ linear-gradient(125deg,transparent 40%,#8a7a6620 40% 42%,transparent 42%);pointer-events:none}
+.b601-hubtitle{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;padding:4px 18px;pointer-events:none;
+ border-left:2px solid #ffffffb0;border-right:2px solid #ffffffb0;border-radius:40%/50%}
+.b601-hub .b601-name{font-size:17px;line-height:20px;letter-spacing:.06em;text-shadow:0 1px 3px #000}
+.b601-hubtitle>small{font-size:5.5px;letter-spacing:.04em;color:#ddd;white-space:nowrap}
+.b601-ver{display:flex;align-items:flex-end;gap:2px;margin-top:2px}
+.b601-verhatch{display:block;width:14px;height:20px;background:repeating-linear-gradient(135deg,#e9a64a 0 2px,transparent 2px 4px)}
+.b601-ver small{font-size:7px;color:#ccc;margin-bottom:2px}
+.b601-ver strong{font-size:30px;line-height:28px;font-weight:400;color:transparent;-webkit-text-stroke:1.2px #f0a43c;font-family:Bahnschrift,'DIN Alternate',sans-serif;text-shadow:0 0 6px #f0a43c55}
+.b601-ready{position:absolute;right:6px;top:6px;width:7px;height:7px;background:#d5ef8f;box-shadow:0 0 5px #d5ef8f;transform:rotate(45deg);z-index:3}
+.b601-lift{z-index:20;box-shadow:0 0 0 2px #333,0 8px 16px #0008!important;opacity:.95}
+.b601-bad{box-shadow:0 0 0 2px #ff5a4f,0 8px 16px #0008!important}
