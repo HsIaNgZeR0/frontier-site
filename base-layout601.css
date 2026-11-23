@@ -89,3 +89,12 @@
 .b601-chip em{font-style:normal;color:#d5ef8f;font-weight:700;white-space:nowrap}
 .b601-chip.is-off em{color:#e98a7a}
 .b601-total{font-size:10.5px;color:#d5ef8f;font-weight:700;white-space:nowrap;margin-left:2px}
+/* 派駐頭像 */
+.b601-chip{position:relative;flex-direction:column;gap:0;padding:0!important;border-left:0!important;background:transparent!important;width:38px}
+.b601-face{display:block;width:38px;height:38px;object-fit:cover;object-position:top;background:#0d1418;border:1px solid var(--rc);box-sizing:border-box}
+.b601-chip.is-enemy .b601-face{object-fit:contain;object-position:center;padding:2px;background:#2a1d22}
+.b601-face-fb{display:grid;place-items:center;font-size:15px;font-weight:700;color:#fff}
+.b601-chip em{display:block;width:100%;text-align:center;font-size:9.5px;line-height:13px;background:#000c;margin-top:-1px}
+.b601-chip.is-off .b601-face{filter:grayscale(1) brightness(.6)}
+.b601-staffline{align-items:flex-end;gap:4px}
+.b601-total{align-self:center}
