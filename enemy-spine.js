@@ -36,7 +36,11 @@ window.FrontierEnemySpine=(()=>{
   const state=new spine.AnimationState(new spine.AnimationStateData(data));if(anim)state.setAnimation(0,anim,true);
   /* 以第 0 格的邊界框置中，之後不再重算，避免動作造成縮放跳動。 */
   sk.setToSetupPose();state.apply(sk);sk.updateWorldTransform();const off=new spine.Vector2(),size=new spine.Vector2();sk.getBounds(off,size,[]);
-  Object.assign(st,{sk,state,bounds:{x:off.x,y:off.y,w:Math.max(1,size.x),h:Math.max(1,size.y)},ready:true})}
+  Object.assign(st,{sk,state,bounds:{x:off.x,y:off.y,w:Math.max(1,size.x),h:Math.max(1,size.y)},ready:true});if(st.want)applyMotion(st,st.want)}
+ /* 收容管理場：在 Idle 與 Move 間切換；沒有 Move 的模型維持 Idle */
+ function moveName(data){const n=names(data);return n.find(x=>/^move_loop$/i.test(x))||n.find(x=>/^move$/i.test(x))||n.find(x=>/^run_loop$/i.test(x))||n.find(x=>/^(a_)?move(_a)?$/i.test(x))||n.find(x=>/move/i.test(x)&&!/begin|start|end|die/i.test(x))||null}
+ function applyMotion(st,want){const name=want==='move'?moveName(st.data)||pickIdle(st.data,'A'):pickIdle(st.data,'A');if(name&&st.current!==name){st.current=name;st.state.setAnimation(0,name,true)}}
+ function motion(id,key,want){const r=resolve(id),st=r&&byKey.get(r+'|'+key);if(!st)return;st.want=want;if(st.ready)applyMotion(st,want)}
  function draw(st,dt){
   if(!st.canvas.isConnected){st.ctx.gl.getExtension('WEBGL_lose_context')?.loseContext();live.delete(st);if(st.key)byKey.delete(st.key);return}
   if(!st.ready){if(st.assets.isLoadingComplete()){try{setup(st)}catch(e){console.warn('spine',st.id,e);live.delete(st);(failed.add(st.id),st.host.dispatchEvent(new CustomEvent('spine-failed')));return}}else{if(st.assets.hasErrors()){live.delete(st);(failed.add(st.id),st.host.dispatchEvent(new CustomEvent('spine-failed')))}return}}
@@ -61,5 +65,5 @@ window.FrontierEnemySpine=(()=>{
  function lock(ms,label){let el=document.querySelector('.fd-phase-lock');if(!el){el=document.createElement('div');el.className='fd-phase-lock';el.setAttribute('role','status');document.body.append(el);for(const ev of ['pointerdown','pointerup','click','touchstart','touchend','keydown','contextmenu'])el.addEventListener(ev,e=>{e.preventDefault();e.stopPropagation()},{capture:true,passive:false})}
   el.innerHTML='<b>'+label+'</b>';el.classList.add('is-on');document.documentElement.classList.add('fd-phase-locked');clearTimeout(lockTimer);lockTimer=setTimeout(()=>{el.classList.remove('is-on');document.documentElement.classList.remove('fd-phase-locked')},Math.max(800,ms))}
  document.addEventListener('keydown',e=>{if(document.documentElement.classList.contains('fd-phase-locked')){e.preventDefault();e.stopPropagation()}},true);
- return{mount,transition,lifeOf,lastLife,lock,has,live:()=>live.size,cost:()=>({frames:cost.n,avgMs:cost.n?+(cost.ms/cost.n).toFixed(2):0})};
+ return{mount,motion,transition,lifeOf,lastLife,lock,has,live:()=>live.size,cost:()=>({frames:cost.n,avgMs:cost.n?+(cost.ms/cost.n).toFixed(2):0})};
 })();
