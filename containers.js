@@ -263,14 +263,14 @@ window.FrontierContainers=(()=>{
    const item=keys.find(x=>x.uid===selectedAccess.keys[i]);
    return '<button aria-label="選擇房卡 '+(i+1)+'" onclick="FrontierContainers.pickAccess(&quot;keys&quot;)">'+(item?FrontierIcons.access(item):'+')+'</button>';
   }).join('')+'</div>'+(!capacity?'<button onclick="go(&quot;doctor&quot;)">前往認知構築解鎖權限卡匣</button>':'')+'</section>'+
-  '<section class="search174-block"><h3>開鎖裝置 <small>'+(tools.length?'攜帶 '+tools.length+' 件':'未攜帶')+'</small></h3><button type="button" class="search174-toolzone" aria-label="選擇開鎖裝置與炸藥，目前攜帶 '+tools.length+' 件" onclick="FrontierContainers.pickAccess(&quot;tools&quot;)">'+(tools.length?tools.map(item=>FrontierIcons.access(item)).join(''):'<span>點此選擇開鎖裝置與炸藥</span>')+'</button></section></div>';
+  '<section class="search174-block"><h3>開鎖裝置／偵查儀 <small>'+(tools.length?'攜帶 '+tools.length+' 件':'未攜帶')+'</small></h3><button type="button" class="search174-toolzone" aria-label="選擇開鎖裝置與炸藥，目前攜帶 '+tools.length+' 件" onclick="FrontierContainers.pickAccess(&quot;tools&quot;)">'+(tools.length?tools.map(item=>FrontierIcons.access(item)).join(''):'<span>點此選擇開鎖裝置、炸藥與偵查儀</span>')+'</button></section></div>';
  }
  function pickAccess(kind){
   if(!Object.hasOwn(selectedAccess,kind))return;
   syncKeys();const keys=kind==='keys',capacity=locks.keyRingLimit(db);
   if(keys&&!capacity)return;
   const candidates=accessCandidates(kind),selected=selectedAccess[kind];
-  modal(keys?'選擇房卡':'選擇開鎖裝置／炸藥','<p>'+(keys?'最多 '+capacity+' 張，每款可帶一張。':'開鎖裝置用來開容器；炸藥在沒有房卡時破門。兩者都占背包空間，炸藥最多攜帶一件。')+'</p><div class="search174-access-picker">'+candidates.map(item=>'<label title="'+esc(catalog[item.itemId].name)+'"><input type="checkbox" data-search174-load value="'+esc(item.uid)+'" aria-label="'+esc(catalog[item.itemId].name)+'" '+(selected.includes(item.uid)?'checked':'')+'>'+FrontierIcons.access(item)+'</label>').join('')+'</div>'+(!candidates.length?'<p>目前沒有可攜帶的物品。</p>':''),'<button class="primary" onclick="FrontierContainers.confirmAccess(&quot;'+kind+'&quot;)">確認攜帶</button>');
+  modal(keys?'選擇房卡':'選擇開鎖裝置／炸藥／偵查儀','<p>'+(keys?'最多 '+capacity+' 張，每款可帶一張。':'開鎖裝置用來開容器；炸藥在沒有房卡時破門；偵查儀在開門前查看容器的鎖。都占背包空間，炸藥最多攜帶一件。')+'</p><div class="search174-access-picker">'+candidates.map(item=>'<label title="'+esc(catalog[item.itemId].name)+'"><input type="checkbox" data-search174-load value="'+esc(item.uid)+'" aria-label="'+esc(catalog[item.itemId].name)+'" '+(selected.includes(item.uid)?'checked':'')+'>'+FrontierIcons.access(item)+'</label>').join('')+'</div>'+(!candidates.length?'<p>目前沒有可攜帶的物品。</p>':''),'<button class="primary" onclick="FrontierContainers.confirmAccess(&quot;'+kind+'&quot;)">確認攜帶</button>');
  }
  function checkAccess(keys,tools){
   const capacity=locks.keyRingLimit(db);
@@ -344,7 +344,7 @@ window.FrontierContainers=(()=>{
   const row=items.find(x=>x.item.uid===uid);
   let amount=0,reason='',plan;
   if(method==='scout'){
-   if(!row||row.id!=='S1'||row.uses<1||scene.scouted605)return;
+   if(!row||row.id!=='S1'||row.uses<row.cost||scene.scouted605)return;
    consumeAccess(run,row);scene.scouted605=true;applyAlert(run,run.expedition.current+':scout',1,'偵查隔離門');save();render();showSearchDoor();return;
   }
   if(method==='access'){
@@ -398,8 +398,8 @@ window.FrontierContainers=(()=>{
    const click=!row?'':id==='B1'?"FrontierContainers.openSearchDoor(&quot;breach&quot;,"+esc(JSON.stringify(row.item.uid))+")":"FrontierContainers.chooseBreach("+esc(JSON.stringify(row.item.uid))+")";
    out.push(doorOption(row||{item:{itemId:'search174_'+id}},'用'+info[id][0]+'炸開'+why,info[id][1],info[id][2],click,!!why));
   }
-  const scout=items.find(r=>r.id==='S1'&&r.uses>0);
-  if(!scene.scouted605)out.push(doorOption(scout||{item:{itemId:'search174_S1'}},'啟用'+locks.catalog.S1.name+(scout?'':'（未攜帶）'),'消耗 1 件 · 警戒 +1 · 不開門','代價：用掉偵查儀；可看到門後每個容器需要的開鎖裝置等級，再決定要不要開。',scout?"FrontierContainers.openSearchDoor(&quot;scout&quot;,"+esc(JSON.stringify(scout.item.uid))+")":'',!scout));
+  const scout=items.find(r=>r.id==='S1'&&r.uses>=r.cost),scoutAny=items.find(r=>r.id==='S1');
+  if(!scene.scouted605)out.push(doorOption(scout||scoutAny||{item:{itemId:'search174_S1'}},'啟用'+locks.catalog.S1.name+(scout?'':scoutAny?'（點數不足）':'（未攜帶）'),(scoutAny?'預計消耗 '+scoutAny.cost+' 點（剩 '+scoutAny.uses+' 點）':'每次消耗 普通1／困難2／極限4／折磨5／高危5 點')+' · 警戒 +1 · 不開門','代價：扣偵查儀點數；可看到門後每個容器需要的開鎖裝置等級，再決定要不要開。',scout?"FrontierContainers.openSearchDoor(&quot;scout&quot;,"+esc(JSON.stringify(scout.item.uid))+")":'',!scout));
   if(canSearchExterior(scene))out.push('<button onclick="FrontierContainers.openSearchDoor(&quot;exterior&quot;)">只搜外圍 · 不加警戒 · 放棄門後容器</button>');
   return out.join('');
  }
