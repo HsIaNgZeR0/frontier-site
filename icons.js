@@ -16,8 +16,8 @@ window.FrontierIcons=(()=>{
  }
  function html(id,instance){if(window.FrontierCurrencyIcons?.has(id))return FrontierCurrencyIcons.html(id);const story=window.FrontierAdventure?.relics[id],d=FrontierInventory.definitions[id]||(story?{name:story.name,rarity:0}:null);if(!d)return '<span class="item-icon icon-missing" aria-label="暫無圖示">◇</span>';if(d.category==='searchTool'){
  const path='assets/search174/'+d.effect.id+'.png';
- const max=window.FrontierSearchLocks174?.catalog[d.effect.id]?.uses;
- const uses=max!=null?(instance?.searchUses174??max)+'/'+max:'';
+ const L=window.FrontierSearchLocks174,max=L?.maxPoints?L.maxPoints(d.effect.id):L?.catalog[d.effect.id]?.uses;
+ const uses=max!=null?(instance?.itemId&&L?.pointsLeft?L.pointsLeft(instance):instance?.searchUses174??max)+'/'+max:'';
  const src=(typeof ASSETS!=='undefined'&&ASSETS[path])||path;
  return '<span data-item-id="'+esc(id)+'" class="item-icon rarity-'+d.rarity+' search174-icon" role="img" aria-label="'+esc(d.name)+'" title="'+esc(d.name)+'"><img class="item-source-image" src="'+esc(src)+'" alt="" draggable="false">'+(uses?'<span class="search174-uses">'+uses+'</span>':'')+'</span>';
 }if(d.category==='researchSample'){const sample=sampleHtml(d);if(sample)return sample}const a=registry[id]||ensure()[id]||window.FrontierLegacyIconAssets?.[id],tile=failed?defaults.item:a.tile,external=a.iconStatus==='ready'&&!a.tile,path=typeof ASSETS!=='undefined'&&ASSETS[a.iconPath]||a.iconPath,src=a.assetUrl?.startsWith('https://torappu.prts.wiki/')&&path===a.iconPath?path+'?v='+a.sha256.slice(0,12):path;return `<span data-item-id="${esc(id)}" class="item-icon rarity-${d.rarity}${d.category==='container'?' container-item-icon':''}${failed?' icon-missing':''}" role="img" aria-label="${esc(d.name)}圖示${a.iconStatus!=='ready'?'（共用替代圖）':''}" title="${esc(d.name)}">${external?'<img class="item-source-image" src="'+src+'" alt="" loading="lazy" decoding="async" onerror="FrontierIcons.fallback(this,\''+id+'\')">':'<span class="item-sprite" style="--sprite-x:'+tile[0]+';--sprite-y:'+tile[1]+'"></span>'}</span>`}

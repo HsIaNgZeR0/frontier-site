@@ -97,11 +97,12 @@ function containerRule(itemId){
  return {...structureRules[type],type,name:structureNames[type]};
 }
 const recipeInput={
- // v603 價格校正：合成成本（素材＋龍門幣）÷ 點數商店月售價 ≈ 1.75（合成無購買上限，故較貴；藍75／銀120／金≈442點，1點≈69龍門幣）。
- T1:[1,3000,[['polyester',4,6],['iron',4,2]]],
- T2:[2,6000,[['device',5,6],['sugar',4,6]]],
- T3:[3,15000,[['rma',6,3],['device',5,8]]],
- T4:[4,40000,[['gel',6,6],['rock',6,4]]],
+ // v604 價格校正：開鎖裝置合成成本 ≈ 點數商店週售價（價值換算：金材300點＝1、銀0.4、藍0.16，1點≈69龍門幣），
+ // 用完全部點數的權限獎勵＝成本×1.5（普通）～×3（高危），見 accessBonusValue。
+ T1:[1,2000,[['polyester',4,1],['iron',4,1]]],
+ T2:[2,4000,[['device',4,3],['sugar',4,2]]],
+ T3:[3,7000,[['rma',5,2],['device',4,4]]],
+ T4:[4,12000,[['gel',5,2],['rock',4,4]]],
  B1:[2,30000,[['rock',5,10],['grindstone',6,2]]],
  B2:[3,40000,[['ketone',6,6],['manganese',6,4]]]
 };
@@ -120,7 +121,24 @@ function greenPrice(id){const d=catalog[id];return greenPrices[d.key?'keycard':'
 function yellowPrice(id){return Math.max(1,Math.round(greenPrice(id)/10*.8))}
 // 調查點數基準（之後由點數商店再套每月／每週倍率）。
 // 房卡與開鎖裝置在點數商店半價（使用者定案）；炸藥維持原換算。
-function pointBase(id){return greenPrice(id)*12*(catalog[id].key||id[0]==='T'?.5:1)}
+// v604：房卡／開鎖裝置在點數商店另有定價（基準；每月×1.2、每週再×1.5），與權限獎勵一起校正。炸藥維持原換算。
+const accessPointBase={3:400,4:585,5:800,6:1000,T1:70,T2:170,T3:300,T4:335};
+function pointBase(id){return catalog[id].key?accessPointBase[catalog[id].rarity]:id[0]==='T'?accessPointBase[id]:greenPrice(id)*12}
+// v604 點數制：房卡與開鎖裝置改存「點數」，各難度每次開啟消耗不同點數；炸藥仍是次數。
+// 點數取 20 的倍數（1／2／4／5 的公倍數），任何難度都能剛好用完、不留零頭。
+const accessPoints={3:40,4:40,5:20,6:20,T1:20,T2:20,T3:20,T4:20};
+const openCosts={normal:1,hard:2,extreme:4,torment:5,highrisk:5};
+const bonusRatios={normal:1.5,hard:1.8,extreme:2.2,torment:2.6,highrisk:3};
+const difficultyNames={normal:'普通',hard:'困難',extreme:'極限',torment:'折磨',highrisk:'高危'};
+function usesPoints(id){return !!catalog[id]&&(!!catalog[id].key||id[0]==='T')}
+function maxPoints(id){return usesPoints(id)?accessPoints[catalog[id].key?catalog[id].rarity:id]:catalog[id]?.uses}
+function pointsLeft(item){const id=item?.itemId?.slice(10),d=catalog[id];if(!d)return 0;if(!usesPoints(id))return item.searchUses174??d.uses;if(Number.isInteger(item.searchPoints604))return item.searchPoints604;const max=maxPoints(id);return item.searchUses174==null?max:Math.round(item.searchUses174/d.uses*max)}
+function difficultyKey(run){const e=run?.expedition;return e?.mode==='highrisk'?'highrisk':openCosts[e?.difficulty]?e.difficulty:'normal'}
+function openCost(id,run){return usesPoints(id)?openCosts[difficultyKey(run)]:1}
+function neatPrice(n){const base=Math.floor(n/100)*100;return base+[0,20,25,40,50,60,75,80,100].find(x=>base+x>=n)}
+function weeklyPrice(id){const m=Math.ceil(pointBase(id)*1.2/5)*5;return neatPrice(m*1.5)}
+// 權限獎勵（金材當量）＝本次消耗點數 × 難度倍率 × 每點價值（週售價÷總點數，金材＝300點）。
+function accessBonusValue(id,run){if(!usesPoints(id))return 0;const key=difficultyKey(run);return openCosts[key]*bonusRatios[key]*weeklyPrice(id)/300/maxPoints(id)}
 function shopPrice(id,ladder){const d=catalog[id];return d.key?(d.rarity>=6?ladder[6]*2:ladder[d.rarity+1]):ladder[d.rarity]}
 // unit: 0≤u<1 的決定性亂數。回傳在 minRarity 以上依權重抽中的房卡 ID（排除 exclude）。
 function pickKeycard(unit,minRarity=3,exclude=[]){
@@ -145,8 +163,8 @@ function register(definitions,recipes){
   const kind=accessKind(id);
   definitions[key]={id:key,name:item.name,category:'searchTool',accessKind:kind,rarity:item.rarity,
    description:{
-    keycard:'房卡：開啟對應的探索房間，最多使用 '+item.uses+' 次。',
-    lockpick:'開鎖裝置：開啟上鎖的容器，最多使用 '+item.uses+' 次。',
+    keycard:'房卡：開啟對應的探索房間並取得權限獎勵素材。共 '+maxPoints(id)+' 點，每次開啟消耗 普通1／困難2／極限4／折磨5／高危5 點。',
+    lockpick:'開鎖裝置：開啟上鎖的容器並取得權限獎勵素材。共 '+maxPoints(id)+' 點，每次開啟消耗 普通1／困難2／極限4／折磨5／高危5 點。',
     explosive:id==='B1'?'炸藥：沒有房卡時炸開房門。代價：房內只留下 1～2 個容器，優先炸毀較稀有的，警戒 +25（第二次 +40）。':'炸藥：沒有房卡時切開房門。代價：自選 1 個容器犧牲，40% 機率再多損毀 1 個，警戒 +18（第二次 +30）；每局限用一次。'
    }[kind],effect:{type:'searchAccess',id},
    sources:['container.exploration'],recipe:null,gridSize:{w:item.size[0],h:item.size[1]},stack:1,rv:0,dropDisabled141:true};
@@ -216,6 +234,7 @@ function validateTransition(before,next){
  for(const item of [...(next.inventory?.items||[]),...(run.itemCargo||[])]){
   const def=catalog[item.itemId?.slice(10)];
   if(def&&item.searchUses174!=null&&(!Number.isInteger(item.searchUses174)||item.searchUses174<0||item.searchUses174>def.uses))throw Error('房卡／開鎖裝置／炸藥剩餘次數不符。');
+  if(def&&item.searchPoints604!=null&&(!Number.isInteger(item.searchPoints604)||item.searchPoints604<0||item.searchPoints604>maxPoints(item.itemId.slice(10))))throw Error('房卡／開鎖裝置剩餘點數不符。');
  }
 }
 function rollAccess(tier, ordinaryCount, random){
@@ -229,7 +248,7 @@ function rollAccess(tier, ordinaryCount, random){
  }
  return null;
 }
-const FrontierSearchLocks174={greenPrices,greenPrice,yellowPrice,pointBase,accessKind,shopTierWeight,keycardWeight,shopPrice,pickKeycard,keycardStock,rollAccess,containerRule,keyRingLimit,register,validateTransition,keyFits,toolFits,breachPlan,keyUses,catalog,roomLock,tools};
+const FrontierSearchLocks174={accessPoints,openCosts,bonusRatios,difficultyNames,usesPoints,maxPoints,pointsLeft,difficultyKey,openCost,weeklyPrice,accessBonusValue,greenPrices,greenPrice,yellowPrice,pointBase,accessKind,shopTierWeight,keycardWeight,shopPrice,pickKeycard,keycardStock,rollAccess,containerRule,keyRingLimit,register,validateTransition,keyFits,toolFits,breachPlan,keyUses,catalog,roomLock,tools};
 globalThis.FrontierSearchLocks174=FrontierSearchLocks174;
 if (typeof module!=='undefined') module.exports=FrontierSearchLocks174;
 

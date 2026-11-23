@@ -241,7 +241,7 @@ window.FrontierContainers=(()=>{
   const protectedKeys=(run.searchKeys174||[]).map(uid=>db.inventory.items.find(item=>item.uid===uid)).filter(Boolean);
   return [...(run.itemCargo||[]),...protectedKeys].flatMap(item=>{
    const def=accessDefinition(item);
-   return def?[{item,id:catalog[item.itemId].effect.id,uses:item.searchUses174??def.uses}]:[];
+   const id=catalog[item.itemId].effect.id;return def?[{item,id,uses:locks.pointsLeft(item),cost:locks.openCost(id,run),points:locks.usesPoints(id)}]:[];
   });
  }
  const selectedAccess={keys:[],tools:[]};
@@ -250,7 +250,7 @@ window.FrontierContainers=(()=>{
  function accessCandidates(kind){
   return db.inventory.items.filter(item=>{
    const d=accessDefinition(item);
-   return d&&Boolean(d.key)===(kind==='keys')&&(item.searchUses174??d.uses)>0;
+   return d&&Boolean(d.key)===(kind==='keys')&&locks.pointsLeft(item)>0;
   });
  }
  function accessPrep(){
@@ -314,7 +314,7 @@ window.FrontierContainers=(()=>{
  }
  function fitsAccess(lock,row){
   const def=locks.catalog[row.id];
-  return row.uses>0&&lock&&(def.key?locks.keyFits(lock,def.key):locks.toolFits(lock,row.id));
+  return row.uses>=row.cost&&lock&&(def.key?locks.keyFits(lock,def.key):locks.toolFits(lock,row.id));
  }
  const canSearchExterior=scene=>[1,2,3,5,7,8,11,13,14,19,20].includes(scene.lock?.room);
  const easyDoor=scene=>!scene.lock||scene.lock.level===1||scene.lock.room>=19;
@@ -379,15 +379,32 @@ window.FrontierContainers=(()=>{
    }
    if(!accessOption(scene,row))continue;
    const args=esc(JSON.stringify(row.item.uid));
-   buttons.push('<button onclick="FrontierContainers.openSearchDoor(&quot;access&quot;,'+args+')"><span aria-hidden="true">'+FrontierIcons.html(row.item.itemId)+'</span>'+esc(locks.catalog[row.id].name)+' · 消耗 1 次（剩 '+row.uses+' 次） · 警戒 ＋'+(locks.tools[row.id]?.alert||0)+' · 容器保全</button>');
+   buttons.push('<button onclick="FrontierContainers.openSearchDoor(&quot;access&quot;,'+args+')"><span aria-hidden="true">'+FrontierIcons.html(row.item.itemId)+'</span>'+esc(locks.catalog[row.id].name)+' · '+useText(row)+' · 警戒 ＋'+(locks.tools[row.id]?.alert||0)+' · 容器保全</button>');
   }
   return buttons.join('');
  }
  function consumeAccess(run,row){
-  row.item.searchUses174=row.uses-1;
+  const def=locks.catalog[row.id];
+  if(row.points){
+   /* v604 點數制：依難度扣點，並發放權限獎勵素材 */
+   const left=Math.max(0,row.uses-row.cost);
+   row.item.searchPoints604=left;row.item.searchUses174=Math.ceil(left/locks.maxPoints(row.id)*def.uses);
+   grantAccessBonus(run,row);
+  }else row.item.searchUses174=row.uses-1;
   const uid=row.item.uid;
-  if(!row.item.searchUses174&&!run.searchKeys174?.includes(uid))run.itemCargo=run.itemCargo.filter(i=>i.uid!==uid);
+  if(!(row.points?row.item.searchPoints604:row.item.searchUses174)&&!run.searchKeys174?.includes(uid))run.itemCargo=run.itemCargo.filter(i=>i.uid!==uid);
   FrontierGrid.sync();
+ }
+ function useText(row){return row.points?'消耗 '+row.cost+' 點（剩 '+row.uses+' 點）':'消耗 1 次（剩 '+row.uses+' 次）'}
+ /* 權限獎勵：價值（金材當量）＝消耗點數×難度倍率×每點價值；拆成金／銀／藍素材，餘數以機率給藍材，期望值不變。 */
+ function grantAccessBonus(run,row){
+  const value=locks.accessBonusValue(row.id,run);if(!(value>0)||!run.field?.materials)return;
+  const families=run.focus27?.families?.length?run.focus27.families:Object.keys(FrontierProgress.families);
+  let gold=Math.floor(value+1e-9),rest=value-gold,silver=Math.floor(rest/.4+1e-9);rest-=silver*.4;let blue=Math.floor(rest/.16+1e-9);rest-=blue*.16;if(random()<rest/.16)blue++;
+  const got=[];
+  for(const [tier,count] of [[6,gold],[5,silver],[4,blue]])for(let i=0;i<count;i++){const id=FrontierProgress.materialId(pick(families),tier);run.field.materials[id]=(run.field.materials[id]||0)+1;got.push(id)}
+  (run.accessBonus604??=[]).push({id:row.id,cost:row.cost,value:Math.round(value*100)/100,items:got});
+  if(got.length&&typeof toast==='function')toast('權限獎勵：'+[[6,'金'],[5,'銀'],[4,'藍']].map(([tier,name])=>{const n=got.filter(id=>catalog[id]?.rarity===tier).length;return n?name+'材×'+n:''}).filter(Boolean).join('、'));
  }
  function unlockSearchCore(uid){
   const run=R(),scene=searchScene(),target=scene?.targets[scene.focus];
@@ -417,7 +434,7 @@ window.FrontierContainers=(()=>{
   }[rule.type];
   return accessItems(R()).filter(row=>{
    if(locks.catalog[row.id].key&&authorized&&!authorized.includes(row.id))return false;
-   if(rule.type===8&&row.id==='K10')return row.uses>0&&[19,20].includes(scene.lock.room);
+   if(rule.type===8&&row.id==='K10')return row.uses>=row.cost&&[19,20].includes(scene.lock.room);
    return fitsAccess(lock,row);
   });
  }
@@ -469,7 +486,7 @@ window.FrontierContainers=(()=>{
   if(target.paused)return '<button class="primary" onclick="FrontierContainers.beginSceneSearch(&quot;resume&quot;)">繼續開箱</button>';
   if(target?.core&&!target.core.open){
    const permitted=accessItems(R()).filter(row=>fitsAccess(target.core,row));
-   return '<span>核心需核驗相符的通行授權或破解器</span>'+permitted.map(row=>'<button onclick="FrontierContainers.unlockSearchCore('+esc(JSON.stringify(row.item.uid))+')"><span aria-hidden="true">'+FrontierIcons.html(row.item.itemId)+'</span>'+esc(locks.catalog[row.id].name)+' · 剩 '+row.uses+' 次</button>').join('');
+   return '<span>核心需核驗相符的通行授權或破解器</span>'+permitted.map(row=>'<button onclick="FrontierContainers.unlockSearchCore('+esc(JSON.stringify(row.item.uid))+')"><span aria-hidden="true">'+FrontierIcons.html(row.item.itemId)+'</span>'+esc(locks.catalog[row.id].name)+' · '+useText(row)+'</button>').join('');
   }
   const rule=objectRule(target),definition=catalog[target.box.itemId];
   const inspected=target.inspected174?
@@ -477,7 +494,7 @@ window.FrontierContainers=(()=>{
    '<button onclick="FrontierContainers.inspectSearchTarget()">查看容器</button>';
   const openMethods=()=>{
    const available=objectMethods(scene,target).map(row=>'<button onclick="FrontierContainers.prepareObject(&quot;tool&quot;,'+
-    esc(JSON.stringify(row.item.uid))+')">'+esc(locks.catalog[row.id].name)+' · 扣 1 次 · 警戒 +'+(locks.catalog[row.id].key?(rule.type===5?2:1):locks.tools[row.id].alert)+'</button>').join('');
+    esc(JSON.stringify(row.item.uid))+')">'+esc(locks.catalog[row.id].name)+' · '+useText(row)+' · 警戒 +'+(locks.catalog[row.id].key?(rule.type===5?2:1):locks.tools[row.id].alert)+'</button>').join('');
    const clue=target.locatedCode174?'<button onclick="FrontierContainers.prepareObject(&quot;clue&quot;)">輸入現場密碼 · 警戒 +2</button>':'';
    const force=rule.force?'<button onclick="FrontierContainers.prepareObject(&quot;force&quot;)">強行破拆 · 警戒 +'+rule.force+
     (target.hiddenReward?' · 損失暗格':'')+(rule.type===6&&coldRoomRisk(R())?' · 加重地區環境':'')+(rule.guard&&!scene.guardFought174?' · 須先迎戰守衛':'')+'</button>':'';
@@ -655,7 +672,7 @@ window.FrontierContainers=(()=>{
  function currentBox(){return carriedBox()||(page==='containers'&&baseBox?db.inventory.items.find(x=>x.uid===baseBox):page==='containers'?null:R()?.event?.box)}
  function fieldTools(run,box){
   const permitted=box.sealed.quality>=5?['T4']:box.sealed.quality===4?['T3','T4']:['T2','T3','T4'];
-  return accessItems(run).filter(row=>row.uses>0&&permitted.includes(row.id));
+  return accessItems(run).filter(row=>row.uses>=row.cost&&permitted.includes(row.id));
  }
  function unsealCarried(boxUid,toolUid){
   const run=R(),box=carriedBoxes().find(item=>item.uid===boxUid);
@@ -672,7 +689,7 @@ window.FrontierContainers=(()=>{
   const box=carriedBoxes().find(item=>item.uid===uid);if(!box)return false;
   if(box.sealed.fieldSeal174){
    const choices=fieldTools(R(),box).map(row=>'<button onclick="FrontierContainers.unsealCarried('+
-    esc(JSON.stringify(uid))+','+esc(JSON.stringify(row.item.uid))+')">'+esc(locks.catalog[row.id].name)+' · 扣 1 次 · 警戒 +4</button>').join('');
+    esc(JSON.stringify(uid))+','+esc(JSON.stringify(row.item.uid))+')">'+esc(locks.catalog[row.id].name)+' · '+useText(row)+' · 警戒 +4</button>').join('');
    closeModal();modal('野外解封','<div class="search174-door-options">'+(choices||'<p>需要適階破解器，也可整箱帶回基地拆封。</p>')+'</div>',
     '<button onclick="FrontierContainers.returnToBag()">返回背包</button>');
    return true;

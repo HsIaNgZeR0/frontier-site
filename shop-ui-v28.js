@@ -2,7 +2,7 @@
 window.FrontierShopUIV28=(()=>{
  const E=FrontierSurveyEngineV27,c=FrontierInventory.definitions;
  const ticket=()=>'<span class="item-icon rarity-6" data-item-id="wallet:ticket" role="img" aria-label="尋訪憑證"><img src="assets/recruit-ticket-official.png" alt="" draggable="false"></span>';
- const icon=FrontierIcons.html;FrontierIcons.html=function(id){return id==='wallet:ticket'?ticket():icon(id)};
+ const icon=FrontierIcons.html;FrontierIcons.html=function(id,...rest){return id==='wallet:ticket'?ticket():icon(id,...rest)};
  const count=FrontierMobile.count;FrontierMobile.count=function(id){const key=id?.replace('survey_focus_','');return E.limits[key]?(E.ensure(db).tickets[key]||0)+count(id):count(id)};
  function decorate(){
   for(const img of document.querySelectorAll('img[src*="item-legacy-ticket"]'))if(!img.alt.includes('人事')){img.src='assets/recruit-ticket-official.png';img.dataset.itemId='wallet:ticket';img.draggable=false}

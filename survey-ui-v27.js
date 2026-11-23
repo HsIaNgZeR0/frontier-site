@@ -9,11 +9,11 @@ window.FrontierSurveyV27=(()=>{
  function packIcon(key){
   return '<span class="item-icon rarity-'+E.tiers[key]+'" data-item-id="survey_pack_'+key+'"><img class="survey-pack-icon" src="assets/'+packAssets[key]+'" alt="'+packName(key)+'" draggable="false"></span>';
  }
- const icon=FrontierIcons.html;FrontierIcons.html=function(id){
+ const icon=FrontierIcons.html;FrontierIcons.html=function(id,...rest){
   const pack=id?.startsWith('survey_pack_')&&id.slice('survey_pack_'.length);
   if(Object.hasOwn(packAssets,pack))return packIcon(pack);
   const key=id?.replace('survey_focus_','');
-  return E.limits[key]?'<span class="item-icon rarity-'+E.tiers[key]+'" data-item-id="'+id+'">'+picture(key)+'</span>':icon(id);
+  return E.limits[key]?'<span class="item-icon rarity-'+E.tiers[key]+'" data-item-id="'+id+'">'+picture(key)+'</span>':icon(id,...rest);
  };
  function offerDescription(row){
   if(row.kind.endsWith('Pack'))return packDescription(row.kind.replace('Pack',''));

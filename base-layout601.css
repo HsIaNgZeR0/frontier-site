@@ -146,3 +146,7 @@
 .screen-tool-head.b601-mtitle>b{flex:1;min-width:0}
 .b601-mtitle-act{flex:none;display:flex}
 .b602-famicon img{clip-path:circle(39% at 50% 50%);transform:scale(1.22)}
+
+/* v603 加工站數量畫面返回鈕 */
+.b603-back{min-height:44px!important;height:44px;min-width:64px;padding:0 12px!important;border:1px solid #59717b;border-radius:8px;background:#1d3038;color:#e8f1f4;font-weight:700;flex:none;cursor:pointer}
+.b603-has-back{justify-content:flex-start!important;gap:10px}.b603-has-back>b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}h2.b603-has-back{display:flex;align-items:center}
