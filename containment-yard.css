@@ -1,10 +1,12 @@
-/* 收容管理場（敵人 Spine 原生朝左，--dir=1 往右走時需鏡像） */
+/* 收容管理場：單一 WebGL 畫布繪製全部模型，陰影／星芒各一層 2D 畫布 */
 body.yard-mode{overflow:hidden}
 body.yard-mode>header{visibility:hidden}
 .yard{position:fixed;inset:0 0 64px 0;z-index:60;overflow:hidden;background:radial-gradient(120% 70% at 50% 100%,#1d2b33 0%,#10171c 55%,#0a0f13 100%);color:#e8eef2;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
-.yard-floor{position:absolute;inset:0;background-image:linear-gradient(rgba(120,170,195,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(120,170,195,.07) 1px,transparent 1px);background-size:48px 48px;mask-image:linear-gradient(to bottom,transparent 0,#000 30%,#000 100%);-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 30%,#000 100%);pointer-events:none}
-.yard-floor::after{content:"";position:absolute;inset:auto 0 0 0;height:3px;background:repeating-linear-gradient(90deg,#f2c230 0 18px,#141414 18px 36px);opacity:.55}
-.yard-head{position:absolute;top:0;left:0;right:0;z-index:5000;display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top,0px) + 10px) 12px 10px;background:linear-gradient(#0a0f13 30%,rgba(10,15,19,0));pointer-events:none}
+.yard>canvas{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
+.yard-shadows{background-image:none}
+.yard-layer{position:absolute;inset:0;pointer-events:none}
+.yard-layer>*{pointer-events:auto}
+.yard-head{position:absolute;top:0;left:0;right:0;z-index:5;display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top,0px) + 10px) 12px 10px;background:linear-gradient(#0a0f13 30%,rgba(10,15,19,0));pointer-events:none}
 .yard-head>*{pointer-events:auto}
 .yard-back{width:44px;height:44px;display:grid;place-items:center;padding:0;border:1px solid rgba(232,238,242,.3);background:rgba(16,24,30,.85);color:#e8eef2;border-radius:2px}
 .yard-back svg{width:22px;height:22px}
@@ -12,23 +14,11 @@ body.yard-mode>header{visibility:hidden}
 .yard-title small{font-size:10px;letter-spacing:.16em;color:#7fa4b6}
 .yard-title b{font-size:18px;letter-spacing:.06em}
 .yard-count{margin-left:auto;font-size:12px;color:#9fb6c2;border-left:2px solid #f2c230;padding-left:8px}
-.yard-hint{position:absolute;top:calc(env(safe-area-inset-top,0px) + 66px);left:0;right:0;margin:0;text-align:center;font-size:11px;color:#6f8b99;letter-spacing:.08em;pointer-events:none;z-index:4999}
+.yard-hint{position:absolute;top:calc(env(safe-area-inset-top,0px) + 66px);left:0;right:0;margin:0;text-align:center;font-size:11px;color:#6f8b99;letter-spacing:.08em;pointer-events:none;z-index:4}
 .yard-empty{position:absolute;inset:40% 24px auto;margin:0;text-align:center;color:#8aa3b0;line-height:1.7;font-size:14px}
-.yard-field{position:absolute;inset:0}
-.yard-mob{position:absolute;left:0;top:0;width:var(--s);height:var(--s);will-change:transform;cursor:pointer;touch-action:none}
-.yard-shadow{position:absolute;left:22%;right:22%;bottom:-4px;height:10px;border-radius:50%;background:radial-gradient(rgba(0,0,0,.55),transparent 70%);transition:transform .2s,opacity .2s}
-.yard-body{position:absolute;inset:0;transform:translateY(var(--hop,0px)) scaleX(calc(var(--dir,1) * -1));transform-origin:50% 100%;transition:filter .15s}
-.yard-art{position:absolute;inset:0;display:grid;place-items:end center}
-.yard-art canvas{width:100%;height:100%;display:block}
-.yard-art img{max-width:92%;max-height:92%;object-fit:contain;-webkit-user-drag:none;pointer-events:none}
-.yard-mob.is-walking .yard-art img{animation:yard-bob .5s ease-in-out infinite alternate}
-@keyframes yard-bob{from{transform:translateY(0) rotate(-2deg)}to{transform:translateY(-4px) rotate(2deg)}}
-.yard-unknown{font-size:40px;color:#7fa4b6}
-.yard-mob.is-mutant .yard-body{filter:drop-shadow(0 0 6px rgba(242,194,48,.55))}
-.yard-mob.is-held{cursor:grabbing;z-index:4000!important}
-.yard-mob.is-held .yard-body{transform:translateY(-18px) scaleX(calc(var(--dir,1) * -1)) scale(1.08);filter:drop-shadow(0 10px 10px rgba(0,0,0,.5)) brightness(1.1)}
-.yard-mob.is-held .yard-shadow{transform:scale(.7);opacity:.6}
-.yard-bubble{position:absolute;left:0;top:0;z-index:4500;min-width:180px;max-width:min(260px,calc(100% - 16px));padding:10px 12px;background:rgba(14,21,26,.96);border:1px solid rgba(127,164,182,.55);border-top:3px solid #f2c230;box-shadow:0 8px 24px rgba(0,0,0,.5);font-size:12px;color:#d7e2e8;animation:yard-pop .16s ease-out}
+.yard-zoom{position:absolute;right:12px;bottom:14px;z-index:5;display:flex;flex-direction:column;gap:6px}
+.yard-zoom button{width:44px;height:44px;padding:0;border:1px solid rgba(232,238,242,.3);background:rgba(16,24,30,.85);color:#e8eef2;font-size:20px;line-height:1;border-radius:2px}
+.yard-bubble{position:absolute;left:0;top:0;z-index:6;min-width:180px;max-width:min(260px,calc(100% - 16px));padding:10px 12px;background:rgba(14,21,26,.96);border:1px solid rgba(127,164,182,.55);border-top:3px solid #f2c230;box-shadow:0 8px 24px rgba(0,0,0,.5);font-size:12px;color:#d7e2e8;animation:yard-pop .16s ease-out}
 .yard-bubble::after{content:"";position:absolute;left:calc(var(--tail,50%) - 7px);bottom:-8px;border:7px solid transparent;border-bottom:0;border-top-color:rgba(127,164,182,.55)}
 .yard-bubble.is-below::after{bottom:auto;top:-10px;border:7px solid transparent;border-top:0;border-bottom-color:#f2c230}
 @keyframes yard-pop{from{opacity:0;margin-top:6px}to{opacity:1;margin-top:0}}
@@ -42,7 +32,17 @@ body.yard-mode>header{visibility:hidden}
 .yard-bubble dd{margin:0;display:flex;flex-wrap:wrap;gap:4px}
 .yard-diff{padding:0 5px;border:1px solid currentColor;font-size:11px;line-height:16px}
 .yard-diff-l{color:#8fd19e}.yard-diff-m{color:#7fc3ea}.yard-diff-h{color:#f0a24a}.yard-diff-x{color:#ef6a6a}
+.yard-diff-shiny{color:#ffd76a;background:rgba(255,215,106,.12)}
+.yard-diff-color{color:#d59bff;background:rgba(213,155,255,.12)}
 .yard-rename{display:flex;gap:6px}
 .yard-rename input{flex:1;min-width:0;height:34px;padding:0 8px;font-size:16px;background:#0a0f13;color:#fff;border:1px solid #7fa4b6;border-radius:0}
 .yard-rename button{height:34px;padding:0 10px;background:#f2c230;color:#111;border:0;font-weight:700}
-@media (prefers-reduced-motion:reduce){.yard-mob.is-walking .yard-art img{animation:none}.yard-bubble{animation:none}}
+@media (prefers-reduced-motion:reduce){.yard-bubble{animation:none}}
+
+/* 戰鬥中的閃光／色違外觀 */
+[data-variant="color"] .enemy-figure canvas,[data-variant="color"] .enemy-figure img{filter:hue-rotate(var(--vhue,180deg)) saturate(1.18)}
+[data-variant="shiny"] .enemy-figure{position:relative}
+[data-variant="shiny"] .enemy-figure canvas,[data-variant="shiny"] .enemy-figure img{filter:saturate(1.12) brightness(1.06) drop-shadow(0 0 4px rgba(255,214,110,.85))}
+[data-variant="shiny"] .enemy-figure::after{content:"";position:absolute;inset:6% 10%;pointer-events:none;background:radial-gradient(circle,#fff6cf 0 1.5px,transparent 2.5px) 18% 22%/36% 30%,radial-gradient(circle,#ffe08a 0 1.2px,transparent 2.2px) 70% 60%/30% 34%;filter:drop-shadow(0 0 3px #ffd35a);animation:variant-twinkle 1.6s ease-in-out infinite alternate}
+@keyframes variant-twinkle{from{opacity:.25;transform:translateY(2px)}to{opacity:1;transform:translateY(-3px)}}
+@media (prefers-reduced-motion:reduce){[data-variant="shiny"] .enemy-figure::after{animation:none;opacity:.8}}

@@ -265,7 +265,7 @@ window.FrontierOperatorUIV113=(()=>{
      const amount=document.createElement('span');amount.textContent=enemy.atk;intent.append(img,amount);
     }else intent.textContent=enemy.npcTarget?'護送目標':enemy.skipNextOrdinaryAction||enemy.skipNextControllableAction?'受控':enemy.intent==='defend'?'防守':'強化';
    }
-   const figure=el.querySelector('.enemy-figure');
+   const figure=el.querySelector('.enemy-figure');{const v177=window.FrontierVariants?.of(enemy);el.dataset.variant=v177||'';if(v177)el.style.setProperty('--vhue',FrontierVariants.hue(enemy.species)+'deg')}
    const art=figure?.querySelector('.enemy-art');
    art?.removeAttribute('data-inspect-actor');
    const artId=FrontierEnemyData.units[enemy.species]?.image,paths133=window.FrontierEnemyIdleAssets?.[enemy.species]||window.FrontierEnemyIdleAssets?.[artId];
