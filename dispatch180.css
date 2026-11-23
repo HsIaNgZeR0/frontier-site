@@ -84,3 +84,5 @@
 .d180-history p{margin:4px 0;font-size:12px;color:#aabfc8}
 @media(max-width:420px){.d180-dgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.d180-job{grid-template-columns:minmax(0,1fr) auto auto}}
 @media(max-width:360px){.d180-cover{min-height:160px;padding:12px}.d180-cover h1{font-size:22px}.d180-region-head,.d180-expand{padding:8px}.d180-slots-row{gap:4px}}
+.d180-job-bar{grid-column:1/-1;display:block;height:4px;background:rgba(255,255,255,.1);overflow:hidden}.d180-job-bar i{display:block;height:100%;background:var(--dc,#8fc7a1);box-shadow:0 0 6px var(--dc,#8fc7a1);transition:width .6s linear}.d180-job-bar.d-normal{--dc:#8fc7a1}.d180-job-bar.d-hard{--dc:#e0c25c}.d180-job-bar.d-extreme{--dc:#e8894f}.d180-job-bar.d-torment{--dc:#e0505a}
+.d180-job-bar,.d180-job-bar i{border-radius:0!important;margin:0!important;padding:0!important}
