@@ -11,7 +11,7 @@ window.FrontierProgress=(()=>{
   if(recipe)recipes[recipe]={id:recipe,output:{item:id,qty:1},materials:[{item:materialId(family,tier-1),qty:[0,0,10,5,4,6][tier]}],lmd:[0,0,50,150,500,2500][tier],station:'materials'};
   catalog[id]={id,name:names[tier-1],category:'material',family,rarity:tier,description:colors[tier]+'階'+family+'系培育／精英化／多族配方材料。'+(tier===6?'只能稀有取得，不能由銀階合成。':''),effect:{type:'craftResource',family,tier},sources:[tier>=5?'modern.boss':'modern.battle',...(recipe?['recipe:'+recipe]:[])],recipe,gridSize:{w:1,h:1},stack:10,rv:[0,5,12,40,140,650,3500][tier],balance:{craftUpTo:5,limited:tier===6}};
  }
- for(const[id,exp]of Object.entries(recordValues))catalog[id]={id,name:recordNames[id],category:'record',rarity:exp>=1000?4:exp>=400?3:2,description:'提供 '+exp+' EXP，使用餘額永久保存在指定幹員，不增加能量或抽牌。',effect:{type:'operatorExp',amount:exp},sources:[exp>=1000?'modern.boss':'modern.battle','training.initial'],recipe:null,gridSize:{w:1,h:1},stack:exp>=2000?5:exp>=1000?10:20,rv:Math.ceil(exp/10),balance:{exp}};
+ for(const[id,exp]of Object.entries(recordValues))catalog[id]={id,name:recordNames[id],category:'record',rarity:exp>=2000?5:exp>=1000?4:exp>=400?3:2,description:'提供 '+exp+' EXP，使用餘額永久保存在指定幹員，不增加能量或抽牌。',effect:{type:'operatorExp',amount:exp},sources:[exp>=1000?'modern.boss':'modern.battle','training.initial'],recipe:null,gridSize:{w:1,h:1},stack:exp>=2000?5:exp>=1000?10:20,rv:Math.ceil(exp/10),balance:{exp}};
  FrontierInventory.sources['training.initial']={id:'training.initial',name:'一次性訓練補給',system:'migration'};
  function ensure(){
   if(!db.wallet)db.wallet={lmd:3000,synth:0,originium:0,green:0,yellow:0};
