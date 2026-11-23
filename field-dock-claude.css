@@ -89,7 +89,15 @@ dialog#modal:not([open]){display:none!important}
 /* 保險箱：不受背包縮放影響，固定原尺寸並完整顯示 */
 .bag-ux-safe .bag-canvas31{transform:none!important}
 .bag-ux-safe .bag-canvas-stage31{width:auto!important;height:auto!important;overflow:visible!important}
-.bag-ux-safe{overflow:visible!important;max-height:none!important;position:sticky;bottom:0;z-index:3;background:var(--panel,#10171b);box-shadow:0 -8px 12px -6px #000a;padding-bottom:4px}
+.bag-ux-safe{overflow:visible!important;max-height:none!important;position:static!important;flex:none;padding-bottom:4px}
+/* 背包下方固定列：保險箱＋額外空間（裝備／詞條／收藏品側袋），不隨背包縮放或移動 */
+.bag-ux-layout{align-items:stretch!important;height:auto!important}
+.bag-ux-storage{display:flex;flex-direction:column;min-height:0}
+.bag-ux-trash{align-self:stretch;height:auto!important;max-height:none!important}
+.bag-ux-fixed{display:flex;align-items:flex-start;gap:10px;margin-top:0;padding-top:4px;border-top:1px solid #3c5560;overflow-x:auto;max-width:100%}
+.bag-ux-side{display:flex;flex-wrap:wrap;align-items:flex-start;gap:6px 10px;min-width:0}
+.bag-ux-side .bag-ux-label{flex-basis:100%;font-size:11px;color:#aabfc8}
+.bag-ux-side .inventory-grid{transform:none!important}
 .bag-ux-safe .bag-canvas31{position:static!important;transform:none!important}
 .bag-ux-safe .grid-panel{margin:0}
 
@@ -262,3 +270,12 @@ dialog#modal:not([open]){display:none!important}
 .fd-slot em{position:absolute;left:0;right:0;top:0;font-style:normal;font-size:8px;line-height:1.2;text-align:center;background:#000a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
 .fd-slot.fd-over{outline:2px solid #d4eb96;outline-offset:-2px}
 .fd-slot img{cursor:grab}
+
+/* 背包對話框：保險箱列固定在底部可見，背包區自動吃剩餘高度 */
+.screen-simple-dialog:has(.bag-ux){display:flex;flex-direction:column;overflow:hidden!important}
+.screen-simple-dialog:has(.bag-ux)>.context-mount{display:flex;flex-direction:column;flex:1;min-height:0}
+.screen-simple-dialog .bag-ux{flex:1;min-height:0}
+.screen-simple-dialog .bag-ux>.bag-ux-layout{flex:1 1 auto;min-height:140px}
+.screen-simple-dialog .bag-ux .bag-ux-storage{min-height:0;height:100%}
+.screen-simple-dialog .bag-ux .bag-ux-pan{flex:1 1 auto;height:auto!important;min-height:120px}
+.screen-simple-dialog .bag-ux>.bag-ux-fixed{flex:none}
