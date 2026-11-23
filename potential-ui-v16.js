@@ -12,3 +12,10 @@ window.FrontierPotentialUIV16=(()=>{
  async function change(type,id,form,count){if(busy)return;busy=true;document.querySelectorAll('.potential-panel button').forEach(b=>b.disabled=true);try{if(FrontierCloud.info().onlineRequired){db=await FrontierCloud.potentialChange(type,id,count);render()}else{const ok=await FrontierRuntime.perform('potential-'+type,()=>{db=E.apply(db,{id:crypto.randomUUID(),seq:(db.potentials?.seq||0)+1,type,operator:id,...(type==='exchange'?{count}:{})},c);save();render()});if(!ok)throw Error('潛能操作未完成，原資源保留。')}busy=false;open(id,form);toast(type==='upgrade'?'潛能提升完成。':'多餘信物已兌換。')}catch(e){busy=false;toast(e.message);open(id,form)}}
  return{open};
 })();
+
+// 有可用信物（持有對應幹員、未滿潛、信物≥1）時，在幹員入口右上角顯示小紅點。
+(()=>{const st=document.createElement('style');st.textContent='.token-dot-host{position:relative}.token-dot{position:absolute;top:4px;right:4px;width:9px;height:9px;border-radius:50%;background:#ff3b30;box-shadow:0 0 0 2px rgba(0,0,0,.55);pointer-events:none;z-index:2}';document.head.append(st);
+ const pending=()=>{const p=db?.potentials;if(!p?.tokens)return false;return Object.entries(p.tokens).some(([id,n])=>n>0&&db.personnel?.units?.[id]&&(p.levels?.[id]||1)<6&&!FrontierCapture.units[id]?.retired)};
+ const paint=()=>{let on=false;try{on=pending()}catch{}for(const el of document.querySelectorAll('[onclick="go(\'roster\')"]')){el.classList.add('token-dot-host');let d=el.querySelector(':scope>.token-dot');if(on&&!d){d=document.createElement('i');d.className='token-dot';d.setAttribute('aria-label','有可使用的信物');el.append(d)}else if(!on&&d)d.remove()}};
+ const draw=window.render;if(typeof draw==='function'){window.render=function(){const r=draw.apply(this,arguments);paint();return r}}
+ addEventListener('frontier:boot',paint);setTimeout(paint,0);window.FrontierTokenDot={paint,pending}})();
