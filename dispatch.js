@@ -95,8 +95,8 @@ window.FrontierDispatch=(()=>{
  function toggleGroup(open){matOpen=!!open}
  function toggleJobs(open){jobsOpen=!!open}
  function openRegion(id){const next=id&&region(id)?id:null,card=[...document.querySelectorAll('[data-d180-card="'+id+'"]')].find(el=>el.offsetParent),top0=card?.getBoundingClientRect().top,scrollers=[document.scrollingElement,...document.querySelectorAll('*')].filter(el=>el&&el.scrollHeight>el.clientHeight&&el.scrollTop>0).map(el=>[el,el.scrollTop]);focus=focus===next?null:next;diffSel=null;selected=[];render();/* 原地展開：還原捲動並讓點擊的地區卡停在原本位置，不做平滑捲動造成跳動 */const fix=()=>{for(const[el,y]of scrollers)if(el.isConnected)el.scrollTop=y;if(top0==null)return;const now=[...document.querySelectorAll('[data-d180-card="'+id+'"]')].find(el=>el.offsetParent);if(!now)return;const delta=now.getBoundingClientRect().top-top0;if(Math.abs(delta)<1)return;let sc=now.parentElement;while(sc&&!(sc.scrollHeight>sc.clientHeight&&['auto','scroll'].includes(getComputedStyle(sc).overflowY)))sc=sc.parentElement;(sc||document.scrollingElement).scrollTop+=delta};fix();requestAnimationFrame(fix);setTimeout(fix,60)}
- function openDifficulty(id){if(!difficulty(id))return;diffSel=diffSel===id?null:id;selected=[];render();if(diffSel)setTimeout(()=>{for(const el of document.querySelectorAll('.d180-squad'))if(el.offsetParent)el.scrollIntoView({block:'nearest',behavior:'smooth'})},0)}
- function paint(){const html=squadHTML();for(const el of document.querySelectorAll('.d180-squad'))el.outerHTML=html}
+ function openDifficulty(id){if(!difficulty(id))return;diffSel=diffSel===id?null:id;selected=[];render();}
+ function paint(){const html=squadHTML(),go=()=>{for(const el of document.querySelectorAll('.d180-squad'))el.outerHTML=html};window.FrontierDispatchHold?FrontierDispatchHold(go):go()}
  function limit(){return difficulty(diffSel)?.max||0}
  function pick(uid){if(!focus||!diffSel)return;choose(uid,limit());paint()}
  function unpick(uid){selected=selected.filter(x=>x!==uid);paint()}
@@ -117,3 +117,12 @@ window.FrontierDispatch=(()=>{
  ensure();
  return{templates,regions,difficulties,roleNames,kinds,ensure,eligible,capacity,slots,breakdown,plan,chance,tierOf,lmdRange,drops,choose,clearSelection,start,claim,view,openRegion,openDifficulty,openPicker,toggleGroup,toggleJobs,pick,unpick,place,launch,key,get selected(){return [...selected]}};
 })();
+
+// 外派頁防跳動：任何重畫（選地區、難度、幹員、出發、領取、計時刷新）都保留捲動位置，
+// 並讓最後一次按下的元素停在原本的螢幕位置。
+(()=>{let anchor=null;const sel=el=>{for(let n=el;n&&n!==document.body;n=n.parentElement){for(const a of n.attributes||[])if(/^data-(d180|dispatch)-/.test(a.name))return '['+a.name+'="'+CSS.escape(a.value)+'"]';if(n.classList?.contains('d180-squad'))return '.d180-squad';if(n.classList?.contains('d180-jobs'))return '.d180-jobs'}return null};
+ document.addEventListener('pointerdown',e=>{if(document.querySelector('.visual-dispatch')?.contains(e.target)){const s=sel(e.target),el=s&&[...document.querySelectorAll(s)].find(x=>x.offsetParent);anchor=el?{s,top:el.getBoundingClientRect().top,at:Date.now()}:null}},true);
+ const box=()=>document.querySelector('.visual-dispatch');
+ function hold(run){const b=box();if(!b)return run();const y=b.scrollTop,a=anchor&&Date.now()-anchor.at<4000?anchor:null;const out=run();const fix=()=>{const nb=box();if(!nb)return;if(Math.abs(nb.scrollTop-y)>1)nb.scrollTop=y;if(a){const el=[...document.querySelectorAll(a.s)].find(x=>x.offsetParent);if(el){const d=el.getBoundingClientRect().top-a.top;if(Math.abs(d)>1)nb.scrollTop+=d}}};fix();requestAnimationFrame(fix);setTimeout(fix,60);return out}
+ const draw=window.render;window.render=function(){return page==='dispatch'?hold(()=>draw.apply(this,arguments)):draw.apply(this,arguments)};
+ window.FrontierDispatchHold=hold})();
