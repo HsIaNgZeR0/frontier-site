@@ -1,41 +1,45 @@
-/* 基建佈局 v601b：還原本家基建總覽的房間剖面造型 */
-.base151-board-wrap{background:#101316;max-width:100%}
-.base151-board.b601-host{display:block;height:650px;background:#0c0e10}
-.b601-board{position:relative;display:block;margin:5px;background-color:#14171a;background-image:linear-gradient(#ffffff09 1px,transparent 1px),linear-gradient(90deg,#ffffff09 1px,transparent 1px);background-size:16px 16px}
-.b601-room{position:absolute;box-sizing:border-box;margin:0!important;padding:0!important;min-height:0!important;display:block;text-align:left;overflow:hidden;border:0!important;border-radius:0!important;color:#fff;touch-action:pan-x pan-y;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
- /* 房間剖面：上方深色牆面＋斜紋，下方地板 */
- background:linear-gradient(180deg,#2d3135 0,#24272a 62%,#3a3e42 62%,#2f3236 100%)!important;
- box-shadow:inset 0 0 0 1px #00000099,inset 0 0 0 2px #ffffff10,0 0 0 1px #000;transition:box-shadow .15s}
-.b601-room::before{content:'';position:absolute;inset:0 0 38% 0;background:repeating-linear-gradient(90deg,#ffffff05 0 1px,transparent 1px 14px);pointer-events:none}
-.b601-room::after{content:'';position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--rc)}
-.b601-room:focus-visible{outline:2px solid var(--rc);outline-offset:1px}
-.b601-floor{position:absolute;left:0;right:0;top:62%;height:1px;background:#ffffff22}
-/* 本家式標籤：左上彩色圖示方塊＋白字名稱於深色半透明帶 */
-.b601-head{position:absolute;left:0;right:0;top:0;height:20px;display:flex;align-items:center;gap:0;background:linear-gradient(90deg,#000000d0,#00000080 75%,#0000);pointer-events:none}
-.b601-ico{flex:none;width:20px;height:20px;display:grid;place-items:center;background:var(--rc);color:#1a1a1a;clip-path:polygon(0 0,100% 0,100% 100%,0 100%)}
-.b601-ico svg{width:13px;height:13px;fill:currentColor;display:block}
-.b601-name{flex:1;min-width:0;padding:0 4px;font-size:11.5px;font-weight:700;letter-spacing:.02em;white-space:nowrap;overflow:visible;text-overflow:clip;line-height:20px;text-shadow:0 1px 2px #000}
-.b601-lv{position:absolute;left:4px;top:24px;display:flex;gap:2px;align-items:flex-end;height:11px}
+/* 基建佈局 v601c：還原本家基建總覽——切角房框、室內剖面、斜角名稱標籤（碰撞仍以長方形判定） */
+.base151-board-wrap{background:#0b0d0f;max-width:100%}
+.base151-board.b601-host{display:block;height:650px;background:#0b0d0f}
+.b601-board{position:relative;display:block;margin:5px;background:#101215;background-image:linear-gradient(#ffffff07 1px,transparent 1px),linear-gradient(90deg,#ffffff07 1px,transparent 1px);background-size:16px 16px}
+.b601-room{--cut:9px;position:absolute;box-sizing:border-box;margin:0!important;padding:0!important;min-height:0!important;display:block;text-align:left;overflow:visible;border:0!important;border-radius:0!important;color:#fff;background:transparent!important;box-shadow:none!important;touch-action:pan-x pan-y;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;filter:drop-shadow(0 2px 0 #000)}
+/* 外框：1px 亮邊＋右上／左下切角 */
+.b601-frame{position:absolute;inset:1px;display:block;overflow:hidden;background:#1c1f22;clip-path:polygon(0 0,calc(100% - var(--cut)) 0,100% var(--cut),100% 100%,var(--cut) 100%,0 calc(100% - var(--cut)))}
+.b601-room::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,#ffffff55,#ffffff22 60%,var(--rc) 60%,var(--rc));clip-path:polygon(0 0,calc(100% - var(--cut)) 0,100% var(--cut),100% 100%,var(--cut) 100%,0 calc(100% - var(--cut)));pointer-events:none}
+.b601-int{position:absolute;inset:0;width:100%;height:100%;display:block}
+.b601-int .w{fill:#26292d}
+.b601-int .c{fill:#16181a}
+.b601-int .g{stroke:var(--rc);stroke-width:2;opacity:.55}
+.b601-int .l{stroke:#ffffff26;stroke-width:1;fill:none}
+.b601-int .p{stroke:#ffffff10;stroke-width:1;fill:none}
+.b601-int .f{fill:#363a3f}
+.b601-int .fl{stroke:#ffffff30;stroke-width:1}
+.b601-int .m{fill:#41464c;stroke:#00000080;stroke-width:.6}
+.b601-int .a{fill:var(--rc);opacity:.7}
+.b601-int .al{stroke:var(--rc);stroke-width:1.6;fill:none;opacity:.7}
+.b601-room:focus-visible{outline:2px solid var(--rc);outline-offset:2px}
+/* 名稱標籤：彩色圖示方塊＋右端斜切的深色名稱帶 */
+.b601-head{position:absolute;left:1px;top:1px;height:19px;max-width:calc(100% - 10px);display:flex;align-items:stretch;pointer-events:none;z-index:2}
+.b601-ico{flex:none;width:19px;display:grid;place-items:center;background:var(--rc);color:#141414}
+.b601-ico svg{width:12px;height:12px;fill:currentColor;display:block}
+.b601-name{flex:0 1 auto;min-width:0;padding:0 12px 0 5px;font-size:11.5px;font-weight:700;letter-spacing:.03em;white-space:nowrap;line-height:19px;background:#0b0c0ee6;clip-path:polygon(0 0,100% 0,calc(100% - 8px) 100%,0 100%);text-shadow:0 1px 1px #000}
+.b601-lv{position:absolute;left:4px;top:23px;display:flex;gap:2px;align-items:flex-end;height:10px;z-index:2;padding:1px 2px;background:#0009}
 .b601-room i{border-radius:0!important;padding:0!important;margin:0!important;min-width:0!important;flex:none;font-style:normal}
-.b601-lv i{display:block;border:0!important;width:3px;height:11px;background:var(--rc);box-shadow:0 0 2px #000}
-.b601-en{position:absolute;right:4px;top:24px;font-size:7px;letter-spacing:.06em;color:var(--rc);opacity:.75;white-space:nowrap;font-weight:700;pointer-events:none}
-.b601-staff{position:absolute;left:4px;bottom:7px;display:flex;gap:2px}
-.b601-staff i{display:block;width:14px;height:14px;box-sizing:border-box;border:1px solid #ffffff40!important;background:#0000004d}
-.b601-staff i.on{border-color:var(--rc)!important;background:linear-gradient(180deg,#ffffff30,#0000 60%),var(--rc)}
-.b601-ready{position:absolute;right:4px;bottom:8px;width:9px;height:9px;background:#d5ef8f;box-shadow:0 0 6px #d5ef8f;transform:rotate(45deg)}
-/* 模板差異 */
-.b601-t-power::before{background:repeating-linear-gradient(90deg,#9fd12a12 0 2px,transparent 2px 10px)}
-.b601-t-trade::before{background:repeating-linear-gradient(0deg,#ffffff06 0 1px,transparent 1px 8px)}
-/* 控制中樞：2×2，較大標籤與中央徽記 */
-.b601-hub{background:linear-gradient(180deg,#25292d 0,#1d2023 70%,#34383c 70%,#2a2d31 100%)!important;box-shadow:inset 0 0 0 1px #000,inset 0 0 0 3px #f0f0f022,0 0 0 1px #000}
-.b601-hub .b601-head{height:28px}
-.b601-hub .b601-ico{width:28px;height:28px}
-.b601-hub .b601-ico svg{width:18px;height:18px}
-.b601-hub .b601-name{font-size:15px;line-height:28px}
-.b601-hub .b601-lv{top:34px;left:6px;height:14px}
-.b601-hub .b601-lv i{width:4px;height:14px}
-.b601-hub .b601-en{top:36px;right:8px;font-size:9px}
-.b601-hub .b601-floor{top:70%}
-.b601-hub::before{inset:0;background:radial-gradient(circle at 50% 50%,transparent 0 22px,#f0f0f018 23px 25px,transparent 26px 36px,#f0f0f010 37px 38px,transparent 39px)}
-.b601-lift{z-index:20;box-shadow:0 0 0 2px var(--rc),0 8px 18px #000c!important;opacity:.92}
-.b601-bad{box-shadow:0 0 0 2px #ff5a4f,0 8px 18px #000c!important}
+.b601-lv i{display:block;border:0!important;width:3px;height:10px;background:#f4f4f4}
+.b601-en{position:absolute;right:6px;top:25px;font-size:6.5px;letter-spacing:.08em;color:#fff;opacity:.55;white-space:nowrap;font-weight:700;pointer-events:none;z-index:2}
+.b601-staff{position:absolute;left:5px;bottom:5px;display:flex;gap:2px;z-index:2}
+.b601-staff i{display:block;width:13px;height:13px;box-sizing:border-box;border:1px solid #ffffff50!important;background:#00000080}
+.b601-staff i.on{border-color:#fff!important;background:linear-gradient(180deg,#ffffff40,#0000 60%),var(--rc)}
+.b601-ready{position:absolute;right:5px;top:5px;width:8px;height:8px;background:#d5ef8f;box-shadow:0 0 6px #d5ef8f;transform:rotate(45deg);z-index:3}
+/* 控制中樞（2×2） */
+.b601-hub{--cut:16px}
+.b601-hub .b601-frame{background:#191b1e}
+.b601-hub .b601-head{height:26px}
+.b601-hub .b601-ico{width:26px}
+.b601-hub .b601-ico svg{width:16px;height:16px}
+.b601-hub .b601-name{font-size:15px;line-height:26px;padding-right:16px}
+.b601-hub .b601-lv{top:31px;left:6px;height:13px}
+.b601-hub .b601-lv i{width:4px;height:13px}
+.b601-hub .b601-en{font-size:9px;right:20px;top:auto;bottom:8px}
+.b601-lift{z-index:20;filter:drop-shadow(0 0 2px var(--rc)) drop-shadow(0 8px 10px #000)!important;opacity:.95}
+.b601-bad{filter:drop-shadow(0 0 3px #ff5a4f) drop-shadow(0 8px 10px #000)!important}
