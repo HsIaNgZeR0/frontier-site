@@ -78,26 +78,32 @@ window.FrontierContainmentYard=(()=>{
   }else if(assets.hasErrors()&&Object.keys(assets.getErrors?.()||{}).some(k=>k.includes(sid+'/'))){sp.state='failed'}
  }
  /* ---------- 場地 ---------- */
+ /* 十個分區 A～J 橫向排列。由 A 開始填，每區先放滿 15～30 隻（數量多時每區平均分擔）才往下一區，避免散布到後段 */
+ const ZONES=10;
  function layoutWorld(n){
-  const r=yard.getBoundingClientRect(),f=clamp(Math.sqrt(n/100),1,3.3);
-  /* 橫向至少 3 個螢幕寬，手指左右滑動瀏覽 */world={w:Math.round(r.width*Math.max(3,f)),h:Math.round(r.height*f),f};
-  minZoom=Math.min(.6,1/f);
+  const r=yard.getBoundingClientRect(),caps=[];let left=n;
+  for(let z=0;z<ZONES&&left>0;z++){const cap=z===ZONES-1?left:Math.max(15+Math.floor(Math.random()*16),Math.ceil(n/ZONES));caps.push(Math.min(cap,left));left-=caps[z]}
+  const peak=Math.max(30,...caps),s=clamp(Math.sqrt(peak/60),1,1.6),zw=Math.round(r.width*s);
+  world={w:zw*ZONES,h:Math.round(r.height*s),f:s,zw,caps,used:Math.max(1,caps.length)};
+  minZoom=Math.max(.07,Math.min(.6,r.width/(world.used*zw),r.height/world.h));
  }
  function spread(n){
-  /* 抖動網格：鬆散且 O(n)，上千隻也不卡 */
-  const m=44,w=world.w-m*2,h=world.h-m*2-60,cols=Math.max(1,Math.round(Math.sqrt(n*w/h))),rows=Math.max(1,Math.ceil(n/cols)),cells=[];
-  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++)cells.push([c,r]);
-  for(let k=cells.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[cells[k],cells[j]]=[cells[j],cells[k]]}
-  return cells.slice(0,n).map(([c,r])=>({x:m+(c+rnd(.15,.85))*w/cols,y:m+60+(r+rnd(.2,.95))*h/rows}));
+  const m=30,pts=[],h=world.h-m-70;
+  world.caps.forEach((cap,z)=>{
+   const x0=z*world.zw+m,w=world.zw-m*2,cols=Math.max(1,Math.round(Math.sqrt(cap*w/h))),rows=Math.max(1,Math.ceil(cap/cols)),cells=[];
+   for(let r=0;r<rows;r++)for(let c=0;c<cols;c++)cells.push([c,r]);
+   for(let k=cells.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[cells[k],cells[j]]=[cells[j],cells[k]]}
+   for(const [c,r] of cells.slice(0,cap))pts.push({x:x0+(c+rnd(.15,.85))*w/cols,y:70+(r+rnd(.2,.95))*h/rows,zone:z});
+  });
+  return pts;
  }
- function mount(){
+ const zoneOf=x=>clamp(Math.floor(x/world.zw),0,ZONES-1); function mount(){
   stop();yard=document.querySelector('.yard');if(!yard)return;
   const navTop=document.querySelector('#nav')?.getBoundingClientRect().top;if(navTop>0&&navTop<innerHeight)yard.style.bottom=(innerHeight-navTop)+'px';
   const removed=purge();if(removed){yard.querySelector('.yard-count').textContent='收容個體 '+instances().length;toast('已移除 '+removed+' 隻沒有模型的收容個體。')}
   fx=yard.querySelector('.yard-fx');shadow=yard.querySelector('.yard-shadows');
-  const list=instances();layoutWorld(list.length);cam={x:world.w/2,y:Math.min(world.h/2,yard.clientHeight/2),z:1,vx:0,vy:0};clampCam();
-  const pts=spread(list.length);
-  mobs=list.map((i,k)=>{const u=FrontierCapture.units[i.species];return{i,v:variantOf(i),sp:null,phase:k%PHASES,x:pts[k].x,y:pts[k].y,tx:pts[k].x,ty:pts[k].y,dir:Math.random()<.5?-1:1,mode:'idle',wait:rnd(.2,4),speed:rnd(9,16)*(u.rarity>=3?.9:1),s:UNIT*(u.rarity>=3?ELITE:1)*(i.mutation?1.05:1),hop:0,lift:0,motion:'idle',seed:Math.random()*10}});
+  const list=instances();layoutWorld(list.length);const pts=spread(list.length);cam={x:0,y:world.h/2,z:1,vx:0,vy:0};clampCam();
+  mobs=list.map((i,k)=>{const u=FrontierCapture.units[i.species];return{i,v:variantOf(i),sp:null,phase:k%PHASES,zone:pts[k].zone,x:pts[k].x,y:pts[k].y,tx:pts[k].x,ty:pts[k].y,dir:Math.random()<.5?-1:1,mode:'idle',wait:rnd(.2,4),speed:rnd(9,16)*(u.rarity>=3?.9:1),s:UNIT*(u.rarity>=3?ELITE:1)*(i.mutation?1.05:1),hop:0,lift:0,motion:'idle',seed:Math.random()*10}});
   updateCount();loadRuntime().then(ok=>{if(!ok||!yard?.isConnected)return;if(!setupGL()){toast('此裝置不支援 WebGL，無法顯示模型。');return}for(const m of mobs)m.sp=speciesOf(m.i.species);last=0;raf=requestAnimationFrame(tick)});
  }
  function stop(){if(raf)cancelAnimationFrame(raf);raf=0;mobs=[];focus=null;bubble=null;editing=false;gesture=null;pointers.clear();try{ctx?.gl.getExtension('WEBGL_lose_context')?.loseContext()}catch{}ctx=null;renderer=null;assets=null;species.clear()}
@@ -127,7 +133,7 @@ window.FrontierContainmentYard=(()=>{
   if(m.hop>0)m.hop=Math.max(0,m.hop-dt*50);
   const held=gesture?.type==='drag'&&gesture.m===m;m.lift+=((held?10:0)-m.lift)*Math.min(1,dt*14);
   if(held||focus===m){m.motion='idle';return}
-  if(m.mode==='idle'){m.motion='idle';m.wait-=dt;if(m.wait<=0){const far=Math.random()<.25,r=far?rnd(90,200):rnd(25,90),a=rnd(0,Math.PI*2);m.tx=clamp(m.x+Math.cos(a)*r,30,world.w-30);m.ty=clamp(m.y+Math.sin(a)*r*.6,90,world.h-10);m.mode='walk'}}
+  if(m.mode==='idle'){m.motion='idle';m.wait-=dt;if(m.wait<=0){const far=Math.random()<.25,r=far?rnd(90,200):rnd(25,90),a=rnd(0,Math.PI*2);m.tx=clamp(m.x+Math.cos(a)*r,m.zone*world.zw+24,(m.zone+1)*world.zw-24);m.ty=clamp(m.y+Math.sin(a)*r*.6,90,world.h-10);m.mode='walk'}}
   else{const dx=m.tx-m.x,dy=m.ty-m.y,d=Math.hypot(dx,dy);if(d<1.5){m.mode='idle';m.wait=rnd(1.5,7)}else{const s=Math.min(d,m.speed*dt);m.x+=dx/d*s;m.y+=dy/d*s;if(Math.abs(dx)>.5)m.dir=dx<0?-1:1;m.motion='move'}}
  }
  function sizeCanvas(c,dpr){const w=Math.round(c.clientWidth*dpr),h=Math.round(c.clientHeight*dpr);if(c.width!==w||c.height!==h){c.width=w;c.height=h}return[w,h]}
@@ -202,7 +208,7 @@ window.FrontierContainmentYard=(()=>{
   tile??=makeTile();const W=world.w,H=world.h;
   c.fillStyle=c.createPattern(tile,'repeat');c.fillRect(0,0,W,H);
   /* 分區：每個螢幕寬一區，畫地面標線與區號 */
-  const zw=W/Math.max(1,Math.round(W/(yard.clientWidth||375)));let n=0;
+  const zw=world.zw;let n=0;
   for(let x=0;x<W-1;x+=zw){c.strokeStyle='rgba(242,194,48,.22)';c.lineWidth=3;c.setLineDash([18,12]);if(x>0){c.beginPath();c.moveTo(x,70);c.lineTo(x,H-10);c.stroke()}c.setLineDash([]);
    c.save();c.globalAlpha=.07;c.fillStyle='#bfe3f2';c.font='900 '+Math.round(zw*.38)+'px system-ui,sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText(String.fromCharCode(65+n%26),x+zw/2,H/2);c.restore();
    c.strokeStyle='rgba(127,164,182,.14)';c.lineWidth=2;c.beginPath();c.ellipse(x+zw/2,H*.62,zw*.32,zw*.12,0,0,7);c.stroke();n++}
@@ -259,7 +265,7 @@ window.FrontierContainmentYard=(()=>{
   if(g.type==='pinch'){if(pointers.size===0)gesture=null;else{const [id,p]=[...pointers.entries()][0];gesture={type:'pan',id,x:p.x,y:p.y,cam:{...cam},moved:true}}return}
   if(e.pointerId!==g.id)return;clearTimeout(g.timer);gesture=null;
   if(g.type==='pan'){const fresh=performance.now()-(g.lt||0)<80;cam.vx=fresh?clamp(g.vx||0,-2500,2500):0;cam.vy=fresh?clamp(g.vy||0,-2500,2500):0;return}
-  if(g.type==='drag'){const m=g.m;m.hop=8;m.mode='idle';m.wait=rnd(1,3);m.tx=m.x;m.ty=m.y;return}
+  if(g.type==='drag'){const m=g.m;m.zone=zoneOf(m.x);m.hop=8;m.mode='idle';m.wait=rnd(1,3);m.tx=m.x;m.ty=m.y;return}
   if(g.type!=='press'||e.type==='pointercancel')return;
   if(!g.m){if(bubble)close();return}
   if(focus===g.m){close();return}
