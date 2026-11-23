@@ -19,7 +19,18 @@ window.FrontierInspector=(()=>{
     const height=tip.offsetHeight, origin=tip.style.position==='absolute'?host.getBoundingClientRect():{top:0,left:0};
     tip.style.setProperty('inset','calc('+ (oy+Math.max(edge,(h-height)/2)-origin.top) +'px + env(safe-area-inset-top)/2) auto auto '+(left-origin.left)+'px','important');
   }
+  fit(tip,h,oy,edge,host);
   return tip;
+ }
+ // Tooltips can't scroll (pointer-events:none while the finger holds), so long text must fit: shrink type first, then take the whole viewport height.
+ function fit(tip,h,oy,edge,host){
+  const over=()=>tip.scrollHeight>tip.clientHeight+1;if(!over())return;
+  const nodes=[tip,...tip.querySelectorAll('*')],base=nodes.map(n=>parseFloat(getComputedStyle(n).fontSize)||12);
+  for(let s=.92;s>=.68&&over();s-=.08)nodes.forEach((n,i)=>n.style.setProperty('font-size',Math.max(9,base[i]*s).toFixed(1)+'px','important'));
+  if(!over())return;
+  const origin=tip.style.position==='absolute'?host.getBoundingClientRect():{top:0};
+  tip.style.setProperty('max-height','calc('+Math.max(24,h-2*edge)+'px - env(safe-area-inset-top) - env(safe-area-inset-bottom))','important');
+  tip.style.setProperty('top','calc('+(oy+edge-origin.top)+'px + env(safe-area-inset-top))','important');tip.style.setProperty('bottom','auto','important');
  }
  return{attach};
 })();

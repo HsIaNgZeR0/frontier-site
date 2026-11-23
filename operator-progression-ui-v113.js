@@ -3,6 +3,8 @@ window.FrontierOperatorProgressionV113=(()=>{
  const M=FrontierOperatorMasteryV31,source=FrontierOperatorCatalogV113;
  const catalog={...FrontierOperatorProgressionCatalogV113,materials:FrontierInventory.definitions,rarities:Object.fromEntries(Object.entries(FrontierCapture.units).map(([id,u])=>[id,u.rarity])),formUnlocked:M.formUnlocked,trialComplete:(s,id,card)=>s.operatorTrialsV113?.[s.personnel?.units[id]?.uid]?.includes(card)===true};
  const el=(tag,text,cls)=>{const n=document.createElement(tag);if(text!=null){if(['p','b','summary'].includes(tag))n.innerHTML=FrontierOperatorUIV113.formatText(text);else n.textContent=text}if(cls)n.className=cls;return n};
+ // Design markdown → concise talent list: headings become names, stage tables become "E0：…" lines; locked rows, table chrome and long rule notes are dropped.
+ function parseTalents(md){const out=[];let cur=null;for(const raw of md.split('\n')){const line=raw.trim();if(!line)continue;let m;if(m=line.match(/^#+\s*(.*)$/)){const h=m[1];if(/^(\d+(\.\d+)*\s*)?.*戰鬥天賦|^\d+｜天賦/.test(h)&&!/[：①②③]/.test(h))continue;cur={name:h.replace(/^(天賦[一二三]：|[①②③]\s*)/,'').replace(/｜.*$/,'').trim(),lines:[],table:false};out.push(cur);continue}if(line.startsWith('|')){if(cur)cur.table=true;const cells=line.split('|').map(s=>s.trim()).filter(Boolean);if(cells.length>=2&&/^E\d$/.test(cells[0])&&!/^未解鎖/.test(cells[1]))cur?.lines.push(cells[0]+'：'+cells.slice(1).join(' '));continue}if(cur?.table)continue;if(!cur){cur={name:'',lines:[],table:false};out.push(cur)}cur.lines.push(line.replace(/^-\s*/,''))}return out.filter(t=>t.name||t.lines.length)}
  function button(text,fn,disabled=false){const b=el('button',text);b.type='button';b.disabled=disabled;b.addEventListener('click',fn);return b}
  function recordChrome(){const dialog=document.querySelector('#modal');dialog.dataset.battleRecord='true';if(dialog.querySelector('.screen-tool-head'))return;const footer=dialog.lastElementChild,content=el('div',null,'screen-simple-dialog'),header=el('div',null,'screen-tool-head'),close=button('✕',()=>closeModal());close.setAttribute('aria-label','關閉幹員紀錄');header.append(el('b','幹員戰鬥紀錄'),close);for(const node of [...dialog.children])if(node!==footer){if(node.matches('h2,.eyebrow'))node.remove();else content.append(node)}dialog.prepend(header,content)}
  async function command(type,args){const ok=await FrontierRuntime.perform('operator-'+type,()=>{db=M.apply(db,{id:crypto.randomUUID(),seq:(db.masteryV31?.seq||0)+1,type,...args},catalog);if(type==='branch')window.FrontierProfiles150?.branch(args);save();render()});if(ok)detail(args.operator,args.form);return ok}
@@ -25,7 +27,7 @@ window.FrontierOperatorProgressionV113=(()=>{
   host.append(sig);
   const talents=el('details');talents.append(el('summary','天賦與固有機制'));
   const mechanic=typeof abilities.mechanic==='string'?abilities.mechanic:abilities.mechanic?.rule;
-  if(mechanic||abilities.mechanicSource)talents.append(el('p',mechanic||abilities.mechanicSource));
+  if(mechanic&&!abilities.talentsSource)talents.append(el('p',mechanic));
   for(const talent of abilities.talents||[]){
    talents.append(el('b',talent.name));
    const groups=new Map();
@@ -36,7 +38,7 @@ window.FrontierOperatorProgressionV113=(()=>{
    }
    for(const [text,tiers]of groups)talents.append(el('p',tiers.join('／')+'：'+text));
   }
-  if(abilities.talentsSource)talents.append(el('p',abilities.talentsSource));
+  if(abilities.talentsSource)for(const t of parseTalents(abilities.talentsSource)){if(t.name)talents.append(el('b',t.name));for(const line of t.lines)if(!actor||!/^E\d：/.test(line)||line.startsWith('E'+elite+'：'))talents.append(el('p',line))}
   host.append(talents);
   if(!options.battle&&(abilities.logistics?.length||abilities.logisticsSource)){
    const logistics=el('details');logistics.append(el('summary','後勤技能設計資料'));
