@@ -55,3 +55,10 @@ window.FrontierPresentation=(()=>{
  window.addEventListener('pointerdown',()=>{suppressUntil=0},true);
  return{polish,statuses,skillInfo};
 })();
+
+// 手機長按：不選取文字、不跳出圖片儲存／放大選單（輸入框仍可選取）。
+(()=>{const st=document.createElement('style');st.textContent='html,body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}input,textarea,select,[contenteditable],[contenteditable] *{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}img{-webkit-user-drag:none;user-drag:none;-webkit-touch-callout:none}';document.head.append(st);
+ const editable=t=>t?.closest?.('input,textarea,select,[contenteditable]');
+ addEventListener('contextmenu',e=>{if(!editable(e.target))e.preventDefault()},{capture:true});
+ addEventListener('dragstart',e=>{if(e.target?.tagName==='IMG')e.preventDefault()},{capture:true});
+ addEventListener('selectstart',e=>{if(!editable(e.target))e.preventDefault()},{capture:true});})();
