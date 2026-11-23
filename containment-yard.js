@@ -4,8 +4,14 @@
 window.FrontierContainmentYard=(()=>{
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const BASE='assets/enemy-spine/',UNIT=.12,ELITE=1.15,HOLD_MS=360,NAME_MAX=12,PHASES=2,MAX_ZOOM=3;
- let mobs=[],raf=0,last=0,yard=null,gl=null,fx=null,shadow=null,bubble=null,focus=null,editing=false,cam={x:0,y:0,z:1},world={w:400,h:700},minZoom=.5;
- const species=new Map(),pointers=new Map(),perf={ms:0,n:0};let gesture=null,assets=null,ctx=null,renderer=null,shader=null,clock=0;
+ let srcArr=null,mobs=[],raf=0,last=0,yard=null,gl=null,fx=null,shadow=null,bubble=null,focus=null,editing=false,cam={x:0,y:0,z:1},world={w:400,h:700},minZoom=.5;
+ const species=new Map(),pointers=new Map(),perf={ms:0,n:0};
+ /* 篩選：一區 普通／菁英，二區 普通／閃光／色違，三區 已命名／喜愛（勾了才限制，符合任一即可） */
+ const filt={common:true,elite:true,normal:true,shiny:true,color:true,named:false,fav:false};
+ function shown(m){const el=(FrontierCapture.units[m.i.species]?.rarity||1)>=3;if(el?!filt.elite:!filt.common)return false;if(!filt[m.v||'normal'])return false;if(filt.named||filt.fav)return(filt.named&&!!m.i.nickname)||(filt.fav&&!!m.i.favorite);return true}
+ const FILTER_GROUPS=[['類型',[['common','普通敵人'],['elite','菁英敵人']]],['型態',[['normal','普通'],['shiny','閃光'],['color','色違']]],['標記',[['named','已自定名字'],['fav','已加愛心']]]];
+ function filterHtml(){return '<div class="yard-filter-panel" hidden>'+FILTER_GROUPS.map(([t,items])=>'<fieldset><legend>'+t+'</legend>'+items.map(([k,l])=>'<label><input type="checkbox" data-yard-filter="'+k+'"'+(filt[k]?' checked':'')+'><span>'+l+'</span></label>').join('')+'</fieldset>').join('')+'<p class="yard-filter-note">標記區不勾＝不限制</p></div>'}
+ function updateCount(){const el=yard?.querySelector('.yard-count');if(!el)return;const n=mobs.length,s=mobs.filter(shown).length;el.textContent=s===n?'收容個體 '+n:'顯示 '+s+' / '+n;yard.querySelector('[data-yard-filter-open]')?.classList.toggle('is-on',s!==n)}let gesture=null,assets=null,ctx=null,renderer=null,shader=null,clock=0;
  const rnd=(a,b)=>a+Math.random()*(b-a),clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
  const V=()=>window.FrontierVariants;
  const variantOf=i=>V()?.of(i)||null;
@@ -27,7 +33,7 @@ window.FrontierContainmentYard=(()=>{
  function region(i){const id=i.origin?.region;return FrontierExpedition.regions.find(r=>r.id===id)?.name||'舊收容檔案'}
  function view(){
   const n=instances().length;
-  return '<section class="yard" aria-label="收容管理場"><canvas class="yard-shadows" aria-hidden="true"></canvas><canvas class="yard-gl" aria-hidden="true"></canvas><canvas class="yard-fx" aria-hidden="true"></canvas><div class="yard-head"><button class="yard-back" data-yard-back aria-label="返回主頁"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><div class="yard-title"><small>CONTAINMENT YARD</small><b>收容管理場</b></div><span class="yard-count">收容個體 '+n+'</span></div>'+(n?'<p class="yard-hint">點擊查看 · 長按拖曳 · 雙指縮放</p>':'<p class="yard-empty">尚無收容個體。<br>於遠征中削弱敵人並使用收容裝置，成功撤離後會在這裡出現。</p>')+'<div class="yard-zoom"><button data-yard-zoom="1" aria-label="放大">＋</button><button data-yard-zoom="-1" aria-label="縮小">－</button></div><div class="yard-layer"></div></section>';
+  return '<section class="yard" aria-label="收容管理場"><canvas class="yard-shadows" aria-hidden="true"></canvas><canvas class="yard-gl" aria-hidden="true"></canvas><canvas class="yard-fx" aria-hidden="true"></canvas><div class="yard-head"><button class="yard-back" data-yard-back aria-label="返回主頁"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><button class="yard-back yard-filter-btn" data-yard-filter-open aria-label="篩選" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 5h16l-6 7.5V19l-4 1.5v-8z"/></svg></button>'+filterHtml()+'<div class="yard-title"><small>CONTAINMENT YARD</small><b>收容管理場</b></div><span class="yard-count">收容個體 '+n+'</span></div>'+(n?'<p class="yard-hint">點擊查看 · 長按拖曳 · 雙指縮放</p>':'<p class="yard-empty">尚無收容個體。<br>於遠征中削弱敵人並使用收容裝置，成功撤離後會在這裡出現。</p>')+'<div class="yard-zoom"><button data-yard-zoom="1" aria-label="放大">＋</button><button data-yard-zoom="-1" aria-label="縮小">－</button></div><div class="yard-layer"></div></section>';
  }
  /* ---------- Spine 共用渲染 ---------- */
  function makeShader(c){
@@ -92,7 +98,7 @@ window.FrontierContainmentYard=(()=>{
   const list=instances();layoutWorld(list.length);cam={x:world.w/2,y:Math.min(world.h/2,yard.clientHeight/2),z:1};clampCam();
   const pts=spread(list.length);
   mobs=list.map((i,k)=>{const u=FrontierCapture.units[i.species];return{i,v:variantOf(i),sp:null,phase:k%PHASES,x:pts[k].x,y:pts[k].y,tx:pts[k].x,ty:pts[k].y,dir:Math.random()<.5?-1:1,mode:'idle',wait:rnd(.2,4),speed:rnd(9,16)*(u.rarity>=3?.9:1),s:UNIT*(u.rarity>=3?ELITE:1)*(i.mutation?1.05:1),hop:0,lift:0,motion:'idle',seed:Math.random()*10}});
-  loadRuntime().then(ok=>{if(!ok||!yard?.isConnected)return;if(!setupGL()){toast('此裝置不支援 WebGL，無法顯示模型。');return}for(const m of mobs)m.sp=speciesOf(m.i.species);last=0;raf=requestAnimationFrame(tick)});
+  updateCount();loadRuntime().then(ok=>{if(!ok||!yard?.isConnected)return;if(!setupGL()){toast('此裝置不支援 WebGL，無法顯示模型。');return}for(const m of mobs)m.sp=speciesOf(m.i.species);last=0;raf=requestAnimationFrame(tick)});
  }
  function stop(){if(raf)cancelAnimationFrame(raf);raf=0;mobs=[];focus=null;bubble=null;editing=false;gesture=null;pointers.clear();try{ctx?.gl.getExtension('WEBGL_lose_context')?.loseContext()}catch{}ctx=null;renderer=null;assets=null;species.clear()}
  function clampCam(){
@@ -104,12 +110,14 @@ window.FrontierContainmentYard=(()=>{
  function zoomAt(z,sx,sy){const r=yard.getBoundingClientRect();sx??=r.left+r.width/2;sy??=r.top+r.height/2;const before=toWorld(sx,sy);cam.z=clamp(z,minZoom,MAX_ZOOM);const after=toWorld(sx,sy);cam.x+=before.x-after.x;cam.y+=before.y-after.y;clampCam()}
  /* 個體外框（世界座標）：腳底為 (x,y) */
  function box(m){const b=m.sp?.state==='ready'?m.sp.bounds:{x:-80,y:0,w:160,h:200},w=b.w*m.s,h=(b.y+b.h)*m.s,cx=m.x+(b.x+b.w/2)*m.s*(m.dir>0?-1:1);return{l:cx-w/2,r:cx+w/2,t:m.y-h-m.hop-m.lift,b:m.y+4,cx,w,h}}
- function hit(wx,wy){let best=null;for(const m of mobs){const b=box(m);if(wx>=b.l&&wx<=b.r&&wy>=b.t&&wy<=b.b&&(!best||m.y>best.y))best=m}return best}
+ function hit(wx,wy){let best=null;for(const m of mobs){if(!shown(m))continue;const b=box(m);if(wx>=b.l&&wx<=b.r&&wy>=b.t&&wy<=b.b&&(!best||m.y>best.y))best=m}return best}
  /* ---------- 主迴圈 ---------- */
  function tick(t){
   raf=0;if(!yard?.isConnected||!renderer){stop();return}
   const dt=last?Math.min(.1,(t-last)/1000):0;last=t;clock+=dt;
   for(const sp of species.values())prepare(sp);
+  /* 存檔物件可能被重新載入替換；以 uid 重新連結，名牌／愛心／篩選才會跟上 */
+  if(db.capture?.instances!==srcArr){srcArr=db.capture?.instances;const map=new Map((srcArr||[]).map(i=>[i.uid,i]));for(const m of mobs){const i=map.get(m.i.uid);if(i){m.i=i;m.v=variantOf(i)}}updateCount()}
   for(const m of mobs)step(m,dt);
   const t0=performance.now();draw(dt);perf.ms=perf.ms*.9+(performance.now()-t0)*.1;perf.n++;if(bubble&&focus)aim();
   raf=requestAnimationFrame(tick);
@@ -145,7 +153,7 @@ window.FrontierContainmentYard=(()=>{
  function draw(dt){
   const dpr=Math.min(2,devicePixelRatio||1),W=yard.clientWidth,H=yard.clientHeight;if(!W||!H)return;
   const vl=cam.x-W/2/cam.z-60,vr=cam.x+W/2/cam.z+60,vt=cam.y-H/2/cam.z-20,vb=cam.y+H/2/cam.z+160;
-  const vis=mobs.filter(m=>m.x>vl&&m.x<vr&&m.y>vt&&m.y<vb).sort((a,b)=>a.y-b.y);
+  const vis=mobs.filter(m=>shown(m)&&m.x>vl&&m.x<vr&&m.y>vt&&m.y<vb).sort((a,b)=>a.y-b.y);
   const far=vis.length>60||cam.z<.75;
   const c=yard.querySelector('.yard-gl'),[w,h]=sizeCanvas(c,dpr),g=ctx.gl;
   if(far){let budget=5;for(const m of vis){if(m.sp?.state!=='ready'||m.sp.sheets?.[m.v||''])continue;if(budget--<=0)break;bake(m.sp,m.v)}}
@@ -177,13 +185,26 @@ window.FrontierContainmentYard=(()=>{
   // 閃光星芒
   const [fw,fh]=sizeCanvas(fx,dpr),f2=fx.getContext('2d');f2.setTransform(1,0,0,1,0,0);f2.clearRect(0,0,fw,fh);f2.setTransform(k,0,0,k,ox,oy);
   for(const m of vis){if(m.v!=='shiny')continue;const b=box(m);for(let q=0;q<4;q++){const p=(clock*.55+m.seed+q*.25)%1,a=Math.sin(p*Math.PI),x=b.cx+Math.sin(m.seed*7+q*2.3)*b.w*.45,y=b.t+b.h*(.1+.75*((q*.37+m.seed)%1))-p*6,sz=(1.6+1.3*a)*Math.max(.6,b.w/30);star(f2,x,y,sz,a)}}
+  /* 已命名個體常駐名牌（固定字級，不隨縮放） */
+  f2.setTransform(dpr,0,0,dpr,0,0);
+  for(const m of vis){if(!m.i.nickname||focus===m)continue;const b=box(m),p=toScreen(b.cx,b.t);if(p.x<-90||p.x>W+90||p.y<-20||p.y>H+30)continue;tag(f2,p.x,p.y-9,m)}
+ }
+ function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.lineTo(x+w-r,y);c.quadraticCurveTo(x+w,y,x+w,y+r);c.lineTo(x+w,y+h-r);c.quadraticCurveTo(x+w,y+h,x+w-r,y+h);c.lineTo(x+r,y+h);c.quadraticCurveTo(x,y+h,x,y+h-r);c.lineTo(x,y+r);c.quadraticCurveTo(x,y,x+r,y);c.closePath()}
+ function tag(c,x,y,m){
+  const name=(m.i.favorite?'♥ ':'')+m.i.nickname,v=m.v,lab=v?V().label(v):'';
+  c.font='600 11px system-ui,sans-serif';const nw=c.measureText(name).width;c.font='700 9px system-ui,sans-serif';const lw=lab?c.measureText(lab).width+8:0;
+  const w=nw+12+(lab?lw+4:0),h=18,x0=Math.round(x-w/2),y0=Math.round(y-h);
+  c.fillStyle='rgba(10,15,19,.82)';rr(c,x0,y0,w,h,3);c.fill();c.strokeStyle=v==='shiny'?'rgba(255,215,106,.8)':v==='color'?'rgba(213,155,255,.8)':'rgba(127,164,182,.6)';c.lineWidth=1;c.stroke();
+  c.textBaseline='middle';c.font='600 11px system-ui,sans-serif';c.fillStyle='#fff';c.fillText(name,x0+6,y0+h/2+.5);
+  if(m.i.favorite){c.fillStyle='#ff6f91';c.fillText('♥',x0+6,y0+h/2+.5)}
+  if(lab){const lx=x0+6+nw+4;c.fillStyle=v==='shiny'?'#ffd76a':'#d59bff';rr(c,lx,y0+3,lw,h-6,2);c.fill();c.fillStyle='#14181c';c.font='700 9px system-ui,sans-serif';c.fillText(lab,lx+4,y0+h/2+.5)}
  }
  function star(c,x,y,s,a){c.save();c.globalAlpha=a;c.fillStyle='#fff6cf';c.shadowColor='rgba(255,210,90,.9)';c.shadowBlur=6;c.beginPath();c.moveTo(x,y-s);c.quadraticCurveTo(x,y,x+s,y);c.quadraticCurveTo(x,y,x,y+s);c.quadraticCurveTo(x,y,x-s,y);c.quadraticCurveTo(x,y,x,y-s);c.fill();c.restore()}
  /* ---------- 資料泡泡 ---------- */
  function show(m){focus=m;editing=false;bubble?.remove();bubble=document.createElement('div');bubble.className='yard-bubble';bubble.setAttribute('role','dialog');fill();yard.querySelector('.yard-layer').append(bubble);aim()}
  function fill(){
   const i=focus.i,u=FrontierCapture.units[i.species],v=variantOf(i);
-  bubble.innerHTML=(editing?'<form class="yard-rename"><input maxlength="'+NAME_MAX+'" value="'+esc(i.nickname||'')+'" placeholder="'+esc(u.name)+'" aria-label="自訂名稱"><button type="submit">確定</button></form>':'<div class="yard-name"><b>'+esc(nameOf(i))+'</b><button class="yard-pen" data-yard-pen aria-label="自訂名稱"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4"/></svg></button></div>')+(i.nickname?'<small class="yard-species">'+esc(u.name+(V()?.suffix(v)||''))+'</small>':'')+'<dl><dt>收容時間</dt><dd>'+when(i.capturedAt)+'</dd><dt>收容難度</dt><dd>'+difficulty(i)+'</dd><dt>收容地區</dt><dd>'+esc(region(i))+'</dd></dl>';
+  bubble.innerHTML=(editing?'<form class="yard-rename"><input maxlength="'+NAME_MAX+'" value="'+esc(i.nickname||'')+'" placeholder="'+esc(u.name)+'" aria-label="自訂名稱"><button type="submit">確定</button></form>':'<div class="yard-name"><button class="yard-heart'+(i.favorite?' is-on':'')+'" data-yard-heart aria-pressed="'+!!i.favorite+'" aria-label="喜愛"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7.5-4.6-9-9.2C2 7.4 4.3 4.5 7.4 4.5c2 0 3.6 1.1 4.6 2.7 1-1.6 2.6-2.7 4.6-2.7 3.1 0 5.4 2.9 4.4 6.3-1.5 4.6-9 9.2-9 9.2z"/></svg></button><b>'+esc(nameOf(i))+'</b><button class="yard-pen" data-yard-pen aria-label="自訂名稱"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4"/></svg></button></div>')+(i.nickname?'<small class="yard-species">'+esc(u.name+(V()?.suffix(v)||''))+'</small>':'')+'<dl><dt>收容時間</dt><dd>'+when(i.capturedAt)+'</dd><dt>收容難度</dt><dd>'+difficulty(i)+'</dd><dt>收容地區</dt><dd>'+esc(region(i))+'</dd></dl>';
   if(editing){const input=bubble.querySelector('input');input.focus();input.select()}
  }
  function aim(){const fw=yard.clientWidth,bw=bubble.offsetWidth,bh=bubble.offsetHeight,b=box(focus),top=toScreen(b.cx,b.t),foot=toScreen(b.cx,b.b);let x=top.x-bw/2,y=top.y-bh-10;x=Math.max(8,Math.min(fw-bw-8,x));const below=y<64;if(below)y=foot.y+10;bubble.style.transform='translate3d('+x+'px,'+y+'px,0)';bubble.style.setProperty('--tail',(top.x-x)+'px');bubble.classList.toggle('is-below',below)}
@@ -192,11 +213,11 @@ window.FrontierContainmentYard=(()=>{
   const i=focus?.i;if(!i)return;const name=String(value||'').replace(/[\u0000-\u001f<>]/g,'').trim().slice(0,NAME_MAX);
   const live=(db.capture?.instances||[]).find(x=>x.uid===i.uid);if(!live)return;
   if(name&&name!==FrontierCapture.units[live.species].name)live.nickname=name;else delete live.nickname;
-  focus.i=live;save();editing=false;fill();aim();toast(name?'已命名為「'+name+'」':'已恢復原名');
+  focus.i=live;save();editing=false;fill();aim();updateCount();toast(name?'已命名為「'+name+'」':'已恢復原名');
  }
  /* ---------- 指標：短按查看、長按拖曳、空白處拖曳平移、雙指縮放、滾輪縮放 ---------- */
  function down(e){
-  if(!yard?.isConnected||!e.target.closest?.('.yard')||e.target.closest('.yard-bubble,.yard-head,.yard-zoom'))return;
+  if(!yard?.isConnected||!e.target.closest?.('.yard')||e.target.closest('.yard-bubble,.yard-head,.yard-zoom,.yard-filter-panel'))return;
   e.preventDefault();pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
   if(pointers.size===2){if(gesture?.timer)clearTimeout(gesture.timer);if(gesture?.type==='drag')gesture.m.hop=6;const [a,b]=[...pointers.values()];gesture={type:'pinch',d:Math.hypot(a.x-b.x,a.y-b.y),z:cam.z};return}
   if(pointers.size>2)return;
@@ -232,7 +253,11 @@ window.FrontierContainmentYard=(()=>{
   if(e.target.closest?.('[data-yard-back]')){go('home');return}
   const z=e.target.closest?.('[data-yard-zoom]');if(z){zoomAt(cam.z*(z.dataset.yardZoom==='1'?1.4:1/1.4));return}
   if(e.target.closest?.('[data-yard-pen]')&&focus){editing=true;fill();aim()}
+  if(e.target.closest?.('[data-yard-heart]')&&focus){const live=(db.capture?.instances||[]).find(x=>x.uid===focus.i.uid);if(live){if(live.favorite)delete live.favorite;else live.favorite=true;focus.i=live;save();fill();aim();updateCount();toast(live.favorite?'已加入喜愛名單':'已移出喜愛名單')}}
+  const fb=e.target.closest?.('[data-yard-filter-open]');if(fb){const p=yard.querySelector('.yard-filter-panel');p.hidden=!p.hidden;fb.setAttribute('aria-expanded',String(!p.hidden));return}
+  if(yard?.isConnected&&!e.target.closest?.('.yard-filter-panel,[data-yard-filter-open]')){const p=yard.querySelector('.yard-filter-panel');if(p&&!p.hidden){p.hidden=true;yard.querySelector('[data-yard-filter-open]')?.setAttribute('aria-expanded','false')}}
  });
+ document.addEventListener('change',e=>{const k=e.target.dataset?.yardFilter;if(!k||!(k in filt))return;filt[k]=e.target.checked;if(focus&&!shown(focus))close();updateCount()});
  document.addEventListener('submit',e=>{if(!e.target.closest?.('.yard-rename'))return;e.preventDefault();rename(e.target.querySelector('input').value)});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&bubble){if(editing){editing=false;fill();aim()}else close()}});
  const prior=render;render=function(){
