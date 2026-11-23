@@ -85,7 +85,7 @@ window.FrontierContainmentYard=(()=>{
   for(let z=0;z<ZONES&&left>0;z++){const cap=z===ZONES-1?left:Math.max(15+Math.floor(Math.random()*16),Math.ceil(n/ZONES));caps.push(Math.min(cap,left));left-=caps[z]}
   const peak=Math.max(30,...caps),s=clamp(Math.sqrt(peak/60),1,1.6),zw=Math.round(r.width*s);
   world={w:zw*ZONES,h:Math.round(r.height*s),f:s,zw,caps,used:Math.max(1,caps.length)};
-  minZoom=Math.max(.07,Math.min(.6,r.width/(world.used*zw),r.height/world.h));
+  /* 最多縮到剛好看見一區的上下高度，其他分區用左右滑動查看 */minZoom=Math.min(1,r.height/world.h);
  }
  function spread(n){
   const m=30,pts=[],h=world.h-m-70;
