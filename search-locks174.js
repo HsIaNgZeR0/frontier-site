@@ -97,12 +97,13 @@ function containerRule(itemId){
  return {...structureRules[type],type,name:structureNames[type]};
 }
 const recipeInput={
- T1:[1,400,[['polyester',2,2],['iron',1,1]]],
- T2:[2,1200,[['device',3,1],['sugar',2,2]]],
- T3:[3,4000,[['rma',5,1],['device',3,2]]],
- T4:[4,10000,[['gel',6,1],['rock',5,1]]],
- B1:[2,1500,[['rock',2,3],['grindstone',3,1]]],
- B2:[3,5000,[['ketone',5,1],['manganese',3,2]]]
+ // v602 價格校正：點數商店月售價 ÷ 合成成本（素材＋龍門幣）≈ 1.75（藍75／銀120／金≈442點，1點≈69龍門幣）。
+ T1:[1,1500,[['polyester',4,2],['iron',3,2]]],
+ T2:[2,3000,[['device',4,4],['sugar',3,4]]],
+ T3:[3,3000,[['rma',5,4],['device',4,4]]],
+ T4:[4,10000,[['gel',6,2],['rock',5,5]]],
+ B1:[2,1000,[['rock',4,6],['grindstone',5,3]]],
+ B2:[3,10000,[['ketone',6,2],['manganese',5,5]]]
 };
 // 房卡 K01–K10 開探索房間；開鎖裝置 T1–T4 開容器；炸藥 B1/B2 無房卡時破門。
 function accessKind(id){return id[0]==='K'?'keycard':id[0]==='T'?'lockpick':'explosive'}

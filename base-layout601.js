@@ -1,7 +1,7 @@
 'use strict';
 /* 基建佈局 v601：本家風格長方形房間、指揮中樞 2×2、自由拖動擺放（存於 db.baseLayout601）。 */
 window.FrontierBaseLayout601=(()=>{
- if(!document.querySelector('link[data-b601]')){const l=document.createElement('link');l.rel='stylesheet';l.href='base-layout601.css?v=601i';l.dataset.b601='';document.head.appendChild(l)}
+ if(!document.querySelector('link[data-b601]')){const l=document.createElement('link');l.rel='stylesheet';l.href='base-layout601.css?v=601l';l.dataset.b601='';document.head.appendChild(l)}
  const U=16,COLS=40,ROWS=40,RW=7,RH=4,LV=2;
  const esc=s=>String(s??'').replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));
  // 本家房間造型：色彩、圖示與英文標示。本家沒有的房間沿用模板換色。
@@ -55,9 +55,12 @@ window.FrontierBaseLayout601=(()=>{
   const style='--rc:'+L.c+';left:'+box.x*U+'px;top:'+box.y*U+'px;width:'+box.w*U+'px;height:'+box.h*U+'px';
   if(r.kind==='hub')return '<button type="button" class="b601-room b601-hub" data-room601="'+esc(r.id)+'" aria-label="'+esc(name)+' 等級 '+r.level+'" style="'+style+'"><span class="b601-frame"><span class="b601-tree"></span><span class="b601-hubtitle"><b class="b601-name">'+esc(name)+'</b><small>LEVEL OF CONTROL_INTERFACE</small><span class="b601-ver"><i class="b601-verhatch"></i><small>VER</small><strong>'+r.level+'.0</strong></span></span></span>'+(ready?'<em class="b601-ready"></em>':'')+'</button>';
   const status=ready?'可收取':prod?(prod+' ▸▸▸'):(r.staff.length?'工作中':'空閒中');
-  return '<button type="button" class="b601-room'+(prod?' b601-prod':'')+'" data-room601="'+esc(r.id)+'" aria-label="'+esc(name)+' 等級 '+r.level+'" style="'+style+'"><span class="b601-frame"><span class="b601-mark">'+hex+'<span class="b601-ico">'+ico[L.t]+'</span></span>'+(prod?'<span class="b601-bar"></span>':'')+'<span class="b601-head"><b class="b601-name">'+esc(name)+'</b>'+bars(r.level)+'</span><small class="b601-status'+(ready?' is-ready':'')+'">'+status+'</small>'+(seats?'<span class="b601-count">'+person+'<b>'+r.staff.length+'</b><small>/'+seats+'</small></span>':'')+'<span class="b601-seg">'+'<i></i>'.repeat(5)+'</span></span></button>'}
+  return '<button type="button" class="b601-room'+(prod?' b601-prod':'')+'" data-room601="'+esc(r.id)+'" aria-label="'+esc(name)+' 等級 '+r.level+'" style="'+style+'"><span class="b601-frame"><span class="b601-mark">'+hex+'<span class="b601-ico">'+ico[L.t]+'</span></span><span class="b601-bar"></span><span class="b601-head"><b class="b601-name">'+esc(name)+'</b>'+bars(r.level)+'</span><small class="b601-status'+(ready?' is-ready':'')+'">'+status+'</small>'+(seats?'<span class="b601-count">'+person+'<b>'+r.staff.length+'</b><small>/'+seats+'</small></span>':'')+'<span class="b601-seg">'+'<i></i>'.repeat(5)+'</span></span></button>'}
  /* 名稱過長時縮小字級而非截斷為「…」。 */
- function fit(root){for(const b of root.querySelectorAll('.b601-room:not(.b601-hub) .b601-name,.b601-status')){let f=parseFloat(getComputedStyle(b).fontSize);while(b.scrollWidth>b.clientWidth+.5&&f>5){f-=.5;b.style.fontSize=f+'px'}}}
+ function fit(root){const els=[...root.querySelectorAll('.b601-room:not(.b601-hub) .b601-name,.b601-status')],m=els.map(b=>[b.scrollWidth,b.clientWidth,parseFloat(getComputedStyle(b).fontSize)]);els.forEach((b,i)=>{const[sw,cw,f]=m[i];if(sw>cw+.5&&cw>0)b.style.fontSize=Math.max(5,Math.floor(f*cw/sw*2)/2)+'px'})}
+ /* 縮放時暫時提升為合成層，停手 250ms 後再重新點陣化成清晰畫面。 */
+ let zoomTimer=0;function zooming(c){c.style.willChange='transform';clearTimeout(zoomTimer);zoomTimer=setTimeout(()=>{c.style.willChange='auto'},250)}
+ new MutationObserver(ms=>{for(const m of ms)if(m.target.classList?.contains('b601-host'))zooming(m.target)}).observe(document.querySelector('#app'),{attributes:true,attributeFilter:['style'],subtree:true});
  function board(){const s=FrontierBase151.preview?.()||db,lay=resolve(s);return '<div class="b601-board" style="width:'+COLS*U+'px;height:'+ROWS*U+'px">'+(s.base151.rooms||[]).filter(r=>lay[r.id]).map(r=>roomHTML(s,r,lay[r.id])).join('')+'</div>'}
  function decorate(){const old=document.querySelector('.base151-board');if(!old||!db.base151||!FrontierBaseEngine.modern(db))return;old.classList.add('b601-host');old.innerHTML=board();fit(old);const hint=[...document.querySelectorAll('.base151-shell .tiny')].find(p=>p.textContent.includes('拖動'));if(hint)hint.textContent='雙指縮放 · 長按拖動房間 · 點按管理';const intro=[...document.querySelectorAll('.base151-shell>.tiny')].find(p=>p.textContent.includes('無人派駐'));if(intro)intro.textContent='無人也會生產，派駐可加速；離線時間照常結算，沒有每日上限。';const list=document.querySelector('.base151-room-list');if(list){list.classList.add('b601-list');list.innerHTML=listHTML()}}
  document.addEventListener('click',e=>{const el=e.target.closest?.('[data-row601]');if(el)FrontierBase151.room(el.dataset.row601)});
@@ -105,5 +108,7 @@ window.FrontierBaseLayout601=(()=>{
  document.addEventListener('click',e=>{const el=e.target.closest?.('[data-room601]');if(!el)return;if(performance.now()<suppressClick){e.preventDefault();e.stopImmediatePropagation();return}FrontierBase151.room(el.dataset.room601)});
  async function move(id,x,y,lay){lay=lay||resolve(db);const me=lay[id];if(!me)return false;const box={...me,x,y};if(!inside(box)||Object.values(lay).some(b=>b.id!==id&&overlap(b,box)))return false;
   return FrontierRuntime.perform('base-layout601',()=>{const cur=resolve(db),rooms={};for(const [k,b]of Object.entries(cur))rooms[k]={x:b.x,y:b.y};rooms[id]={x,y};db.baseLayout601={v:LV,rooms};if(typeof render==='function')render()})}
- return {resolve,valid,move,board,U,COLS,ROWS};
+ /* 在彈窗標題列（房間名稱右側）插入動作按鈕；screen 版標題會跳脫 HTML，所以開窗後再插入。 */
+ function titleAction(html){const m=document.querySelector('#modal');if(!m)return;const head=m.querySelector('.screen-tool-head')||m.querySelector('h2');if(!head)return;head.classList.add('b601-mtitle');const w=document.createElement('span');w.className='b601-mtitle-act';w.innerHTML=html;const title=head.matches('h2')?null:head.querySelector(':scope>b');if(title)title.after(w);else head.append(w)}
+ return {titleAction,resolve,valid,move,board,U,COLS,ROWS};
 })();
