@@ -52,39 +52,45 @@ window.FrontierFieldDock=(()=>{
   document.body.append(host);bind(host);
  }
 
- /* ---------- 編隊：左 5 出戰、右 3 候補，下方全部幹員可左右滑動，拖曳到區塊 ---------- */
+ /* ---------- 編隊：上排左出戰、右支援，下方候補；三區可互相拖曳，落在有人的格子上直接交換 ---------- */
+ function zones(){const st=g(),cap=FrontierExpeditionRecruit144.capacity(st),f=!!st.formation175,active=st.roster.filter(u=>u.active),support=st.roster.filter(u=>!u.active&&(f?u.support:true)),reserve=f?st.roster.filter(u=>!u.active&&!u.support):[];return{st,f,cap:{active:cap.active,support:f?cap.support:cap.reserve,reserve:f?cap.reserve:0},active,support,reserve}}
  function teamView(){
   const st=g();if(!st)return '<p class="fd-empty">此模式沒有招募編制。</p>';
-  const cap=FrontierExpeditionRecruit144.capacity(st),active=st.roster.filter(u=>u.active),reserve=st.roster.filter(u=>!u.active),canEdit=!R().battle;
-  const slot=(list,i,limit,zone)=>{if(i>=limit)return '<span class="fd-slot fd-locked" aria-label="尚未解鎖">'+lock+'</span>';const u=list[i];return '<span class="fd-slot" data-fd-zone="'+zone+'">'+(u?'<img src="'+esc(portrait(u))+'" alt="'+esc(units()[u.id].name)+'" data-fd-op="'+u.id+'" draggable="false"><i>E'+u.elite+'</i>':'')+'</span>'};
-  return '<div class="fd-team-zones"><div class="fd-zone" data-fd-zone="active"><b>出戰 '+active.length+'/'+cap.active+'</b><div class="fd-slots">'+[0,1,2,3,4].map(i=>slot(active,i,cap.active,'active')).join('')+'</div></div><div class="fd-zone fd-zone-reserve" data-fd-zone="reserve"><b>候補 '+reserve.length+'/'+cap.reserve+'</b><div class="fd-slots">'+[0,1,2].map(i=>slot(reserve,i,cap.reserve,'reserve')).join('')+'</div></div></div>'+
-   '<p class="fd-hint">'+(canEdit?'拖曳頭像到出戰或候補；點一下也可切換。':'戰鬥中無法調整編隊。')+'</p>'+
-   '<div class="fd-roster" aria-label="全部幹員，可左右滑動">'+(st.roster.length?st.roster.map(u=>'<button type="button" class="fd-op '+(u.active?'is-active':'is-reserve')+'" data-fd-op="'+u.id+'" '+(canEdit?'':'disabled')+'><img src="'+esc(portrait(u))+'" alt="" draggable="false"><span>'+esc(units()[u.id].name)+'</span></button>').join(''):'<p class="fd-empty">尚未招募幹員，請使用招募券。</p>')+'</div>';
+  const z=zones(),canEdit=!R().battle;
+  const slot=(zone,i)=>{const limit=z.cap[zone],list=z[zone];if(i>=limit)return '<span class="fd-slot fd-locked" aria-label="尚未解鎖">'+lock+'</span>';const u=list[i];return '<span class="fd-slot" data-fd-zone="'+zone+'" data-fd-index="'+i+'">'+(u?'<img src="'+esc(portrait(u))+'" alt="'+esc(units()[u.id].name)+'" data-fd-op="'+u.id+'" draggable="false"><i>E'+u.elite+'</i><em>'+esc(units()[u.id].name)+'</em>':'')+'</span>'};
+  const block=(zone,label,count,cls='')=>'<div class="fd-zone '+cls+'" data-fd-zone="'+zone+'"><b>'+label+' '+z[zone].length+'/'+z.cap[zone]+'</b><div class="fd-slots" style="--n:'+count+'">'+Array.from({length:count},(_,i)=>slot(zone,i)).join('')+'</div></div>';
+  return '<div class="fd-team-zones">'+block('active','出戰',5)+block('support','支援',3,'fd-zone-support')+'</div>'+(z.f?block('reserve','候補',4,'fd-zone-reserve fd-zone-wide'):'')+
+   '<p class="fd-hint">'+(canEdit?'拖曳頭像到出戰、支援或候補；拖到已有幹員的格子會直接交換。支援幹員不上場，只提供支援技能。':'戰鬥中無法調整編隊。')+'</p>'+
+   (st.roster.length?'':'<p class="fd-empty">尚未招募幹員，請使用招募券。</p>');
  }
- function setFormation(id,zone){
-  const st=g(),cap=FrontierExpeditionRecruit144.capacity(st);let ids=st.roster.filter(u=>u.active).map(u=>u.id);
-  const isActive=ids.includes(id);
-  if(zone==='active'&&!isActive){if(ids.length>=cap.active){toast('出戰已滿 '+cap.active+' 人。');return}ids=[...ids,id]}
-  else if(zone==='reserve'&&isActive){if(ids.length<=1){toast('至少需要一名出戰幹員。');return}if(st.roster.length-ids.length>=cap.reserve){toast('候補已滿 '+cap.reserve+' 人。');return}ids=ids.filter(x=>x!==id)}
-  else return;
-  FrontierRecruitUI144.command('formation',{active:ids});
+ /* 把 id 放到 zone 的第 index 格；若該格已有幹員則兩人互換區塊與位置。 */
+ function place(id,zone,index){
+  const z=zones(),lists={active:z.active.map(u=>u.id),support:z.support.map(u=>u.id),reserve:z.reserve.map(u=>u.id)};
+  const from=Object.keys(lists).find(k=>lists[k].includes(id));if(!from||!lists[zone])return;
+  const fromIndex=lists[from].indexOf(id),other=lists[zone][index];
+  if(from===zone){if(other==null||other===id){lists[zone].splice(fromIndex,1);lists[zone].push(id)}else{lists[zone][index]=id;lists[zone][fromIndex]=other}}
+  else if(other!=null){lists[zone][index]=id;lists[from][fromIndex]=other}
+  else{if(lists[zone].length>=z.cap[zone]){toast(({active:'出戰',support:'支援',reserve:'候補'})[zone]+'已滿 '+z.cap[zone]+' 人。');return}lists[from].splice(fromIndex,1);lists[zone].push(id)}
+  if(!lists.active.length){toast('至少需要一名出戰幹員。');return}
+  if(z.f)FrontierRecruitUI144.command('formation175',{active:lists.active,support:lists.support});
+  else{if(lists.support.length>z.cap.support){toast('候補已滿 '+z.cap.support+' 人。');return}FrontierRecruitUI144.command('formation',{active:lists.active})}
  }
  let drag=null;
  function bind(host){
   host.querySelector('[data-fd-close]')?.addEventListener('click',()=>close());
   if(sheet==='team'){
-   host.addEventListener('pointerdown',e=>{const el=e.target.closest('[data-fd-op]');if(!el||el.disabled||R().battle)return;drag={id:el.dataset.fdOp,x:e.clientX,y:e.clientY,pointer:e.pointerId,ghost:null,src:el}});
-   host.addEventListener('click',e=>{const el=e.target.closest('button[data-fd-op]');if(!el||drag?.moved)return;const u=g().roster.find(x=>x.id===el.dataset.fdOp);if(u)setFormation(u.id,u.active?'reserve':'active')});
+   host.addEventListener('pointerdown',e=>{const el=e.target.closest('[data-fd-op]');if(!el||el.disabled||R().battle)return;e.preventDefault();drag={id:el.dataset.fdOp,x:e.clientX,y:e.clientY,pointer:e.pointerId,ghost:null,src:el}});
   }
   if(sheet==='curio')host.addEventListener('click',e=>{const el=e.target.closest('[data-fd-curio]');if(!el)return;curioFocus=curioFocus===el.dataset.fdCurio?null:el.dataset.fdCurio;mount(document.querySelector('.screen-combat-actions'))});
   if(sheet==='ticket')host.addEventListener('click',onTicket);
  }
+ const dropSlot=(x,y)=>document.elementFromPoint(x,y)?.closest('.fd-slot[data-fd-zone],.fd-zone');
  window.addEventListener('pointermove',e=>{if(!drag||drag.pointer!==e.pointerId)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
-  if(!drag.ghost){if(Math.abs(dy)<16)return;drag.moved=true;const img=drag.src.querySelector('img')||drag.src;drag.ghost=img.cloneNode(true);drag.ghost.className='fd-ghost';document.body.append(drag.ghost)}
+  if(!drag.ghost){if(Math.hypot(dx,dy)<10)return;drag.moved=true;drag.ghost=drag.src.cloneNode(true);drag.ghost.className='fd-ghost';drag.ghost.removeAttribute('data-fd-op');document.body.append(drag.ghost)}
   e.preventDefault();drag.ghost.style.left=e.clientX+'px';drag.ghost.style.top=e.clientY+'px';
-  for(const z of document.querySelectorAll('.fd-zone'))z.classList.toggle('fd-over',z.contains(document.elementFromPoint(e.clientX,e.clientY)));
+  const over=dropSlot(e.clientX,e.clientY);for(const z of document.querySelectorAll('.fd-over'))if(z!==over)z.classList.remove('fd-over');over?.classList.add('fd-over');
  },{passive:false});
- window.addEventListener('pointerup',e=>{if(!drag||drag.pointer!==e.pointerId)return;const d=drag;setTimeout(()=>{if(drag===d)drag=null},0);if(!d.ghost)return;d.ghost.remove();document.querySelectorAll('.fd-over').forEach(z=>z.classList.remove('fd-over'));const zone=document.elementFromPoint(e.clientX,e.clientY)?.closest('.fd-zone');if(zone)setFormation(d.id,zone.dataset.fdZone)});
+ window.addEventListener('pointerup',e=>{if(!drag||drag.pointer!==e.pointerId)return;const d=drag;drag=null;if(!d.ghost)return;d.ghost.remove();document.querySelectorAll('.fd-over').forEach(z=>z.classList.remove('fd-over'));const over=dropSlot(e.clientX,e.clientY);if(!over)return;const zone=over.dataset.fdZone,index=over.dataset.fdIndex!=null?Number(over.dataset.fdIndex):99;place(d.id,zone,index)});
  window.addEventListener('pointercancel',()=>{drag?.ghost?.remove();drag=null});
 
  /* ---------- 收藏品：約畫面 1/3 高，列出已持有 ---------- */

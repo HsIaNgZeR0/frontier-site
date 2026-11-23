@@ -1,0 +1,27 @@
+/* v175 支援幹員直排：出戰血條右側縮短，空出的位置放支援頭像 */
+.sp175-host{position:relative!important}
+.sp175-host>.team-actor.v113-actor-row{margin-right:50px!important;width:auto!important}
+.sp175-rail{position:absolute;top:0;right:0;width:46px;display:flex;flex-direction:column;align-items:center;gap:6px;z-index:3}
+.sp175-unit{position:relative;width:44px;height:44px;min-height:44px;padding:0!important;margin:0;border:0!important;background:none!important;box-shadow:none!important;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.sp175-face,.sp175-color,.sp175-clock{position:absolute;inset:3px;overflow:hidden;pointer-events:none}
+.sp175-face{background:#0c171c}
+.sp175-face img,.sp175-color img{width:100%;height:100%;object-fit:cover;pointer-events:none}
+/* 主動：圓形頭像＋金色外環；被動：圓角方形＋藍灰外框＋「被動」標籤，且不可點擊施放 */
+.sp175-unit.is-active .sp175-face,.sp175-color,.sp175-clock{border-radius:50%}
+.sp175-unit.is-active .sp175-face{box-shadow:0 0 0 2px #f6cc59,0 0 6px #f6cc5988}
+.sp175-unit.is-passive .sp175-face{border-radius:6px;box-shadow:0 0 0 2px #6f8792}
+.sp175-ap{position:absolute;left:-3px;top:-3px;z-index:4;width:18px;height:18px;border-radius:50%;background:#f6cc59;color:#111;font:700 12px/18px "Rajdhani",sans-serif;font-style:normal;text-align:center;box-shadow:0 0 0 1px #111}
+.sp175-ap.is-short{background:#d9534f;color:#fff}
+.sp175-passive{position:absolute;left:50%;bottom:-4px;transform:translateX(-50%);z-index:4;padding:0 3px;font-size:8px;line-height:12px;font-style:normal;color:#dfe9ee;background:#2b3d46;border:1px solid #6f8792;border-radius:2px;white-space:nowrap}
+/* 冷卻／已用：整張頭像變灰；冷卻中以時鐘扇形把已恢復的部分（順時針）變回彩色，並畫出邊界線 */
+.sp175-unit.is-cooling .sp175-face img{filter:grayscale(1) brightness(.7)}
+.sp175-unit.is-cooling .sp175-face{box-shadow:0 0 0 2px #8a8a8a}
+.sp175-color{z-index:1;-webkit-mask:conic-gradient(#000 0 var(--done),transparent 0);mask:conic-gradient(#000 0 var(--done),transparent 0)}
+.sp175-clock{z-index:2}
+.sp175-hand{position:absolute;left:50%;top:0;width:1.5px;height:50%;margin-left:-.75px;background:#f2f2f2;box-shadow:0 0 2px #000;transform-origin:50% 100%}
+.sp175-cd{position:absolute;inset:0;z-index:3;display:grid;place-items:center;font:700 18px/1 "Rajdhani",sans-serif;color:#333;text-shadow:0 0 3px #fff,0 0 2px #fff;pointer-events:none}
+.sp175-cd.sp175-used{font-size:11px}
+.sp175-next{margin-right:4px;color:#f6cc59;font:700 13px/1 "Rajdhani",sans-serif}
+.sp175-targets{display:grid;gap:6px}
+.sp175-targets button{min-height:44px}
+.sp175-tip b{font-size:14px}

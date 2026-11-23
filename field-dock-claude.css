@@ -252,3 +252,13 @@ dialog#modal:not([open]){display:none!important}
 .fd-phase-lock.is-on{display:flex}
 .fd-phase-lock b{padding:8px 22px;font-size:18px;letter-spacing:.2em;color:#ffe2c8;background:linear-gradient(90deg,transparent,#5a1a12e6 20%,#5a1a12e6 80%,transparent);border-top:1px solid #ff9a4d;border-bottom:1px solid #ff9a4d;animation:fdPhaseIn .35s ease-out}
 @keyframes fdPhaseIn{from{opacity:0;transform:scaleX(.6)}to{opacity:1;transform:none}}
+
+/* v175 編隊三區：上排出戰＋支援、下方候補 */
+.fd-team-zones{grid-template-columns:5fr 3fr!important;gap:8px!important}
+.fd-zone-support{border-color:#c9a45c99!important;background:#221f16!important}
+.fd-zone-support>b{color:#f2d38a!important}
+.fd-zone-wide{margin-top:8px}
+.fd-zone-wide .fd-slots{grid-template-columns:repeat(4,minmax(0,52px))!important}
+.fd-slot em{position:absolute;left:0;right:0;top:0;font-style:normal;font-size:8px;line-height:1.2;text-align:center;background:#000a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
+.fd-slot.fd-over{outline:2px solid #d4eb96;outline-offset:-2px}
+.fd-slot img{cursor:grab}
