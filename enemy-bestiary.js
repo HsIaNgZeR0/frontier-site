@@ -48,6 +48,11 @@ window.FrontierBestiary=(()=>{
    return '<button class="enemy-index-tile" data-bestiary-enemy="'+id+'" '+(known||hasCapture?'':'disabled')+'>'+ (known?portrait(id):'<span class="enemy-index-unknown" aria-hidden="true">?</span>')+(hasCapture?'<span class="enemy-index-captured">已收容</span>':'')+'<span>'+esc(known?d.name:'未擊敗')+'</span></button>';
   }).join('')+'</div>':'<p class="muted">本區目前沒有此類單位。</p>');
  }
+ function ledgerHtml(id){
+  const c=window.FrontierVariants?.counts?.(id);if(!c)return '';
+  const total=c.normal+c.shiny+c.color;
+  return '<div class="enemy-index-ledger"><div><b>累計收容</b>'+total+'</div><div><b>閃光</b>'+(c.shiny?'已收容':'未收容')+'</div><div><b>色違</b>'+(c.color?'已收容':'未收容')+'</div></div>';
+ }
  function detail(id){
   viewed=id;
   const d=FrontierCapture.units[id],data=db.enemyArchive?.[id]||{},known=Object.keys(data).length>0;
@@ -58,7 +63,7 @@ window.FrontierBestiary=(()=>{
   if(['enemy_1528_manfri','enemy_1524_bldkgt','enemy_1523_mandra','enemy_1532_minima'].includes(id)||Object.values(data).some(x=>x.phase))details.push(tactics.describeBoss(id));
   if(id===tactics.fragment&&known)details.push(tactics.detail({regionalFragment:true}));
   const rows=Object.entries(ranks).map(([rank,label])=>{const hp=data[rank];return '<div><b>'+label+'</b><span>'+(hp?(hp.min===hp.max?hp.min:hp.min+'–'+hp.max)+' HP':'未擊敗')+'</span></div>'}).join('');
-  return '<button data-bestiary-back>‹ 返回圖鑑</button><div class="enemy-index-detail">'+(known?portrait(id):'')+'<div><h3>'+esc(known?d.name:'未擊敗的收容單位')+'</h3><p>'+esc(types.join('／')||'傷害類型未記錄')+(captured(db,id)?' · 已收容':'')+'</p></div></div><div class="enemy-index-hp">'+rows+'</div>'+details.filter(Boolean).flatMap(text=>text.split(/\n|。(?=.)/)).map(text=>'<p>'+esc(text)+'</p>').join('')+'<p class="tiny muted">HP 為實際擊敗時記錄的區間。舊版沒有擊敗紀錄的敵人會在下次擊敗後解鎖。</p>';
+  return '<button data-bestiary-back>‹ 返回圖鑑</button><div class="enemy-index-detail">'+(known?portrait(id):'')+'<div><h3>'+esc(known?d.name:'未擊敗的收容單位')+'</h3><p>'+esc(types.join('／')||'傷害類型未記錄')+(captured(db,id)?' · 已收容':'')+'</p></div></div>'+ledgerHtml(id)+'<div class="enemy-index-hp">'+rows+'</div>'+details.filter(Boolean).flatMap(text=>text.split(/\n|。(?=.)/)).map(text=>'<p>'+esc(text)+'</p>').join('')+'<p class="tiny muted">HP 為實際擊敗時記錄的區間。舊版沒有擊敗紀錄的敵人會在下次擊敗後解鎖。</p>';
  }
  function paint(){const host=document.querySelector('.enemy-index');if(host)host.innerHTML=viewed?detail(viewed):html()}
  function open(){
