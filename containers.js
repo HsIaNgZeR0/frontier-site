@@ -117,13 +117,14 @@ window.FrontierContainers=(()=>{
   const secondaryPool=rewardPool(secondaryTier,secondaryKind,region);
   for(let i=1;i<count;i++)contents.push(reward(secondaryTier,secondaryKind,region,false,secondaryPool));
   if(q===5)contents.push({itemId:'record_high',qty:1});
-  {const bp=window.FrontierBlueprints?.containerRoll(q,kind,premium);if(bp)contents.push(bp);}
   if(premium){
    contents.push(reward(5,'industrial',region),reward(5,'industrial',region));
    const area=item=>{const size=FrontierCollections.size(catalog[item.itemId],R());return size.w*size.h};
    let occupied=contents.reduce((sum,item)=>sum+area(item),0);
    while(occupied<15){const item=reward(4,'industrial',region);contents.push(item);occupied+=area(item)}
   }
+  /* claude97bp：藍圖在所有內容（含末班密櫃補滿15格）決定後才額外追加，不佔用原有內容。 */
+  {const bp=window.FrontierBlueprints?.containerRoll(q,kind,premium);if(bp)contents.push(bp);}
  instance.sealed={version:1,quality:q,kind,tier,contents,counterStart:counter,counterEnd:db.rng.counter,seed:db.rng.seed,revealed:0,claimed:contents.map(()=>false)};return instance}
  function drop(q,kind,origin){
   const state=ensure();
