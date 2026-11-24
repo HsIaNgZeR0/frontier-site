@@ -117,6 +117,7 @@ window.FrontierContainers=(()=>{
   const secondaryPool=rewardPool(secondaryTier,secondaryKind,region);
   for(let i=1;i<count;i++)contents.push(reward(secondaryTier,secondaryKind,region,false,secondaryPool));
   if(q===5)contents.push({itemId:'record_high',qty:1});
+  {const bp=window.FrontierBlueprints?.containerRoll(q,kind,premium);if(bp)contents.push(bp);}
   if(premium){
    contents.push(reward(5,'industrial',region),reward(5,'industrial',region));
    const area=item=>{const size=FrontierCollections.size(catalog[item.itemId],R());return size.w*size.h};
