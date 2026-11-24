@@ -923,8 +923,8 @@ window.FrontierBattleTools132=(()=>{
  function supplyReason(id,actor,enemy){if(id===kitId)return kitReason(actor);const r=R(),b=battle(),d=D()[id];if(!d||d.category!=='medicine'||!(r?.field.materials[id]>0))return'道具已用完';const p=phaseReason();if(p)return p;
   if(['stride','stamina','scout'].includes(d.family))return'此道具僅限探索使用';
   if(r.supplyTypeLimit&&!r.quickMeds?.includes(id)&&(r.quickMeds?.length||0)>=r.supplyTypeLimit)return'本趟已配置兩種戰術補給';
-  const limit=FrontierContracts.value('medicine',r.team.length===5?4:2),revive=d.family==='revive',energy=revive?2:1;
-  if(limit===0)return'合約禁止使用支援道具';if(b.energy<energy)return'需要 '+energy+' AP';
+  const limit=FrontierContracts.value('medicine',r.team.length===5?4:2),revive=d.family==='revive',energy=FrontierMedicine.energyOf?.(id)??(revive?2:1);if(d.family==='support'&&!(window.FrontierSupport175?.members?.()||[]).length)return'需要編入支援幹員';
+  if(limit===0)return'合約禁止使用支援道具';if(energy&&b.energy<energy)return'需要 '+energy+' AP';
   if((b.medUses||0)>=Math.min(limit,r.team.length===5?4:2))return'本場支援道具次數已用完';
   if((b.medTurn===b.turn?(b.medTurnUses||1):0)>=(r.team.length===5?2:1))return'本回合支援道具次數已用完';
   if(revive&&FrontierContracts.value('revive',1)===0)return'合約禁止救援道具';if(revive&&d.effect.level>0&&Math.max(b.medRevives||0,b.rescues||0)>=(r.team.length===5?2:1))return'本場救援額度已用完';
