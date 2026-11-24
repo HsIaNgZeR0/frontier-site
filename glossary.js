@@ -14,8 +14,8 @@ window.FrontierGlossary=(()=>{
   {id:'corrosion',name:'腐蝕',aliases:['腐蝕'],side:'敵方 → 幹員',desc:'裝甲被腐蝕。',effect:'下一次承受物理攻擊時，每層使該擊原始傷害 +10，最多 +30，之後清除。'},
   {id:'venom',name:'毒蝕',aliases:['毒蝕'],side:'幹員 → 敵人',desc:'舊版戰鬥規則中施加在敵人身上的毒。',effect:'敵方回合開始時每層扣血，之後減少 1 層。',note:'與幹員身上的「中毒」是不同狀態。'},
   {id:'embersFire',name:'殘焰',aliases:['殘焰'],side:'幹員 → 敵人',desc:'炎熔支援技能「引燃」造成的燃燒。',effect:'每回合開始時每層造成 10 點真實傷害，之後減少 1 層。',note:'與「灼燒」「灼燃」為不同狀態，不共用層數。'},
-  {id:'fear',name:'恐懼',aliases:['恐懼'],side:'敵方 → 幹員',desc:'精神類控制。',effect:'負面狀態，可由穩頻耳罩或淨化解除；特定首領的恐懼會提高卡牌 AP 消耗。'},
-  {id:'weak',name:'虛弱',aliases:['虛弱'],side:'雙方',desc:'攻擊力被削弱。',effect:'受影響者造成的傷害降低；可淨化。'},
+  {id:'fear',name:'恐懼',aliases:['恐懼'],side:'敵方 → 幹員',desc:'精神類控制。',effect:'一般恐懼欄位可由對應補給清除。扎羅第二形態的特殊攻擊若造成生命損失，會另施加首領恐懼，使受傷幹員的卡牌多耗 1 AP。首領恐懼在扎羅降至施加時設定的生命門檻（再損失相當於其最大生命 20%），或被擊倒時解除。'},
+  {id:'weak',name:'虛弱',aliases:['虛弱'],side:'雙方',desc:'攻擊力被削弱。',effect:'虛弱類減傷依來源結算。區域敵人施加的一次性攻擊削弱會讓幹員下一張攻擊牌傷害降低 20%，出牌後消耗。'},
   {id:'silence',name:'沉默',aliases:['沉默'],side:'雙方',desc:'封鎖技能類行動。',effect:'盤面上的沉默由狀態規則處理。',targets:{enemy:'生效期間，遇到明確可沉默的特殊攻擊時，普通敵人會跳過該次攻擊。一般攻擊照常執行；精英與首領不受此跳過判定。可破韌窗口另依狀態轉換規則處理。',ally:'部分補給可抵擋或清除幹員身上的沉默欄位。目前未找到這個欄位會封鎖出牌或招牌技能的戰鬥判定。封鎖招牌是凍結的效果。'}},
   {id:'entangle',name:'纏繞',aliases:['纏繞','纏結'],side:'幹員 → 敵人',desc:'累積型控制。敵人處於可破韌的蓄力窗口時，施加纏繞可直接增加 1 點破韌進度。',effect:'普通敵人 3 層、精英／首領 5 層時轉為「束縛」。'},
   {id:'bind',name:'束縛',aliases:['束縛'],side:'幹員 → 敵人',desc:'纏繞達門檻後觸發。',effect:'跳過下一次可控制的敵方行動；敵人正在可破韌的蓄力窗口時，改為增加 1 點破韌進度。'},
@@ -23,7 +23,7 @@ window.FrontierGlossary=(()=>{
   {id:'vuln',name:'易傷',aliases:['易傷','脆弱'],side:'幹員 → 敵人',desc:'受到的傷害提高。',effect:'有易傷的目標承受傷害提高；層數隨受擊或回合消耗。'},
   {id:'armor',name:'破甲',aliases:['破甲'],side:'幹員 → 敵人',desc:'降低敵人防禦。',effect:'目標 DEF 降低指定數值，各效果到期後恢復。'},
   {id:'weightless',name:'失重',aliases:['失重'],side:'幹員 → 敵人',desc:'條件標記。',effect:'供卡牌增益與破韌效果判定，不等同無法攻擊。'},
-  {id:'slow',name:'遲滯',aliases:['遲滯'],side:'幹員 → 敵人',desc:'條件標記。',effect:'供技能條件判定使用。'},
+  {id:'slow',name:'遲滯',aliases:['遲滯'],side:'幹員 → 敵人',desc:'條件標記。',effect:'生效期間供技能條件判定。若非首領的特殊攻擊明確可延後，結算時會消耗遲滯並延後這次攻擊。'},
   {id:'suppression',name:'壓制',aliases:['壓制'],side:'幹員 → 敵人',desc:'條件標記。',effect:'供技能條件判定，不會直接取消敵方行動。緘默德克薩斯的對應專精可讓下一次可被壓制的特殊攻擊減傷 10%。'},
   {id:'taunt',name:'嘲諷',aliases:['嘲諷'],side:'幹員',desc:'吸引敵方攻擊。',effect:'改變敵人預告的攻擊目標；部分敵方特性的瞄準規則仍可被嘲諷轉移。'},
   {id:'embers',name:'餘燼',aliases:['餘燼'],side:'幹員自身',desc:'史爾特爾的天賦狀態。',effect:'首次受到致命傷害時進入：2 個完整敵方行動階段內免疫傷害且無法被治療，期滿強制退場；每戰一次。',note:'收藏品「餘燼標本」與敵方特性「餘燼復燃」名稱相近但無關。'},
@@ -34,7 +34,7 @@ window.FrontierGlossary=(()=>{
   {id:'texasMark',name:'劍雨印記',aliases:['劍雨印記'],side:'幹員 → 敵人',desc:'德克薩斯的專屬計數。',effect:'供德克薩斯卡牌與隊友增益的條件判定。附傷或增傷依卡牌與專精結算。'},
   {id:'ambrielLock',name:'遠距鎖定',aliases:['遠距鎖定'],side:'幹員 → 敵人',desc:'安比爾的專屬計數。',effect:'供安比爾部分卡牌判定額外效果；持續時間與加成依施加及利用鎖定的卡牌而定。'},
   {id:'adnaLock',name:'弱點鎖定',aliases:['弱點鎖定'],side:'幹員 → 敵人',desc:'安德切爾的專屬計數。',effect:'部分卡牌命中已有弱點鎖定的目標時得到增傷，並消耗一層。'},
-  {id:'control',name:'控制狀態',aliases:['控制狀態'],side:'幹員 → 敵人',desc:'限制敵人行動的狀態總稱。',effect:'包含束縛、暈眩、沉默、凍結等；收藏品與天賦的「施加控制狀態」條件以此判定。'},
+  {id:'control',name:'控制狀態',aliases:['控制狀態'],side:'幹員 → 敵人',desc:'限制敵人行動的狀態總稱。',effect:'涵蓋多種限制行動的效果。各卡牌、裝備或收藏品依自己的觸發判定；對幹員的凍結不等於對敵人成功施加控制。'},
  ];
  const byAlias=new Map();for(const t of T)for(const a of t.aliases)byAlias.set(a,t);
  const pattern=new RegExp([...byAlias.keys()].sort((a,b)=>b.length-a.length).join('|'),'g');
