@@ -2,7 +2,21 @@
 globalThis.FrontierOperatorStatusDictionaryV31=(()=>{
  // The status owner declares dispellability. Do not equate every counter with a debuff.
  const definitions={bleed:{name:'流血',cleanse:true},poison:{name:'中毒',cleanse:true},burn:{name:'灼燒',cleanse:true},slow:{name:'遲滯',cleanse:true},bind:{name:'束縛',cleanse:true},silence:{name:'沉默',cleanse:true},weightless:{name:'失重',cleanse:true},mentalDamage:{name:'精神損傷',cleanse:false},surtrEmbers:{name:'餘燼',cleanse:false}};
- function cleanse(state,actor,target,layers){if(!Number.isSafeInteger(layers)||layers<0)throw Error('Invalid cleanse count');let removed=0;const statuses=target.statuses||[];for(const status of statuses){if(removed>=layers)break;const d=definitions[status.id];if(status.dispellable===false||!d?.cleanse||!Number.isSafeInteger(status.stacks)||status.stacks<=0)continue;const n=Math.min(status.stacks,layers-removed);status.stacks-=n;removed+=n;}target.statuses=statuses.filter(s=>s.stacks>0);for(const id of ['poison','bleed','burn','cold','freeze','neural','weak','silence','corrosion','fear','wound','blind']){const value=target.status?.[id];if(removed>=layers)break;if(!Number.isSafeInteger(value)||value<=0)continue;const n=Math.min(value,layers-removed);target.status[id]-=n;removed+=n;if(id==='freeze'&&!target.status[id]&&target.drug)delete target.drug.freezeSkillLockedUntil;}state.events??=[];if(removed)state.events.push({type:'cleanse',source:actor.uid,target:target.uid,layers:removed});return removed}
+ const allyDetails={
+  poison:'每層在結束出牌時造成 10 點傷害，結算後減少 1 層。',
+  bleed:'每層在結束出牌時造成 10 點傷害，結算後減少 1 層。',
+  burn:'每層在結束出牌時造成 20 點傷害，結算後減少 1 層。',
+  cold:'通常達 3 層觸發凍結；保溫效果可提高門檻。未達門檻的層數不會隨回合自然減少。',
+  freeze:'限制招牌技能，區域敵人觸發的凍結持續到下一個己方回合結束。淨化或解除凍結的補給可提早解除。',
+  neural:'累積到 3 層消耗 3 層，使下一次補充 AP 減少 1，最低 1 AP。未達門檻的層數保留。',
+  corrosion:'下一次承受物理攻擊，每層增加 10 點原始傷害，最多 30，結算後清除。',
+  weak:'削弱效果依施加來源。敵人的一次性攻擊削弱使下一張攻擊牌傷害降低 20%。',
+  fear:'一般恐懼可淨化。扎羅施加的首領恐懼由首領的生命門檻解除。',
+  silence:'此欄位可淨化，不限制幹員出牌或招牌技能。',
+  wound:'傷口可由指定補給或淨化解除。',
+  blind:'致盲可由淨化解除。'
+ };
+ function cleanse(state,actor,target,layers){if(!Number.isSafeInteger(layers)||layers<0)throw Error('Invalid cleanse count');let removed=0;const statuses=target.statuses||[];for(const status of statuses){if(removed>=layers)break;const d=definitions[status.id];if(status.dispellable===false||!d?.cleanse||!Number.isSafeInteger(status.stacks)||status.stacks<=0)continue;const n=Math.min(status.stacks,layers-removed);status.stacks-=n;removed+=n;}target.statuses=statuses.filter(s=>s.stacks>0);for(const id of ['poison','bleed','burn','cold','freeze','neural','weak','silence','corrosion','fear','wound','blind']){const value=target.status?.[id];if(removed>=layers)break;const timed=id==='freeze'&&(target.drug?.freezeSkillLockedUntil??-1)>=state.turn;const weaken=id==='weak'&&target.regionalAttackWeaken;const count=Number.isSafeInteger(value)&&value>0?value:timed||weaken?1:0;if(!count)continue;const n=Math.min(count,layers-removed);if(value>0)target.status[id]-=n;removed+=n;if(id==='freeze'&&!target.status?.[id]&&target.drug)delete target.drug.freezeSkillLockedUntil;if(weaken&&!target.status?.[id])delete target.regionalAttackWeaken;if(!target.status?.[id]&&target.regionalAilments)delete target.regionalAilments[id];}state.events??=[];if(removed)state.events.push({type:'cleanse',source:actor.uid,target:target.uid,layers:removed});return removed}
  function entangleThreshold(t){return t.boss||t.elite?5:3}
  function breakStatus(target){
   if(!target.special||target.special.solved||!target.action?.breakWindow)return false;
@@ -53,5 +67,5 @@ globalThis.FrontierOperatorStatusDictionaryV31=(()=>{
   let collapsed=false;if(!immune&&value>=threshold){collapsed=true;target.counters.mentalDamage=0;if(target.boss)target.mentalImmuneUntil=state.turn+1;if(target.action?.breakable&&target.action?.breakWindow){if(!breakStatus(target))target.action.breakProgress=target.action.breakRequired;}else target.nextSpecialDamageReduction=Math.max(target.nextSpecialDamageReduction||0,.25)}
   state.events??=[];state.events.push({type:'mentalDamage',source:actor.uid,target:target.uid,applied,collapsed,turn:state.turn});return {applied,collapsed};
  }
- return{breakStatus,convertStatus,definitions,cleanse,mental,mentalThreshold,entangle,bind,entangleThreshold};
+ return{allyDetails,breakStatus,convertStatus,definitions,cleanse,mental,mentalThreshold,entangle,bind,entangleThreshold};
 })();

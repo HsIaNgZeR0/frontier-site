@@ -179,9 +179,8 @@ window.FrontierOperatorGameV113=(()=>{
   for(const enemy of R().battle.enemies.filter(e=>e.hp>0)){enemy.intent=enemy.boss?(R().battle.turn%3===0?'buff':'attack'):(R().battle.turn+R().battle.enemies.indexOf(enemy))%3===0?'defend':'attack';enemy.action={...enemy.action,kind:enemy.intent,target:null}}
   FrontierBreaks?.turn();FrontierCombat.plan();plan();save();render();
  }
- const environmentDots=['burn','bleed','poison'];
  function prepareEnemyPhase(s){
-  bound(s,()=>{if(s.team.some(a=>a.hp>0&&environmentDots.some(id=>a.regionalAilments?.[id]&&a.status?.[id]>0))){FrontierMedicine.tick();for(const a of s.team)for(const id of environmentDots)if(a.regionalAilments?.[id]&&a.status?.[id]>0)a.status[id]--;}FrontierEnvironment.turn();},previewSandbox);
+  bound(s,()=>{FrontierMedicine.tick();FrontierEnvironment.turn();},previewSandbox);
   for(const card of s.hand)delete card.environmentCost;
   if(globalThis.FrontierGoldenglowV24)s=FrontierGoldenglowV24.endPlayerTurn(s,adapters(previewSandbox));
   s=S.emit(s,{id:identity(s,'turn-complete'),type:'playerTurnCompleted',sourceKind:'turn',turn:s.turn});
