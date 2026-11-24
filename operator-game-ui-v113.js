@@ -78,10 +78,10 @@ window.FrontierOperatorUIV113=(()=>{
   if(includeSignature&&rule?.resource)resources[rule.resource]??=0;
   if(!includeSignature&&rule?.resource)delete resources[rule.resource];
   const entries=Object.entries(resources).filter(([key,value])=>resourceNames[key]&&Number.isFinite(value)).map(([key,value])=>{
-   const [label,cap]=resourceNames[key],maximum=key==='suitCharge'?[3,4,5][actor.elite||0]:(key===rule?.resource?rule.resourceCap:undefined)??cap;
+   const [label,cap]=resourceNames[key],maximum=key==='floats'?Math.max(actor.gg?.cap||2,value):key==='suitCharge'?[3,4,5][actor.elite||0]:(key===rule?.resource?rule.resourceCap:undefined)??cap;
    const count=value+(maximum?'/'+maximum:'');
    const summary=(key==='ammo'?'彈':label)+' '+count;
-   const detail=key==='ammo'?'彈藥 '+count+'。同回合不同的專屬攻擊牌可補充，每回合最多 '+(actor.elite?2:1)+' 發。裝填也能補充。部分卡牌可選擇消耗彈藥強化，過載模式另外充能。':label+' '+count;
+   const detail=key==='floats'?'浮標 '+count+'：每回合結束各攻擊鎖定目標 1 次，連續命中同一敵人倍率 14→68%（第 1～6 階）。'+(actor.gg?.floats?.length?'目前階段 '+actor.gg.floats.map(f=>f.stage||0).join('／')+'。':''):key==='ammo'?'彈藥 '+count+'。同回合不同的專屬攻擊牌可補充，每回合最多 '+(actor.elite?2:1)+' 發。裝填也能補充。部分卡牌可選擇消耗彈藥強化，過載模式另外充能。':label+' '+count;
    return {key,summary,detail,value,maximum};
   });
   if(actor.flow){
@@ -366,7 +366,7 @@ window.FrontierOperatorUIV113=(()=>{
   operator_v31_muelsyse:["tether","#7ee5f3",9],
   operator_v31_aak:["gun-burst","#d4f08a",8],
   texas_the_omertosa:["rose","#a5a8ff",20],
-  char_377_gdglow:["tether","#ffc2e2",12]
+  char_377_gdglow:["arts-burst","#ffb3dc",-14]
  };
  const signatureClips={
   "char_123_fang:standard":"assets/signature-preview/char_123_fang.webp",
@@ -750,7 +750,10 @@ window.FrontierOperatorUIV113=(()=>{
   badge.className='v113-resource-counter';
   badge.dataset.battleStatus=entry.detail;
   badge.setAttribute('aria-label',entry.summary);
-  if(entry.key==='ammo'){
+  if(entry.key==='floats'){
+   badge.classList.add('v113-float-counter');
+   for(let i=0;i<entry.maximum;i++){const icon=document.createElement('img');icon.src='assets/goldenglow/float.png';icon.alt='';icon.draggable=false;icon.className='v113-float-pip'+(i<entry.value?' loaded':'');badge.append(icon)}
+  }else if(entry.key==='ammo'){
    badge.classList.add('v113-ammo-counter');
    for(let i=0;i<entry.maximum;i++){
     const icon=document.createElement('i');
