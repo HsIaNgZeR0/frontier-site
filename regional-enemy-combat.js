@@ -23,7 +23,7 @@ window.FrontierRegionalEnemies=(()=>{
   bleed:{title:'血刃',status:'bleed',text:'攻擊造成生命損失時，施加 1 層流血。下一次結束出牌時，每層扣 1 HP，之後減少 1 層；可提前淨化。'},
   burn:{title:'灼熱',status:'burn',text:'攻擊造成生命損失時，施加 1 層灼燒。下一次結束出牌時，每層扣 2 HP，之後減少 1 層；可提前淨化。'},
   cold:{title:'極寒',status:'cold',text:'攻擊造成生命損失時，施加 1 層寒冷。通常累積 3 層會凍結，封鎖下一個出牌回合的招牌技能；可用抗寒藥。'},
-  neural:{title:'神經侵蝕',status:'neural',text:'攻擊造成生命損失時，施加 1 層神經損傷。每累積 3 層即消耗 3 層，使下回合初始 AP 減少 1，最低 1。'},
+  neural:{title:'神經干擾',status:'neural',text:'攻擊造成生命損失時，施加 1 層神經損傷。每累積 3 層即消耗 3 層，使下回合初始 AP 減少 1，最低 1。'},
   corrosion:{title:'腐蝕',status:'corrosion',text:'攻擊造成生命損失時，施加 1 層腐蝕。下一次承受物理攻擊時，每層使該擊原始傷害 +1，最多 +3，隨後清除。'},
   foam:{title:'泡沫屏障',phase:12,arts:true,text:'造成法術傷害。第一次在半血以下進入回合時，取得 12 點護盾。'},
   arts:{title:'源石技藝',arts:true,text:'攻擊造成法術傷害，由法抗減免。'},

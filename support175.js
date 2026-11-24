@@ -26,7 +26,7 @@ window.FrontierSupport175=(()=>{
   char_124_kroos:{name:'偵查射擊',type:'P',text:e=>'敵人意圖額外顯示之後 '+(e?2:1)+' 回合的行動。'},
   operator_v31_adnachiel:{name:'連射標定',type:'A',ap:1,cd:3,target:'enemy',val:[10,20],text:e=>'指定 1 名敵人被標定 2 回合：我方每段攻擊對它額外 +'+v([10,20],e)+' 傷害。'},
   operator_v31_catapult:{name:'爆破回收',type:'P',val:[4,6],text:e=>'單張牌擊倒 2 名以上敵人時，獲得 '+v([4,6],e)+' 源石碇（每場 1 次）。'},
-  operator_v31_lava:{name:'引燃',type:'A',ap:1,cd:3,target:'enemy',val:[3,5],text:e=>'指定 1 名敵人：下次受到法術傷害時附加 '+v([3,5],e)+' 層灼燒（每回合開始受 10 點真實傷害／層，並減少 1 層）。'},
+  operator_v31_lava:{name:'引燃',type:'A',ap:1,cd:3,target:'enemy',val:[3,5],text:e=>'指定 1 名敵人：下次受到法術傷害時附加 '+v([3,5],e)+' 層殘焰（每回合開始每層受 10 點真實傷害，之後減少 1 層；與灼燒、灼燃為不同狀態）。'},
   char_210_stward:{name:'法術解析',type:'P',val:[5,10],text:e=>'每回合我方對法抗最高敵人的第一擊法術傷害，忽略 '+v([5,10],e)+' 點法抗。'},
   hibiscus:{name:'預防處方',type:'A',ap:1,cd:2,target:'ally',val:[.4,.6],text:e=>'指定 1 名出戰幹員：本次敵方行動中下一次受到的異常無效，並改為恢復 '+pct(v([.4,.6],e))+' ATK 的 HP。'},
   operator_v31_ansel:{name:'遠程後送',type:'P',runUses:[1,2],val:[0,.2],text:e=>'戰鬥勝利後，倒地的出戰幹員'+(e?'以 20% HP':'以最低 HP')+'歸隊（整趟遠征 '+v([1,2],e)+' 次）。'},
@@ -214,7 +214,7 @@ window.FrontierSupport175=(()=>{
    case 'operator_v31_catapult':if(kills.length>=2&&!r.sp175Catapult?.includes(ctx.battleId)){(r.sp175Catapult??=[]).push(ctx.battleId);fieldPoints(v(m.def.val,e),'爆破回收')}break;
    case 'char_172_svrash':if(e&&sp.silverKill===turn&&kills.length)fieldPoints(2*kills.length,'喀蘭號令');break;
    case 'char_377_gdglow':for(const h of hits){const t=s.enemies.find(x=>x.uid===h.target);const st=t?.sp175Static;if(!st)continue;if(st.until<turn||!alive(t)){delete t.sp175Static;touched=true;continue}st.layers++;touched=true;if(st.layers>=st.th){delete t.sp175Static;t.nextAttackDamageReduction=Math.max(t.nextAttackDamageReduction||0,t.boss?.25:.5);log('靜電放電 · '+name(t)+' 下次攻擊減傷');if(st.e===2)gainAP(s,1,'靜電放電 · 返還 1 行動點')}}break;
-    case 'operator_v31_lava':for(const h of hits)if(h.damageType==='arts'){const t=s.enemies.find(x=>x.uid===h.target);if(t?.sp175Ignite){t.sp175Burn=(t.sp175Burn||0)+t.sp175Ignite;delete t.sp175Ignite;touched=true;log('引燃 · '+name(t)+' 灼燒')}}break;
+    case 'operator_v31_lava':for(const h of hits)if(h.damageType==='arts'){const t=s.enemies.find(x=>x.uid===h.target);if(t?.sp175Ignite){t.sp175Burn=(t.sp175Burn||0)+t.sp175Ignite;delete t.sp175Ignite;touched=true;log('引燃 · '+name(t)+' 殘焰')}}break;
    case 'operator_v31_lapluma':{const target=ctx.selection?.target;if(ctx.attack&&target){if(sp.chain?.target===target&&sp.chain.turn===turn)sp.chain.count++;else sp.chain={turn,target,count:1};touched=true}if(actor&&kills.length&&sp.flags.lapluma!==turn){sp.flags.lapluma=turn;heal(actor,m.atk*v(m.def.heal,e));touched=true}break}
    case 'operator_v31_skadi':if(kills.length){sp.skadi=Math.min(3,(sp.skadi||0)+kills.length);touched=true}else if(ctx.attack&&sp.skadi){sp.skadi=0;touched=true}if(sp.skadi)buff(s,{attack:true},sp.skadi*v(m.def.val,e),{group:'sp175-skadi'});else s.cardBuffs=(s.cardBuffs||[]).filter(x=>x.group!=='sp175-skadi');break;
    case 'operator_v31_eyjafjalla':if(ctx.profession==='術師'&&sp.flags.eyja!==turn){sp.flags.eyja=turn;const card=s.hand.filter(c=>professionOf(s,c)==='術師'&&cardInfo(c).cost>0).sort((x,y)=>cardInfo(y).cost-cardInfo(x).cost)[0];if(card)costMod(card,turn,-1);if(e)buff(s,{profession:'術師'},v(m.def.val,e),{group:'sp175-eyja'});touched=true}break;

@@ -4,15 +4,16 @@
 window.FrontierGlossary=(()=>{
  const T=[
   {id:'burn',name:'灼燒',aliases:['灼燒'],opTwin:'ignite',side:'敵方 → 幹員',desc:'敵人或地區環境施加在幹員身上的持續傷害。',effect:'每層在己方結束出牌時造成 20 點傷害，之後減少 1 層。可被淨化、冷卻噴霧解除或減免。',note:'部分幹員卡牌文字中的「灼燒」指的是施加在敵人身上的「灼燃」，兩者規則不同。'},
-  {id:'ignite',name:'灼燃',aliases:['灼燃','引燃'],side:'幹員 → 敵人',desc:'幹員施加在敵人身上的燃燒狀態（卡牌文字中也寫作「灼燒」「引燃」）。',effect:'每名敵人最多 3 層；每次敵方階段結束時逐層結算法術傷害（計算法抗與護盾），各層有到期回合。',note:'與幹員身上的「灼燒」是不同機制。'},
+  {id:'ignite',name:'灼燃',aliases:['灼燃','引燃'],side:'幹員 → 敵人',desc:'幹員施加在敵人身上的燃燒狀態（卡牌文字中也寫作「灼燒」「引燃」）。',effect:'每名敵人最多 3 層；每次敵方階段結束時逐層結算法術傷害（計算法抗與護盾），各層有到期回合。',note:'與幹員身上的「灼燒」、炎熔支援的「殘焰」是不同機制。'},
   {id:'bleed',name:'流血',aliases:['流血'],side:'敵方 → 幹員',desc:'持續失血。',effect:'每層在結算時造成 10 點傷害，之後減少 1 層。可淨化，創傷封合貼可解除。'},
   {id:'poison',name:'中毒',aliases:['中毒'],side:'敵方 → 幹員',desc:'毒霧或敵人造成的持續傷害。',effect:'每層在結算時造成 10 點傷害。過濾罐可解除或轉為治療。'},
   {id:'cold',name:'寒冷',aliases:['寒冷'],side:'敵方 → 幹員',desc:'低溫累積。',effect:'通常累積 3 層轉為「凍結」（保溫毯可提高門檻）。',note:'謝拉格地區的環境數值也叫「寒冷」，那是地區計量，不是幹員狀態。'},
   {id:'freeze',name:'凍結',aliases:['凍結'],side:'敵方 → 幹員',desc:'寒冷達門檻後觸發。',effect:'封鎖該幹員下一個出牌回合的招牌技能。'},
   {id:'neural',name:'神經損傷',aliases:['神經損傷'],side:'敵方 → 幹員',desc:'作用於幹員的神經干擾。',effect:'每累積 3 層即消耗 3 層，使隊伍下回合初始 AP 減少 1（最低 1）。',note:'與幹員對敵人施加的「精神損傷」不同。'},
   {id:'mental',name:'精神損傷',aliases:['精神損傷'],side:'幹員 → 敵人',desc:'幹員對敵人累積的精神壓力。',effect:'普通敵人 4、精英 6、首領 8 層時崩潰並清零：蓄力期間直接完成破韌，否則下次特殊攻擊傷害 -25%；首領崩潰後下一回合免疫。',note:'與敵人對幹員施加的「神經損傷」不同。'},
-  {id:'corrosion',name:'腐蝕',aliases:['腐蝕'],side:'敵方 → 幹員',desc:'裝甲被侵蝕（部分介面寫作「侵蝕」）。',effect:'下一次承受物理攻擊時，每層使該擊原始傷害 +10，最多 +30，之後清除。'},
-  {id:'erosion',name:'侵蝕',aliases:['侵蝕'],side:'視來源而定',desc:'此詞目前有多種用法。',effect:'幹員狀態列中的「侵蝕」＝腐蝕；舊版卡牌的「侵蝕 N 層」＝敵人身上的持續傷害（敵方回合開始扣血後減 1 層）；地區「神經侵蝕」＝神經損傷。',note:'名稱重疊，請以來源判斷。'},
+  {id:'corrosion',name:'腐蝕',aliases:['腐蝕'],side:'敵方 → 幹員',desc:'裝甲被腐蝕。',effect:'下一次承受物理攻擊時，每層使該擊原始傷害 +10，最多 +30，之後清除。'},
+  {id:'venom',name:'毒蝕',aliases:['毒蝕'],side:'幹員 → 敵人',desc:'舊版戰鬥規則中施加在敵人身上的毒。',effect:'敵方回合開始時每層扣血，之後減少 1 層。',note:'與幹員身上的「中毒」是不同狀態。'},
+  {id:'embersFire',name:'殘焰',aliases:['殘焰'],side:'幹員 → 敵人',desc:'炎熔支援技能「引燃」造成的燃燒。',effect:'每回合開始時每層造成 10 點真實傷害，之後減少 1 層。',note:'與「灼燒」「灼燃」為不同狀態，不共用層數。'},
   {id:'fear',name:'恐懼',aliases:['恐懼'],side:'敵方 → 幹員',desc:'精神類控制。',effect:'負面狀態，可由穩頻耳罩或淨化解除；特定首領的恐懼會提高卡牌 AP 消耗。'},
   {id:'weak',name:'虛弱',aliases:['虛弱'],side:'雙方',desc:'攻擊力被削弱。',effect:'受影響者造成的傷害降低；可淨化。'},
   {id:'silence',name:'沉默',aliases:['沉默'],side:'雙方',desc:'封鎖技能類行動。',effect:'對敵人：阻止可被沉默的普通敵人施放特殊攻擊（不阻止一般攻擊，精英與首領不受此控制）。對幹員：負面狀態，可淨化。'},
@@ -28,6 +29,7 @@ window.FrontierGlossary=(()=>{
   {id:'taunt',name:'嘲諷',aliases:['嘲諷'],side:'幹員',desc:'吸引敵方攻擊。',effect:'改變敵人預告的攻擊目標；部分敵方特性的瞄準規則仍可被嘲諷轉移。'},
   {id:'shield',name:'護盾',aliases:['護盾'],side:'雙方',desc:'額外的防護值。',effect:'受到傷害時先扣護盾，再扣 HP。'},
   {id:'embers',name:'餘燼',aliases:['餘燼'],side:'幹員自身',desc:'史爾特爾的天賦狀態。',effect:'首次受到致命傷害時進入：2 個完整敵方行動階段內免疫傷害且無法被治療，期滿強制退場；每戰一次。',note:'收藏品「餘燼標本」與敵方特性「餘燼復燃」名稱相近但無關。'},
+  {id:'control',name:'控制狀態',aliases:['控制狀態'],side:'幹員 → 敵人',desc:'限制敵人行動的狀態總稱。',effect:'包含束縛、暈眩、沉默、凍結等；收藏品與天賦的「施加控制狀態」條件以此判定。'},
   {id:'mark',name:'標記',aliases:['標記'],side:'幹員 → 敵人',desc:'瞄準、鎖定、共鳴等標定效果的統稱。',effect:'供卡牌與收藏品條件判定。'}
  ];
  const byAlias=new Map();for(const t of T)for(const a of t.aliases)byAlias.set(a,t);
@@ -37,7 +39,7 @@ window.FrontierGlossary=(()=>{
  function collect(){
   const out=new Map(T.map(t=>[t.id,new Set()]));
   // 幹員文字裡的「灼燒」施加在敵人身上，實際是灼燃；歸到 twin 詞條避免誤判。
-  const scan=(text,label)=>{if(!text)return;const s=String(text),op=label.startsWith('幹員');for(const t of T)if(t.aliases.some(a=>s.includes(a)))out.get(op&&t.opTwin?t.opTwin:t.id).add(label)};
+  const scan=(text,label)=>{if(!text)return;const s=String(text),op=label.startsWith('幹員');for(const t of T)if(!(s.includes('殘焰')&&['burn','ignite'].includes(t.id))&&t.aliases.some(a=>s.includes(a)))out.get(op&&t.opTwin?t.opTwin:t.id).add(label)};
   const deep=(node,label,depth=0)=>{if(depth>6||node==null)return;if(typeof node==='string'){scan(node,label);return}if(typeof node==='object')for(const v of Object.values(node))deep(v,label,depth+1)};
   try{for(const f of window.FrontierOperatorCatalogV113?.forms||[]){const who='幹員 '+f.operatorName;for(const c of f.cards||[])deep(c.sourceEffects,who+'（卡牌「'+c.name+'」）');if(f.signature)deep(f.signature.sourceTiers,who+'（招牌技能「'+f.signature.name+'」）');for(const t of f.abilities?.talents||[])deep(t.stages,who+'（天賦「'+t.name+'」）');scan(f.abilities?.mechanic,who+'（特性）')}}catch{}
   try{const S=window.FrontierSupport175?.skills||{};for(const[id,d]of Object.entries(S)){const who='幹員 '+(window.FrontierCapture?.units?.[id]?.name||window.FrontierOperatorData?.units?.[id]?.name||id);let txt='';try{txt=typeof d.text==='function'?d.text(0)+d.text(1):d.text}catch{}scan(txt,who+'（支援技能「'+d.name+'」）')}}catch{}
