@@ -59,6 +59,7 @@ window.FrontierSupport175=(()=>{
   operator_v31_mlynar:{name:'未竟之業',type:'P',val:[.08,.1,.15],text:e=>'HP 低於 50% 的出戰幹員攻擊 +'+pct(v([.08,.1,.15],e))+'；同時 3 人以上低於 50% 時加倍。'},
   operator_v31_muelsyse:{name:'水流分身',type:'A',ap:1,cd:1,uses:[2,2,3],target:'none',val:[.3,.4,.5],text:e=>'抽 1 張，下一張普通牌的主效果 +'+pct(v([.3,.4,.5],e))+'。每場 '+v([2,2,3],e)+' 次。'},
   operator_v31_aak:{name:'隨機配方',type:'A',ap:1,cd:2,target:'ally',val:[.25,.3,.3],text:e=>'指定 1 名出戰幹員隨機獲得'+(e===2?'兩':'一')+'種：本回合攻擊 +'+pct(v([.25,.3,.3],e))+'／本回合其手牌費用 -1／下一次受到的傷害無效。'},
+  char_377_gdglow:{name:'靜電附著',type:'A',ap:1,cd:3,target:'enemy',th:[5,4,4],text:e=>'指定 1 名敵人附著靜電 2 回合：我方卡牌每命中它 1 次 +1 層，達 '+v([5,4,4],e)+' 層時放電，它下一次攻擊傷害 -50%（首領 -25%）'+(e===2?'；放電時返還 1 行動點':'')+'。'},
   texas_the_omertosa:{name:'劍雨・預告',type:'A',ap:1,cd:3,uses:[1,1,2],target:'none',val:[0,.1,.2],text:e=>'打斷全體敵人可打斷的蓄力特殊技能'+(e?'，被打斷者下一次受到傷害 +'+pct(v([0,.1,.2],e)):'')+'。每場 '+v([1,1,2],e)+' 次。'}
  };
 
@@ -106,7 +107,8 @@ window.FrontierSupport175=(()=>{
   operator_v31_angelina(s,m,t){t.block=0;t.sp175Weight=v(m.def.val,m.e);return '失重 · '+name(t)},
   operator_v31_muelsyse(s,m){draw(s,1);buff(s,{},v(m.def.val,m.e),{group:'sp175-flow'});return '水流分身'},
   operator_v31_aak(s,m,a){const pool=['atk','cost','guard'];const picks=[];while(picks.length<(m.e===2?2:1))picks.push(pool.splice(Math.floor(rnd()*pool.length),1)[0]);const labels=[];for(const p of picks){if(p==='atk'){buff(s,{owner:a.operator,attack:true},v(m.def.val,m.e),{group:'sp175-aak',remaining:null,expiresTurn:s.turn});labels.push('攻擊提升')}if(p==='cost'){for(const c of s.hand)if(cardInfo(c)?.owner===a.operator)costMod(c,s.turn,-1);labels.push('費用 -1')}if(p==='guard'){a.sp175Guard=true;labels.push('傷害無效 1 次')}}return '隨機配方 · '+name(a)+'：'+labels.join('、')},
-  texas_the_omertosa(s,m){let n=0;for(const e of foes(s))if(e.action?.breakable&&e.action?.breakWindow&&e.special&&!e.special.solved){e.action.breakProgress=e.action.breakRequired;n++;if(m.e)e.nextDamageVulnerability=Math.max(e.nextDamageVulnerability||0,v(m.def.val,m.e))}return '劍雨・預告 · 打斷 '+n+' 名'}
+  char_377_gdglow(s,m,t){t.sp175Static={until:s.turn+1,layers:0,th:v(m.def.th,m.e),e:m.e};return '靜電附著 · '+name(t)},
+   texas_the_omertosa(s,m){let n=0;for(const e of foes(s))if(e.action?.breakable&&e.action?.breakWindow&&e.special&&!e.special.solved){e.action.breakProgress=e.action.breakRequired;n++;if(m.e)e.nextDamageVulnerability=Math.max(e.nextDamageVulnerability||0,v(m.def.val,m.e))}return '劍雨・預告 · 打斷 '+n+' 名'}
  };
 
  function cast(key,targetUid,second){
@@ -211,7 +213,8 @@ window.FrontierSupport175=(()=>{
    case 'operator_v31_vigna':if(ctx.attack&&['先鋒','近衛'].includes(ctx.profession)&&sp.flags.vigna!==turn){sp.flags.vigna=turn;for(const t of targets)for(let i=0;i<v(m.def.val,e);i++)FrontierOperatorStatusDictionaryV31.breakStatus(t);touched=true}break;
    case 'operator_v31_catapult':if(kills.length>=2&&!r.sp175Catapult?.includes(ctx.battleId)){(r.sp175Catapult??=[]).push(ctx.battleId);fieldPoints(v(m.def.val,e),'爆破回收')}break;
    case 'char_172_svrash':if(e&&sp.silverKill===turn&&kills.length)fieldPoints(2*kills.length,'喀蘭號令');break;
-   case 'operator_v31_lava':for(const h of hits)if(h.damageType==='arts'){const t=s.enemies.find(x=>x.uid===h.target);if(t?.sp175Ignite){t.sp175Burn=(t.sp175Burn||0)+t.sp175Ignite;delete t.sp175Ignite;touched=true;log('引燃 · '+name(t)+' 灼燒')}}break;
+   case 'char_377_gdglow':for(const h of hits){const t=s.enemies.find(x=>x.uid===h.target);const st=t?.sp175Static;if(!st)continue;if(st.until<turn||!alive(t)){delete t.sp175Static;touched=true;continue}st.layers++;touched=true;if(st.layers>=st.th){delete t.sp175Static;t.nextAttackDamageReduction=Math.max(t.nextAttackDamageReduction||0,t.boss?.25:.5);log('靜電放電 · '+name(t)+' 下次攻擊減傷');if(st.e===2)gainAP(s,1,'靜電放電 · 返還 1 行動點')}}break;
+    case 'operator_v31_lava':for(const h of hits)if(h.damageType==='arts'){const t=s.enemies.find(x=>x.uid===h.target);if(t?.sp175Ignite){t.sp175Burn=(t.sp175Burn||0)+t.sp175Ignite;delete t.sp175Ignite;touched=true;log('引燃 · '+name(t)+' 灼燒')}}break;
    case 'operator_v31_lapluma':{const target=ctx.selection?.target;if(ctx.attack&&target){if(sp.chain?.target===target&&sp.chain.turn===turn)sp.chain.count++;else sp.chain={turn,target,count:1};touched=true}if(actor&&kills.length&&sp.flags.lapluma!==turn){sp.flags.lapluma=turn;heal(actor,m.atk*v(m.def.heal,e));touched=true}break}
    case 'operator_v31_skadi':if(kills.length){sp.skadi=Math.min(3,(sp.skadi||0)+kills.length);touched=true}else if(ctx.attack&&sp.skadi){sp.skadi=0;touched=true}if(sp.skadi)buff(s,{attack:true},sp.skadi*v(m.def.val,e),{group:'sp175-skadi'});else s.cardBuffs=(s.cardBuffs||[]).filter(x=>x.group!=='sp175-skadi');break;
    case 'operator_v31_eyjafjalla':if(ctx.profession==='術師'&&sp.flags.eyja!==turn){sp.flags.eyja=turn;const card=s.hand.filter(c=>professionOf(s,c)==='術師'&&cardInfo(c).cost>0).sort((x,y)=>cardInfo(y).cost-cardInfo(x).cost)[0];if(card)costMod(card,turn,-1);if(e)buff(s,{profession:'術師'},v(m.def.val,e),{group:'sp175-eyja'});touched=true}break;

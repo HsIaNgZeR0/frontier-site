@@ -183,6 +183,7 @@ window.FrontierOperatorGameV113=(()=>{
  function prepareEnemyPhase(s){
   bound(s,()=>{if(s.team.some(a=>a.hp>0&&environmentDots.some(id=>a.regionalAilments?.[id]&&a.status?.[id]>0))){FrontierMedicine.tick();for(const a of s.team)for(const id of environmentDots)if(a.regionalAilments?.[id]&&a.status?.[id]>0)a.status[id]--;}FrontierEnvironment.turn();},previewSandbox);
   for(const card of s.hand)delete card.environmentCost;
+  if(globalThis.FrontierGoldenglowV24)s=FrontierGoldenglowV24.endPlayerTurn(s,adapters(previewSandbox));
   s=S.emit(s,{id:identity(s,'turn-complete'),type:'playerTurnCompleted',sourceKind:'turn',turn:s.turn});
   for(const a of s.team){if(a.operator==='operator_v31_aak'&&a.hp>0)FrontierOperatorDamageV113.spendHP(a,Math.max(20,Math.floor(a.max*.04)));if(a.specterStunAfter===s.turn)a.stunnedTurn=s.turn+1}
   return s;

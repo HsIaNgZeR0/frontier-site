@@ -247,7 +247,7 @@ globalThis.FrontierOperatorSignatureRulesV113=(()=>{
   const angelRule=definitions[angel.operatorId].standard;angelRule.onBattleEvent=(s,a,e)=>{if(e.type==='playerTurnCompleted'&&a.elite===2&&!s.events.some(x=>x.type==='ordinaryCardPlayed'&&x.actor===a.uid&&x.attack&&x.turn===s.turn)){for(const ally of s.team)if(ally.hp>0&&!ally.exited&&!ally.embers?.active&&!ally.healingBlocked)ally.hp=Math.min(ally.max,ally.hp+30)}return 0};
   for(const name of ['芬','香草','翎羽','玫蘭莎','月見夜','克洛絲','安德切爾','伊桑','安比爾','紅豆','羽毛筆','紅','能天使']){const f=catalog.forms.find(x=>x.operatorName===name);if(f&&definitions[f.operatorId]?.[f.id])definitions[f.operatorId][f.id].cardCountChargeEligible=true}
   const sr=definitions.char_202_demkni.standard,priorSaria49=sr.execute;sr.execute=(s,a,c,ad)=>{const before=new Map(s.team.map(x=>[x.uid,{hp:x.hp,max:x.max}]));priorSaria49(s,a,c,ad);if(a.elite===2&&a.sariaReadyTurn!==s.turn){const t=s.team.filter(x=>x.uid!==a.uid&&x.hp>before.get(x.uid).hp).sort((x,y)=>before.get(x.uid).hp/before.get(x.uid).max-before.get(y.uid).hp/before.get(y.uid).max)[0];if(t){a.sariaReadyTurn=s.turn;s.cardBuffs??=[];s.cardBuffs=s.cardBuffs.filter(b=>b.group!=='saria-ready'||b.filter.owner!==t.operator);s.cardBuffs.push({source:a.uid,filter:{owner:t.operator},amount:.1,remaining:1,group:'saria-ready'})}}};
-  return definitions;
+  for(const ext of globalThis.FrontierOperatorSignatureExtensionsV113||[])ext(definitions,catalog);return definitions;
  }
  return {create};
 })();

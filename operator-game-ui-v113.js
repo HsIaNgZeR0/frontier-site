@@ -40,7 +40,7 @@ window.FrontierOperatorUIV113=(()=>{
   neural:['神經',4],samples:['樣本',3],leadership:['領導力',3],molten:['熔火',5],heat:['熱量',5],
   stance:['架勢'],gravity:['重力',4],momentum:['動能',4],bloodBattle:['血戰'],flowCharge:['流形充能',5],medicine:['藥效',5],
   blood:['血氣',4],charge:['充能',2],formation:['整隊',1],morale:['士氣',2],night:['夜色',2],
-  suitCharge:['護服充能'],tide:['潮汐',4],training:['訓練'],vigor:['活力',3]
+  suitCharge:['護服充能'],floats:['浮標',5],tide:['潮汐',4],training:['訓練'],vigor:['活力',3]
  };
  const ammoTotal=a=>a.resources?.ammo||0;
  function ammoEnhancement(actor,def,stage){
@@ -365,7 +365,8 @@ window.FrontierOperatorUIV113=(()=>{
   operator_v31_specter:["saw","#ecd6e3",-10],
   operator_v31_muelsyse:["tether","#7ee5f3",9],
   operator_v31_aak:["gun-burst","#d4f08a",8],
-  texas_the_omertosa:["rose","#a5a8ff",20]
+  texas_the_omertosa:["rose","#a5a8ff",20],
+  char_377_gdglow:["tether","#ffc2e2",12]
  };
  const signatureClips={
   "char_123_fang:standard":"assets/signature-preview/char_123_fang.webp",
@@ -412,7 +413,8 @@ window.FrontierOperatorUIV113=(()=>{
   "operator_v31_specter:standard":"assets/signature-preview/char_143_ghost.webp",
   "operator_v31_muelsyse:standard":"assets/signature-preview/char_249_mlyss.webp",
   "operator_v31_aak:standard":"assets/signature-preview/char_225_haak.webp",
-  "texas_the_omertosa:standard":"assets/signature-preview/texas-omertosa.webp"
+  "texas_the_omertosa:standard":"assets/signature-preview/texas-omertosa.webp",
+  "char_377_gdglow:standard":"assets/signature-preview/char_377_gdglow.webp"
  };
  const clipCache=new Map(),warmedSignatureArt=new Set();
  const ordinaryClips={
@@ -460,7 +462,8 @@ window.FrontierOperatorUIV113=(()=>{
   "operator_v31_specter:standard":"ordinary-char_143_ghost.webp",
   "operator_v31_muelsyse:standard":"ordinary-char_249_mlyss.webp",
   "operator_v31_aak:standard":"ordinary-char_225_haak.webp",
-  "texas_the_omertosa:standard":"ordinary-texas.webp"
+  "texas_the_omertosa:standard":"ordinary-texas.webp",
+  "char_377_gdglow:standard":"ordinary-char_377_gdglow.webp"
  };
  function loadClip(path){
   if(!path)return null;
