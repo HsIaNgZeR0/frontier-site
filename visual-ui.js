@@ -30,7 +30,13 @@ window.FrontierVisualUI=(()=>{
  if(page==='warehouse'){let rows=Object.values(catalog).filter(d=>!d.balance?.legacy&&!d.retired139&&!['container','collection','legacyRelic','equipment','runModule'].includes(d.category)&&quantity(d.id)>0&&(storageFilter==='all'||storageFilter==='material'&&['material','record'].includes(d.category)||storageFilter==='other'&&!['material','record','equipment','medicine','device'].includes(d.category)||d.category===storageFilter));rows.sort((a,b)=>sorted?b.rarity-a.rarity||group(a.id).localeCompare(group(b.id))||a.id.localeCompare(b.id):sequence.indexOf(a.id)-sequence.indexOf(b.id));html+='<label class="ui-stock-search">搜尋名稱或用途<input type="search" aria-label="搜尋持有物品" value="'+esc(storageSearch)+'" oninput="FrontierVisualUI.searchStorage(this.value)"></label><nav class="ui-stock-filters" aria-label="庫存品類">'+[['all','全部'],['material','材料和 EXP'],['medicine','戰術補給'],['other','珍貴物品']].map(([id,name])=>'<button class="'+(storageFilter===id?'active':'')+'" aria-pressed="'+(storageFilter===id)+'" onclick="FrontierVisualUI.filterStorage(\''+id+'\')">'+name+'</button>').join('')+'</nav><p class="ui-stock-count">'+rows.length+'種持有物品</p><div class="visual-item-grid ui-stock-grid">'+rows.flatMap(d=>d.category==='searchTool'?db.inventory.items.filter(item=>item.itemId===d.id).map(item=>'<div class="ui-stock-item" data-stock-id="'+d.id+'" data-access-instance="'+esc(item.uid)+'"><button class="visual-item rarity-'+d.rarity+'" data-visual-item="'+d.id+'" aria-label="'+esc(d.name)+'" onclick="FrontierVisualUI.accessDetails(&quot;'+esc(item.uid)+'&quot;)">'+FrontierIcons.access(item)+'</button></div>'):['<div class="ui-stock-item" data-stock-id="'+d.id+'">'+tile(d.id)+'</div>']).join('')+'</div>'+(rows.length?'':'<p class="visual-empty">安全帶回的物資會顯示在這裡。</p>')+preciousTiles()}
  if(page==='containers'){const boxes=db.inventory.items.filter(i=>catalog[i.itemId]?.category==='container');html+='<div class="visual-item-grid">'+boxes.map(i=>'<button class="visual-item rarity-'+catalog[i.itemId].rarity+'" data-visual-item="'+i.itemId+'" aria-label="'+esc(catalog[i.itemId].name)+'" onclick="FrontierContainers.openBase(\''+i.uid+'\')">'+FrontierIcons.html(i.itemId)+'<span class="visual-item-count">1</span></button>').join('')+'</div>'+(boxes.length?'':'<p class="visual-empty">目前沒有待開封存箱。</p>')}
  if(page==='collections'){const c=FrontierCollections.scan();html+='<p class="ui-stock-count">收藏需安全帶回才登錄。展開地區可查稀有度、大小和掉落來源。</p>'+FrontierExpedition.regions.map(region=>{const rows=FrontierCollections.entries.filter(d=>d.region===region.id);return '<section class="visual-collection-shelf"><button class="visual-shelf-heading" aria-expanded="'+expanded.has(region.id)+'" onclick="FrontierVisualUI.shelf(\''+region.id+'\')"><b>'+esc(region.name)+'</b><span>'+rows.filter(d=>c.archive[d.id]).length+' / '+rows.length+'　'+(expanded.has(region.id)?'−':'+')+'</span></button>'+(expanded.has(region.id)?'<div class="visual-item-grid">'+rows.map(d=>c.archive[d.id]?tile(d.id):'<div style="opacity:.55">'+tile(d.id,0)+'</div>').join('')+'</div>':'')+'</section>'}).join('')}
- if(page==='collection')html+=FrontierEquipmentUI139.shelf60();body.innerHTML=html;body.classList.add('visual-scroll-page','visual-storage');if(page==='warehouse'&&!preview)searchStorage(storageSearch);if(page==='containers'&&db.containers.activeBox){body.innerHTML='<nav class="visual-storage-tabs">'+tabs.map(([p,name])=>'<button onclick="go(\''+p+'\')">'+name+'</button>').join('')+'</nav>'+FrontierContainers.boxView(db.inventory.items.find(i=>i.uid===db.containers.activeBox))} }
+ if(page==='collection')html+=FrontierEquipmentUI139.shelf60();body.innerHTML=html;body.classList.add('visual-scroll-page','visual-storage');if(page==='warehouse'&&!preview)searchStorage(storageSearch);if(page==='containers'&&db.containers.activeBox){body.innerHTML='<nav class="visual-storage-tabs">'+tabs.map(([p,name])=>'<button onclick="go(\''+p+'\')">'+name+'</button>').join('')+'</nav>'+FrontierContainers.boxView(db.inventory.items.find(i=>i.uid===db.containers.activeBox))}
+ const nav=body.querySelector('.visual-storage-tabs'),content=document.createElement('div');
+ content.className='visual-storage-content';
+ while(nav.nextSibling)content.append(nav.nextSibling);
+ nav.after(content);
+ if(!preview)prepareStorage(body,page);
+ }
  function equipment(){modal('裝備整備',FrontierEquipment.view(),'')}
  let dispatchType=null;
  function dispatchOpen(type){
@@ -76,17 +82,45 @@ window.FrontierVisualUI=(()=>{
  function itemSurfaces(){const r=R();if(page==='run'&&r?.event?.type==='loot'&&catalog[r.event.id]){const icon=document.querySelector('.event-panel .reward');if(icon){icon.dataset.itemId=r.event.id;icon.innerHTML=FrontierIcons.html(r.event.id)}}if(page==='run'&&r?.reward?.strategy?.stage==='choose'&&!r.equipment139){const button=document.querySelector('[onclick="FrontierStrategy.choose(\'material\')"]'),card=button?.closest('section');if(card&&!card.querySelector('[data-visual-item]'))card.insertAdjacentHTML('afterbegin',tile('mat_iron_t2',3,false))}for(const button of document.querySelectorAll('[onclick]')){const code=button.getAttribute('onclick'),id=code.match(/(?:FrontierInventory\.describe|FrontierMedicine\.use(?:Selected)?|FrontierTrading\.sellMaterial)\('([^']+)'/)?.[1];if(id&&catalog[id]){button.dataset.itemId=id;if(code.startsWith('FrontierMedicine.use')&&!button.querySelector('img')){const text=button.textContent;button.innerHTML=FrontierIcons.html(id)+'<span>'+esc(text)+'</span>';button.classList.add('ui-medicine-icon')}}if(code==="FrontierStrategy.camp('supply')")button.dataset.itemId='med_aid_t3';}}
  function decorate(){const body=document.querySelector('.screen-workspace-body');if(!body)return;if(page==='run'&&R()?.battle)fanHand();if(page==='run'&&!R())prep();document.body.classList.toggle('visual-non-exploration',page!=='run');if(page==='base')baseDiagrams(body);if(page==='shop'){shopBody(body);return}if(page==='dispatch'){dispatchBody(body);return}if(page==='tasks'){body.innerHTML=FrontierTasks.view();taskRewards(body);body.classList.add('visual-scroll-page','visual-full-rows');return}if(tabs.some(([p])=>p===page)){body.parentElement.querySelector('.terminal-subnav')?.remove();storage(body)}else if(['tasks','dispatch','doctor','statistics'].includes(page))body.classList.add('visual-scroll-page','visual-full-rows');if(page==='shop')body.classList.add('visual-scroll-page','visual-shop');}
  const oldDeposit=FrontierProgress.deposit;FrontierProgress.deposit=function(...args){const value=oldDeposit(...args);order();return value};const oldPhysicalDeposit=FrontierEquipment.deposit;FrontierEquipment.deposit=function(...args){const value=oldPhysicalDeposit(...args);order();return value};order();const previous=render;render=function(){previous();order();decorate();FrontierIcons.decorate();itemSurfaces()};
+ const storagePreviews=new WeakMap();
+ function prepareStorage(body,section){
+  const previews=new Map();
+  storagePreviews.set(body,previews);
+  const index=tabs.findIndex(([id])=>id===section);
+  for(const adjacent of [tabs[index-1],tabs[index+1]])if(adjacent){
+   const build=()=>{if(body.isConnected)storagePreview(body,adjacent[0])};
+   if(window.requestIdleCallback)requestIdleCallback(build,{timeout:350});
+   else setTimeout(build,90);
+  }
+ }
+ function storagePreview(body,id){
+  const previews=storagePreviews.get(body);
+  if(previews.has(id))return previews.get(id);
+  const view=document.createElement('div');
+  storage(view,id,true);
+  const content=view.querySelector('.visual-storage-content');
+  content.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id'));
+  previews.set(id,content);
+  return content;
+ }
  let swipe=null;
  function positionStorage(gesture,offset){
   gesture.offset=offset;
-  gesture.body.style.translate=offset+'px 0';
-  if(gesture.preview)gesture.preview.style.translate=(offset+gesture.step*gesture.width)+'px 0';
+  if(gesture.paint)return;
+  gesture.paint=requestAnimationFrame(()=>{
+   gesture.paint=0;
+   gesture.content.style.translate=gesture.offset+'px 0';
+   if(gesture.preview)gesture.preview.style.translate=(gesture.offset+gesture.step*gesture.width)+'px 0';
+   gesture.tabs.style.setProperty('--storage-slide',gesture.index-(gesture.destination?gesture.offset/gesture.width:0));
+  });
  }
  function finishStorage(gesture,commit){
   const destination=commit?gesture.destination:null;
   const target=destination?-gesture.step*gesture.width:0;
   if(gesture.offset===undefined){swipe=null;return}
-  const panels=[gesture.body,gesture.preview].filter(Boolean);
+  cancelAnimationFrame(gesture.paint);
+  const panels=[gesture.content,gesture.preview].filter(Boolean);
+  gesture.tabs.style.setProperty('--storage-slide',gesture.index-(destination?target/gesture.width:0));
   const duration=matchMedia('(prefers-reduced-motion: reduce)').matches?0:155;
   const animationOptions={duration,easing:'cubic-bezier(.2,.7,.25,1)',fill:'forwards'};
   const animations=panels.map((panel,index)=>{
@@ -97,7 +131,8 @@ window.FrontierVisualUI=(()=>{
    try{if(destination&&gesture.body.isConnected)go(destination)}
    finally{
     animations.forEach(animation=>animation.cancel());
-    gesture.body.style.removeProperty('translate');
+    gesture.content.style.removeProperty('translate');
+    gesture.tabs.style.removeProperty('--storage-slide');
     gesture.frame?.remove();
     gesture.shell.classList.remove('visual-storage-sliding');
     swipe=null;
@@ -107,7 +142,9 @@ window.FrontierVisualUI=(()=>{
  document.addEventListener('pointerdown',e=>{
   const body=e.target.closest?.('.visual-storage');
   if(swipe||!e.isPrimary||e.button!==0||!body||e.target.closest('input,select,textarea')||document.querySelector('#modal')?.open)return;
-  swipe={body,shell:body.parentElement,pointer:e.pointerId,x:e.clientX,y:e.clientY,index:tabs.findIndex(([id])=>id===page),width:body.clientWidth};
+  const content=body.querySelector('.visual-storage-content'),tabsBar=body.querySelector('.visual-storage-tabs');
+  if(!content||!tabsBar)return;
+  swipe={body,content,tabs:tabsBar,shell:body.parentElement,pointer:e.pointerId,x:e.clientX,y:e.clientY,index:tabs.findIndex(([id])=>id===page),width:content.clientWidth};
  },true);
  document.addEventListener('pointermove',e=>{
   const gesture=swipe;
@@ -118,6 +155,7 @@ window.FrontierVisualUI=(()=>{
    if(Math.abs(dy)>10&&Math.abs(dy)>=Math.abs(dx)){swipe=null;return}
    if(Math.abs(dx)<12||Math.abs(dx)<Math.abs(dy)*1.25)return;
    gesture.shell.classList.add('visual-storage-sliding');
+   gesture.bounds=gesture.content.getBoundingClientRect();
   }
   e.preventDefault();
   const step=dx>0?-1:1;
@@ -127,16 +165,15 @@ window.FrontierVisualUI=(()=>{
    gesture.step=step;
    gesture.destination=tabs[gesture.index+step]?.[0];
    if(gesture.destination){
-    const rect=gesture.body.getBoundingClientRect(),frame=document.createElement('div'),preview=document.createElement('div');
-    frame.className='visual-storage-neighbor';
+    const rect=gesture.bounds,frame=document.createElement('div'),preview=storagePreview(gesture.body,gesture.destination);
+    const top=Math.max(rect.top,gesture.tabs.getBoundingClientRect().bottom);
+    frame.className='visual-storage visual-storage-neighbor';
     frame.inert=true;
     frame.setAttribute('aria-hidden','true');
-    Object.assign(frame.style,{left:(rect.left-(gesture.offset||0))+'px',top:rect.top+'px',width:rect.width+'px',height:rect.height+'px'});
-    preview.className='screen-workspace-body';
-    storage(preview,gesture.destination,true);
-    preview.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id'));
+    Object.assign(frame.style,{left:rect.left+'px',top:top+'px',width:rect.width+'px',height:Math.max(0,gesture.body.getBoundingClientRect().bottom-top)+'px'});
+    preview.style.translate=gesture.step*gesture.width+'px 0';
     frame.append(preview);
-    document.body.append(frame);
+    gesture.shell.append(frame);
     gesture.frame=frame;
     gesture.preview=preview;
    }

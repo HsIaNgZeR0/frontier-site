@@ -279,3 +279,13 @@ dialog#modal.base-crafting>.row button{margin:0;width:100%;min-height:44px}
 .visual-storage-sliding { overflow-x: clip; }
 .visual-storage-neighbor { position: fixed; z-index: 12; overflow: hidden; pointer-events: none; }
 .visual-storage-neighbor > .visual-storage { box-sizing: border-box; width: 100%; height: 100%; background: #10191e; }
+
+.visual-storage-content { min-width: 0; }
+.visual-storage-sliding .visual-storage-tabs { position: sticky; z-index: 14; }
+.visual-storage-sliding .visual-storage-tabs .active { border-color: #4e6066; }
+.visual-storage-sliding .visual-storage-tabs::after {
+ position: absolute; inset: auto auto 7px 0; width: calc((100% - 9px)/4); height: 2px;
+ background: #d2e986; content: ''; pointer-events: none;
+ transform: translateX(calc(var(--storage-slide, 0) * (100% + 3px)));
+}
+.visual-storage-neighbor > .visual-storage-content { width: 100%; min-height: 100%; background: #10191e; }

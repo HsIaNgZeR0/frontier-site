@@ -3,3 +3,7 @@
 #app .equipment142-grid .equipment60-name{height:2.7em!important;min-height:2.7em!important;max-height:2.7em!important;display:-webkit-box!important;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden!important}
 
 .equipment142-grid .equipment60-instance .equipment139-occupant,.equipment139-picker-grid .equipment139-gear-tile .equipment139-occupant{top:1px!important;right:1px!important;bottom:auto!important;left:auto!important}
+
+#app .equipment142-grid .equipment60-instance > .equipment69-tuning-summary {
+ grid-column: 1 / -1; align-self: start; min-height: 22px; padding-bottom: 3px!important;
+}
