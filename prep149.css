@@ -146,3 +146,17 @@ body.expedition-active #app{height:calc(var(--screen-height,100dvh) - env(safe-a
 .prep149-tickets label{display:flex;align-items:center;justify-content:center;gap:4px;padding:4px 4px 4px 22px;min-height:44px}
 .prep149-tickets img{width:28px;height:28px}
 .prep149-tickets input{top:50%;transform:translateY(-50%);left:4px}
+
+/* 倉庫裝備：一排四格；調校詞條圖示全部顯示，縮小並允許換行 */
+#app .visual-item-grid.ui-stock-grid.equipment60-grid.equipment142-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:5px!important}
+#app .equipment142-grid .equipment60-instance{min-height:0!important;padding:4px 2px!important;gap:3px!important}
+#app .equipment142-grid .equipment142-art{width:46px!important;height:46px!important}
+#app .equipment142-grid .equipment142-art>.item-icon{width:44px!important;height:44px!important}
+#app .equipment142-grid .equipment142-art .equipment60-level{right:-4px;font-size:10px!important;font-weight:700;line-height:14px!important;padding:0 3px!important}
+#app .equipment142-grid .equipment142-copy{min-height:0!important;gap:2px!important}
+#app .equipment142-grid .equipment69-tuning-summary{flex-wrap:wrap!important;justify-content:center!important;gap:2px 1px!important;margin:0!important;min-height:13px!important}
+#app .equipment142-grid .equipment69-tuning-stat{width:13px!important;height:13px!important}
+#app .equipment142-grid .equipment69-tuning-stat svg{width:12px!important;height:12px!important}
+#app .equipment142-grid .equipment69-tuning-count{font-size:8px!important;line-height:9px!important;min-width:0;padding:0 1px!important;right:-3px!important;bottom:-3px!important}
+@media (max-width:339px){#app .visual-item-grid.ui-stock-grid.equipment60-grid.equipment142-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
+@media (min-width:700px){#app .visual-item-grid.ui-stock-grid.equipment60-grid.equipment142-grid{grid-template-columns:repeat(auto-fill,minmax(92px,1fr))!important}}
