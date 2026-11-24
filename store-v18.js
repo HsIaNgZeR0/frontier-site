@@ -14,7 +14,7 @@ window.FrontierStoreV18=(()=>{
   rows.push(priced(key,greenLadder));
   // 三分之一機率追加一件高階開鎖裝置或炸藥，與房卡獨立抽選，依銀／金物品權重。
   if(hash(s.day+':extra')%3===0){const w=L().shopTierWeight,pool=[['T3',w[5]],['B2',w[5]],['T4',w[6]]];let r=unit(s.day+':extra-tier')*pool.reduce((a,x)=>a+x[1],0);const extra=pool.find(([,x])=>(r-=x)<0)?.[0]||'T4';rows.push(priced(extra,greenLadder))}
-rows.unshift({id:"first-aid149",item:"med_aid_t3",qty:1,cost:5,limit:10});if((hash(s.day)>>>1)%2===0)rows.unshift({id:'gacha-ticket',special:'ticket',qty:1,cost:50,limit:1});return rows};
+rows.unshift({id:"first-aid149",item:"med_aid_t3",qty:1,cost:10,limit:10});if((hash(s.day)>>>1)%2===0)rows.unshift({id:'gacha-ticket',special:'ticket',qty:1,cost:50,limit:1});return rows};
  F.weekly=()=>{
   const seed=hash(F.ensure().week),rows=oldWeekly().filter(r=>r.id!=='ticket');
   const week=F.ensure().week;

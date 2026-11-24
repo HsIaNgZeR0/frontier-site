@@ -104,8 +104,8 @@ const recipeInput={
  T2:[2,5000,[['device',5,1],['sugar',5,1]]],
  T3:[3,6000,[['rma',5,2],['device',6,1]]],
  T4:[4,6000,[['gel',6,2],['rock',5,1]]],
- B1:[2,30000,[['rock',5,10],['grindstone',6,2]]],
- B2:[3,40000,[['ketone',6,6],['manganese',6,4]]],
+ B1:[2,3000,[['rock',5,1],['grindstone',4,3]]],/* v609 ≈週價 220 */
+ B2:[3,5000,[['ketone',5,1],['manganese',5,1],['manganese',4,3]]],/* v609 ≈週價 360 */
  // v605 偵查儀：成本≈點數商店週售價 320（≈1.07 金材）：3000龍門幣＋銀裝置1＋藍酮凝集3。
  S1:[2,5000,[['device',5,1],['ketone',5,1]]]
 };
@@ -119,14 +119,16 @@ function keycardWeight(rarity){return rarity>=6?shopTierWeight[6]/2:shopTierWeig
 // 綠票基準價（使用者定案）：開鎖裝置／炸藥 50／100／200／400；房卡 100／300／500／1000。
 // 其他商店由此換算：尋訪憑證 綠50＝黃5＝點數基準600，故 1黃≈10綠、1綠≈12點數基準。
 const greenPrices={tool:{3:50,4:100,5:200,6:400},keycard:{3:100,4:300,5:500,6:1000}};
-function greenPrice(id){const d=catalog[id];return greenPrices[d.key?'keycard':'tool'][d.rarity]}
+// v609：綠票價改由點數基準換算（綠票商店多數商品約 1 綠＝1.5 點數基準），黃票沿用 綠÷10×0.8。
+function greenPrice(id){return Math.max(5,Math.round(pointBase(id)/1.5/5)*5)}
 // 黃票：綠票換算後約 8 折。
 function yellowPrice(id){return Math.max(1,Math.round(greenPrice(id)/10*.8))}
 // 調查點數基準（之後由點數商店再套每月／每週倍率）。
 // 房卡與開鎖裝置在點數商店半價（使用者定案）；炸藥維持原換算。
 // v604：房卡／開鎖裝置在點數商店另有定價（基準；每月×1.2、每週再×1.5），與權限獎勵一起校正。炸藥維持原換算。
-const accessPointBase={3:400,4:585,5:800,6:1000,T1:70,T2:170,T3:300,T4:335,S1:170};
-function pointBase(id){return catalog[id].key?accessPointBase[catalog[id].rarity]:id[0]==='T'||id[0]==='S'?accessPointBase[id]:greenPrice(id)*12}
+// v609 炸藥：單次、會毀容器，原價（月1440／2880）高於金房卡，下修到約兩次房卡開門的價格。
+const accessPointBase={3:400,4:585,5:800,6:1000,T1:70,T2:170,T3:300,T4:335,S1:170,B1:120,B2:200};
+function pointBase(id){return catalog[id].key?accessPointBase[catalog[id].rarity]:accessPointBase[id]}
 // v604 點數制：房卡與開鎖裝置改存「點數」，各難度每次開啟消耗不同點數；炸藥仍是次數。
 // 點數取 20 的倍數（1／2／4／5 的公倍數），任何難度都能剛好用完、不留零頭。
 const accessPoints={3:40,4:40,5:20,6:20,T1:20,T2:20,T3:20,T4:20,S1:20};
