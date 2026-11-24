@@ -39,20 +39,17 @@ window.FrontierGoldenglowUI=(()=>{
    else if(e.goldenglow==='explosion'||e.goldenglow==='splash'){setTimeout(()=>spark(to.left+to.width/2,to.top+to.height*.45,e.goldenglow==='explosion'?'explosion':'splash'),delay+300);delay+=e.goldenglow==='explosion'?160:60}
    else if(e.goldenglow==='conduct'){setTimeout(()=>spark(to.left+to.width/2,to.top+to.height*.45,'float'),delay);delay+=80}}
  }
- /* 招牌全螢幕演出：粉色電弧掃過、浮標環繞，接在原本的立繪切入之後 */
- let clip=null;const castClip=()=>clip??=fetch('assets/goldenglow/signature-cast.webp').then(r=>r.ok?r.blob():null).catch(()=>{clip=null;return null});
+ /* 招牌：通用切入播放三技能施放動作；這裡另加粉色電弧與環繞浮標 */
  function signatureShow(){
   if(reduced())return;const o=document.createElement('div');o.className='gg-sig-show';o.setAttribute('aria-hidden','true');
   o.innerHTML='<i class="gg-sig-flash"></i><i class="gg-sig-arc a1"></i><i class="gg-sig-arc a2"></i><i class="gg-sig-arc a3"></i>';
-  const cast=new Image();cast.className='gg-sig-cast';cast.alt='';cast.draggable=false;o.append(cast);
-  castClip().then(blob=>{if(!blob)return;const url=URL.createObjectURL(blob);cast.src=url;setTimeout(()=>URL.revokeObjectURL(url),4000)});
   const ring=document.createElement('span');ring.className='gg-sig-ring';for(let i=0;i<6;i++){const f=icon('');f.style.setProperty('--i',i);ring.append(f)}o.append(ring);
-  setTimeout(()=>document.body.append(o),1150);setTimeout(()=>o.remove(),1150+1700);
+  document.body.append(o);setTimeout(()=>o.remove(),1700);
  }
  function decorate(){
   const a=actor(),b=R()?.battle;if(!b){seenBattle=null;return}
   if(seenBattle!==b.operatorBattleId){seenBattle=b.operatorBattleId;seenEvents=(b.operatorEvents||[]).length;seenCasts=a?b.signatureState?.actors?.[a.uid]?.casts||0:0}
-  if(!a)return;markers(a);castClip();
+  if(!a)return;markers(a);
   const events=b.operatorEvents||[];if(events.length<seenEvents)seenEvents=0;
   const fresh=events.slice(seenEvents).filter(e=>e.goldenglow&&e.source===a.uid);seenEvents=events.length;
   if(fresh.length)requestAnimationFrame(()=>playEvents(a,fresh));
