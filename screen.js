@@ -116,12 +116,59 @@ function routeMain(content){
  function compactEvent(content,shell,fromBattle){body.classList.add('context-event-body','compact-action-body');const r=R(),e=r.expedition;if(r.reward)body.classList.add('post-battle-workspace');if(r.event?.type==='fieldMerchant')body.classList.add('field-store-body');const environmentText=content.querySelector('.environment-panel b')?.textContent||'';let focus=!r.reward&&!r.result&&(content.querySelector('.field-store')||content.querySelector('.event-panel')||content.querySelector('#box-packet')?.closest('section')||[...content.querySelectorAll('section.panel')].find(n=>!n.matches('.environment-panel,.grid-panel,.bag-panel,.field-cargo')&&!n.closest('aside')));if(r.result){focus=document.createElement('div');for(const node of [...content.children])if(node.matches('h1,.stats,.weather,button.primary'))focus.append(node)}if(focus)focus.remove();else{focus=document.createElement('div');focus.className='compact-reward-content';for(const node of [...content.children])if(!node.matches('.run-top,.progress,.environment-panel,.grid-panel,.bag-panel,.field-cargo,aside'))focus.append(node)}gatherTools(content,null);const heading=document.createElement('div');heading.className='compact-run-summary';heading.innerHTML='<b>'+esc(FrontierExpedition.regions.find(x=>x.id===e?.regionId)?.name||'遠征')+' · 第'+((e?.layer||0)+1)+'層</b><span>警戒 '+(r.alert??(r.expedition?.mode==='highrisk'?20:0))+' · '+esc(environmentText)+'</span>';body.append(heading);const deck=focus.querySelector('.deck-list');if(deck){current._tools.selection=deck;bank.append(deck);const pick=document.createElement('button');pick.textContent='開啟卡牌列表，選擇要調整的牌';pick.setAttribute('onclick',"FrontierScreen.openTool('selection')");focus.append(pick)}const list=focus.querySelector('.loot-reveal-list');if(list){current._tools.contents=list;bank.append(list);const last=[...list.querySelectorAll('article')].at(-1);if(last){const preview=document.createElement('div');preview.className='compact-last-loot';preview.textContent='最新揭曉：'+last.querySelector('h3')?.textContent+(last.querySelector('button:disabled')?'（已收取）':'');focus.append(preview)}}if(r.event?.type==='loot')compactLoot(focus,r.event);if(fromBattle&&r.reward)rewardEntry={run:r.number,started:performance.now()};
  if(r.reward&&rewardEntry?.run===r.number){const elapsed=performance.now()-rewardEntry.started;if(elapsed<220){focus.classList.add('reward-entering');focus.style.animationDelay=-elapsed+'ms'}}body.append(focus);if(r.reward&&finalBossNode())return;shell.append(actionDock(r.result?[['info','完整戰績與事件日誌']]:[['bag','背包'],['medicine','補給'],...(list?[['contents','戰利品']]:[]),['info','紀錄']]));}
  function decorate(){if(!mobile())return;const app=document.querySelector('#app');if(!app||document.body.classList.contains('identity-mode'))return;const nodes=[...app.children],content=document.createElement('div');nodes.forEach(n=>content.append(n));const shell=document.createElement('section');shell.className='screen-shell contextual-shell';const home=page==='home',battle=page==='run'&&R()?.battle,scene=page==='run'?(R()?.number||'prep')+':'+(battle?'battle':R()?.event?'event:'+R().event.type+':'+(R().event.action||''):R()?.reward?'reward:'+R().reward.strategy?.stage:R()?.result?'result':'route'):page;const fromBattle=lastScene===R()?.number+':battle';if(scene!==lastScene)activeContext=null;lastScene=scene;shell.innerHTML='<div class="screen-top">'+(home?'':button('‹ 返回','FrontierScreen.back()'))+'<b>'+esc((battle&&R()?.battle?.operatorVersion===113?'':titles[page]||'行動終端')+(home?' · Lv.'+db.doctor.level:''))+'</b>'+(R()&&!R().result?button('暫停','FrontierSession.pause()'):'')+button('設定',"go('settings')")+'</div>';body=document.createElement('div');body.className='screen-workspace-body';bank=document.createElement('div');bank.hidden=true;bank.className='screen-bank';shell.append(body,bank);app.replaceChildren(shell);current=body;current._tools={};enhanceSelects(content);restoreDraft();if(home){body.classList.add('screen-home-body');body.append(content);return}if(page==='run'&&R()?.event?.searchScene){body.classList.add('context-event-body');body.innerHTML=FrontierContainers.searchSceneView(R().event.searchScene);shell.append(actionDock([['bag','背包'],['medicine','補給'],['info','紀錄']]))}else if(page==='run'&&!R()){collect(content);restoreDraft();body.classList.add('context-prep-body');refreshPrep()}else if(battle){const board=content.querySelector('.card-battle');const regional=content.querySelector('.environment-panel b');gatherTools(content,board);body.classList.add('screen-combat-body');if(regional){const strip=document.createElement('div');strip.className='battle-region-strip';strip.dataset.environmentDetail='';strip.textContent=regional.textContent;body.append(strip)}body.append(board);shell.append(actionDock([['bag','背包'],['medicine','補給'],['capture','收容'],['info','戰況'],...(R().story?.escort?.status==='traveling'?[['escort','護送']]:[])]))}else if(page==='run'&&R()?.expedition&&(!R().event||window.FrontierSurvey16?.routeState())&&!R().reward&&!R().result){routeMain(content);shell.append(actionDock([['bag','背包'],['medicine','補給'],['info','紀錄']]))}else if(page==='run'){compactEvent(content,shell,fromBattle)}else genericMain(content);/* 視窗已被關閉（含返回手勢、Esc）就不在重繪時重新打開。 */if(!document.querySelector('#modal')?.open)activeContext=null;const context=activeContext;if(context?.kind==='tool')openTool(context.id);else if(context?.kind==='squad')openSquad();else if(context?.kind==='entry')openEntry(context.index);else if(context?.kind==='operator')operator(context.id);}
+ const mainTabs=['home','yard','roster','base','warehouse'];
+ let mainSwipe=null,mainSlide=0,mainSlideOffset=0,ignoreNavClickUntil=0;
+ const navStrip=document.querySelector('#nav');
+ navStrip.addEventListener('pointerdown',event=>{
+  if(!event.isPrimary||event.button!==0||document.querySelector('dialog[open]'))return;
+  const button=navStrip.querySelector('[aria-current="page"]');
+  const index=[...navStrip.querySelectorAll('button')].indexOf(button);
+  if(index<0)return;
+  ignoreNavClickUntil=0;
+  mainSwipe={pointer:event.pointerId,x:event.clientX,y:event.clientY,index};
+ });
+ document.addEventListener('pointermove',event=>{
+  const drag=mainSwipe;
+  if(!drag||event.pointerId!==drag.pointer)return;
+  const dx=event.clientX-drag.x,dy=event.clientY-drag.y;
+  if(!drag.moved&&Math.abs(dy)>12&&Math.abs(dy)>Math.abs(dx)){mainSwipe=null;return}
+  if(!drag.moved&&Math.abs(dx)<10)return;
+  drag.moved=true;
+  drag.offset=dx;
+  drag.destination=mainTabs[drag.index+(dx<0?1:-1)];
+  navStrip.style.setProperty('--main-nav-shift',Math.max(-19,Math.min(19,dx/5))+'px');
+  const active=document.querySelector('#app')?.firstElementChild;
+  if(active&&!FrontierMotion.reduced()){
+   drag.surface=active;
+   drag.translation=Math.max(-22,Math.min(22,dx/4));
+   active.style.translate=drag.translation+'px 0';
+  }
+ },{passive:true});
+ function finishMainSwipe(event){
+  const drag=mainSwipe;
+  if(!drag||event.pointerId!==drag.pointer)return;
+  mainSwipe=null;
+  navStrip.style.removeProperty('--main-nav-shift');
+  drag.surface?.style.removeProperty('translate');
+  if(!drag.moved)return;
+  ignoreNavClickUntil=performance.now()+380;
+  if(event.type==='pointerup'&&Math.abs(drag.offset)>42&&drag.destination){
+   mainSlide=Math.sign(-drag.offset);
+   mainSlideOffset=drag.translation||0;
+   try{go(drag.destination)}finally{mainSlide=mainSlideOffset=0}
+  }else if(drag.surface&&drag.translation&&!FrontierMotion.reduced()){
+   drag.surface.animate([{translate:drag.translation+'px 0'},{translate:'0 0'}],{duration:135,easing:'ease-out'});
+  }
+ }
+ document.addEventListener('pointerup',finishMainSwipe,true);
+ document.addEventListener('pointercancel',finishMainSwipe,true);
+ navStrip.addEventListener('click',event=>{if(performance.now()<ignoreNavClickUntil){event.stopImmediatePropagation();event.preventDefault()}},true);
  let homeTransition=null;
  function stopHomeTransition(){homeTransition?.remove();homeTransition=null}
- function transitionHome(app,outgoing,rect,returning,scrollTop){
+ function transitionHome(app,outgoing,rect,returning,scrollTop,slide,offset){
   if(!outgoing||outgoing.isConnected||!rect?.width||!rect.height||!app.firstElementChild)return;
   const layer=document.createElement('div');
-  layer.className='home20-transition-out'+(returning?'':' from-home');
+  layer.className='home20-transition-out'+(outgoing.querySelector('.home20')?' from-home':'');
   layer.inert=true;
   layer.setAttribute('aria-hidden','true');
   Object.assign(layer.style,{top:rect.top+'px',left:rect.left+'px',width:rect.width+'px',height:rect.height+'px'});
@@ -131,8 +178,8 @@ function routeMain(content){
   const scrollBody=outgoing.querySelector(".screen-workspace-body");
   if(scrollBody)scrollBody.scrollTop=scrollTop;
   homeTransition=layer;
-  const direction=returning?-1:1,timing={duration:185,easing:'cubic-bezier(.22,.7,.24,1)'};
-  const animation=layer.animate([{opacity:1,transform:'translateX(0)'},{opacity:0,transform:'translateX('+(-direction*12)+'px)'}],timing);
+  const direction=slide||(returning?-1:1),timing={duration:185,easing:'cubic-bezier(.22,.7,.24,1)'};
+  const animation=layer.animate([{opacity:1,transform:'translateX('+offset+'px)'},{opacity:0,transform:'translateX('+(offset-direction*12)+'px)'}],timing);
   (app.querySelector(':scope>.screen-shell')||app.firstElementChild).animate([{opacity:.66,transform:'translateX('+direction*10+'px)'},{opacity:1,transform:'translateX(0)'}],timing);
   animation.finished.catch(()=>{}).then(()=>{if(homeTransition===layer)stopHomeTransition()});
  }
@@ -143,13 +190,14 @@ function routeMain(content){
   if(next!==previous){trail.push(previous);if(trail.length>30)trail.shift()}
   activeContext=null;
   stopHomeTransition();
+  if(storageSliding&&window.FrontierVisualUI?.settleStorage(next))return;
   const app=document.querySelector('#app'),reduced=FrontierMotion.reduced();
-  const fromHome=next!==previous&&!reduced&&!storageSliding&&(next==='home'||previous==='home');
+  const fromHome=next!==previous&&!reduced&&!storageSliding&&(mainSlide||next==='home'||previous==='home');
   const outgoing=fromHome?app?.firstElementChild:null;
   const rect=outgoing?app.getBoundingClientRect():null;
   const scrollTop=outgoing?.querySelector(".screen-workspace-body")?.scrollTop||0;
   const result=oldGo(next);
-  if(fromHome&&page!==previous){transitionHome(app,outgoing,rect,next==='home',scrollTop);return result}
+  if(fromHome&&page!==previous){transitionHome(app,outgoing,rect,next==='home',scrollTop,mainSlide,mainSlideOffset);return result}
   if(page!==previous&&!storageSliding&&!FrontierMotion.reduced()){
    const app=document.querySelector('#app');
    const body=app?.querySelector('.screen-workspace-body')||app?.firstElementChild;

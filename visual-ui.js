@@ -99,9 +99,25 @@ window.FrontierVisualUI=(()=>{
   const view=document.createElement('div');
   storage(view,id,true);
   const content=view.querySelector('.visual-storage-content');
-  content.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id'));
   previews.set(id,content);
   return content;
+ }
+ function settleStorage(next){
+  const gesture=swipe,body=gesture?.body,content=gesture?.preview;
+  const tab=tabs.find(([id])=>id===next);
+  if(!gesture?.settling||!tab||gesture.destination!==next||!content||!body.isConnected||next==='containers'&&db.containers.activeBox)return false;
+  const current=page,bar=gesture.tabs;
+  gesture.content.replaceWith(content);
+  content.style.removeProperty('translate');
+  page=next;
+  selected=null;
+  body.scrollTop=0;
+  const head=body.querySelector('.visual-storage-head');
+  if(head)head.innerHTML='<h2>'+tab[1]+'</h2>'+(next==='warehouse'?'<button onclick="FrontierVisualUI.sort()">'+(sorted?'入庫順序':'快速整理')+'</button>':'');
+  for(const [i,button]of [...bar.querySelectorAll('button')].entries())button.classList.toggle('active',tabs[i][0]===next);
+  prepareStorage(body,next);
+  storagePreviews.get(body).set(current,gesture.content);
+  return true;
  }
  let swipe=null;
  function positionStorage(gesture,offset){
@@ -196,5 +212,5 @@ window.FrontierVisualUI=(()=>{
  document.addEventListener('contextmenu',event=>{if(event.target.closest?.('[data-visual-item],[data-item-id]'))event.preventDefault()});
  const priorValid=validSave;validSave=function(v){return priorValid(v)&&(!v.visualInventory||v.visualInventory.version===1&&Array.isArray(v.visualInventory.order)&&new Set(v.visualInventory.order).size===v.visualInventory.order.length&&v.visualInventory.order.every(id=>catalog[id]))};
  window.addEventListener('pointerdown',()=>{suppress=0},true);
- return{tile,info,total,details,accessDetails,filterStorage,searchStorage,sort,shelf,equipment,dispatchOpen,dispatchPick,dispatchStart,prep,relicPicker,relicPick,contractCheck,contractToggle,contractMode,contractConfirm,decorate};
+ return{settleStorage,tile,info,total,details,accessDetails,filterStorage,searchStorage,sort,shelf,equipment,dispatchOpen,dispatchPick,dispatchStart,prep,relicPicker,relicPick,contractCheck,contractToggle,contractMode,contractConfirm,decorate};
 })();

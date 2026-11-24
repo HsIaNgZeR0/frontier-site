@@ -310,3 +310,6 @@ html[data-frontier-reduce-motion] :is(#app,#nav,dialog) * {
  transition-duration: 1ms!important;
  transition-delay: 0ms!important;
 }
+
+#nav { touch-action: pan-y; }
+#nav button[aria-current="page"] > span { translate: var(--main-nav-shift,0px) 0; }
