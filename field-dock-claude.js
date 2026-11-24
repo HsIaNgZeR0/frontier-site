@@ -129,12 +129,34 @@ window.FrontierFieldDock=(()=>{
   const fit=()=>{if(!host.isConnected)return;FrontierViewZoom.change('bag','fit');
 };requestAnimationFrame(()=>requestAnimationFrame(fit));
   return host}}
- /* 戰鬥上限：任何走法（每層一路走到底）累計作戰（普通／緊急／首領）不超過 10 場。
-    在所有路線模組處理完後執行；只把非必戰、非首領的普通／緊急作戰改成不期而遇。 */
+ /* 只調整超過各層上限的可選作戰，保留必要作戰與首領。 */
  const isBattle=n=>['battle','elite','boss'].includes(n.type);
  function layerMax(layer){let prev=new Map();for(let row=0;row<layer.rows.length;row++){const next=new Map();for(const n of layer.rows[row]){const src=row===0?[{v:0,path:[]}]:layer.rows[row-1].filter(p=>p.links?.includes(n.id)).map(p=>prev.get(p.id)).filter(Boolean);if(!src.length)continue;const best=src.reduce((a,b)=>b.v>a.v?b:a);next.set(n.id,{v:best.v+(isBattle(n)?1:0),path:[...best.path,n]})}prev=next}return [...prev.values()].reduce((a,b)=>!a||b.v>a.v?b:a,null)||{v:0,path:[]}}
- // 每層戰鬥上限（使用者定案 1／2／3／3／3），超過的非必戰作戰改為不期而遇。
- const layerLimits=[1,2,3,3,3];
+ // Cap optional battles without removing mandatory combat.
+ const layerLimits=[2,2,3,3,3];
+ function tuneEncounterFrequency(r){
+  const e=r.expedition;
+  const layers=e.layers.slice(0,5);
+  const optional=[];
+  for(const [index,layer] of layers.entries()){
+   const fixed=index===0?layer.rows.length-1:layer.rows.findIndex(row=>row.some(node=>node.endingMarket75));
+   const candidates=layer.rows.filter((row,i)=>i!==fixed&&row.some(node=>node.type==='merchant'));
+   if(index>0&&fixed<0&&candidates.length)optional.push(pick(candidates));
+   const storyRows=layer.rows.filter(row=>row.some(node=>node.storyEvent&&!['gift_choice','gift_exchange','trail_intel'].includes(node.storyEvent)));
+   for(const row of storyRows)for(const node of row)if(node.storyEvent)node.routeStory118=0;
+   if(index>0&&storyRows.length&&rnd(100)<35)for(const node of storyRows[0])if(node.storyEvent)node.routeStory118=1;
+   if(index>0&&storyRows.length>1)for(const node of storyRows[1])if(node.storyEvent)node.routeStory118=2;
+  }
+  const required=layers.filter((layer,index)=>index===0||layer.rows.some(row=>row.some(node=>node.endingMarket75))).length;
+  const extra=Math.max(0,Math.min(4-required,1+Number(rnd(100)<30)));
+  const keep=new Set(shuffle(optional).slice(0,extra));
+  for(const [index,layer] of layers.entries())for(const row of layer.rows){
+   if(index===0&&row===layer.rows.at(-1)||keep.has(row))continue;
+   for(const node of row)if(node.type==='merchant'&&!node.endingMarket75){
+    node.type='event';node.risk=0;delete node.earlySpecial;
+   }
+  }
+ }
  function capBattles(e){
   for(const [li,layer] of e.layers.entries()){const limit=layerLimits[li]??3;
    for(let guard=0;guard<40;guard++){const m=layerMax(layer);if(m.v<=limit)break;
@@ -156,7 +178,7 @@ window.FrontierFieldDock=(()=>{
    const n=byId.get(el.dataset.routeId);if(!n||!['search','container'].includes(n.type)||!['search','container'].includes(FrontierTrail.nodeKind(n)))continue;/* v605：勘探視野要能看到該節點的下一排，才預告所需房卡 */const SI=window.FrontierSurveyIndex16;if(SI&&R().survey16&&SI.visibility(R(),{id:'fd-probe:'+n.id,layer:n.layer,row:n.row+1})!=='known')continue;const keys=keycardsFor(n?.room180);if(!keys.length)continue;
    const hint=document.createElement('span');hint.className='fd-keyhint';hint.setAttribute('aria-label','可開門房卡：'+keys.map(id=>FrontierSearchLocks174.catalog[id].name).join('、'));
    hint.innerHTML=keys.slice(0,3).map(id=>'<img src="assets/search174/'+id+'.png" alt="" draggable="false">').join('')+(keys.length>3?'<b>+'+(keys.length-3)+'</b>':'');el.append(hint)}}
- if(typeof startRun==='function'){const start=startRun;startRun=function(...args){const before=R();const out=start(...args);const r=R();if(r&&r!==before&&r.expedition){try{if(r.expedition.mode==='standard'&&!r.expedition.battleCap149)r.expedition.battleCap149=capBattles(r.expedition);assignRooms(r);save();render()}catch(error){console.error(error)}}return out}}
+ if(typeof startRun==='function'){const start=startRun;startRun=function(...args){const before=R();const out=start(...args);const r=R();if(r&&r!==before&&r.expedition){try{if(r.expedition.mode==='standard'&&!r.expedition.battleCap149){r.expedition.battleCap149=capBattles(r.expedition);tuneEncounterFrequency(r);}assignRooms(r);save();render()}catch(error){console.error(error)}}return out}}
  /* 詭異行商：所有商品只放在上方商品格，總數最多 10 個；劇情藏品（結局線索）優先保留，佔用一般商品的名額。 */
  function merchantLimit(){if(R()?.event?.type!=='fieldMerchant')return;const grid=document.querySelector('.field-store .store-grid');if(!grid)return;
   for(const extra of document.querySelectorAll('.field-store .store-alternative')){extra.classList.add('store-card');grid.append(extra)}
