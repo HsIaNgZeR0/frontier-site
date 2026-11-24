@@ -164,8 +164,12 @@ window.FrontierFieldDock=(()=>{
   const keep=cards.filter(c=>c.classList.contains('region75-key')||c.matches('.store-alternative'));const regular=cards.filter(c=>!keep.includes(c));
   regular.slice(Math.max(0,10-keep.length)).forEach(c=>c.remove())}
  /* 長按說明放不下時自動縮小字級，直到完整顯示（最小 9px）。 */
- function fitInspection(el){let size=12;el.style.removeProperty('--fd-fit');for(let i=0;i<8&&el.scrollHeight>el.clientHeight+1&&size>9;i++){size-=.5;for(const p of el.querySelectorAll('p,li,span,div'))p.style.fontSize=size+'px';el.querySelector('b')&&(el.querySelector('b').style.fontSize=Math.max(11,size+1.5)+'px')}}
- new MutationObserver(list=>{for(const r of list)for(const n of r.addedNodes)if(n.nodeType===1&&n.matches?.('.hold-inspection'))requestAnimationFrame(()=>fitInspection(n))}).observe(document.body,{childList:true});
+ /* 注意：樣式表用了 !important，所以這裡也要用 important 才蓋得過。 */
+ function fitInspection(el){const over=()=>el.scrollHeight>el.clientHeight+1,set=(n,k,v)=>n.style.setProperty(k,v,'important');
+  if(!over())return;set(el,'top','calc(env(safe-area-inset-top) + 8px)');set(el,'max-height','calc(100dvh - env(safe-area-inset-top) - 16px)');
+  let size=12;while(over()&&size>8){size-=.5;for(const p of el.querySelectorAll('p,li,span,div,small')){set(p,'font-size',size+'px');set(p,'margin',Math.max(1,size-8)+'px 0');set(p,'line-height','1.3')}const b=el.querySelector('b');b&&set(b,'font-size',Math.max(10,size+1.5)+'px')}
+  if(over()){set(el,'overflow-y','auto');set(el,'pointer-events','auto')}}
+ new MutationObserver(list=>{for(const r of list)for(const n of r.addedNodes)if(n.nodeType===1&&n.matches?.('.hold-inspection'))fitInspection(n)}).observe(document.body,{childList:true});
  /* 戰鬥：①首領機制產生的我方單位（如奎隆的尼盧火）常駐顯示在我方區；②被封鎖／繳械／暈眩的幹員頭像加上交叉鎖鏈。 */
  const chains='<svg class="fd-chains" viewBox="0 0 40 40" aria-hidden="true"><g fill="none" stroke-linecap="round"><path d="M5 5 L35 35" stroke="#1b1b1b" stroke-width="7"/><path d="M35 5 L5 35" stroke="#1b1b1b" stroke-width="7"/><path d="M5 5 L35 35" stroke="#c9ced3" stroke-width="4" stroke-dasharray="5 3"/><path d="M35 5 L5 35" stroke="#c9ced3" stroke-width="4" stroke-dasharray="5 3"/></g></svg>';
  function lockReason(b,a){const t=b.turn||0,m=b.region75;if(m?.caged&&m.caged===a.uid)return '繭籠封鎖：無法行動，擊破繭籠可解除';if((a.disarmed75||0)>=t||(a.attackLockedTurn||0)>=t)return '繳械：本回合無法打攻擊牌（仍可治療與防護）';if((a.stunnedTurn||0)>=t)return '暈眩：本回合無法出牌';return null}
