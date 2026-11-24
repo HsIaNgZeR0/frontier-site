@@ -299,3 +299,14 @@ dialog#modal.base-crafting>.row button{margin:0;width:100%;min-height:44px}
 .home20-transition-out.from-home .screen-top { display: none; }
 .home20-transition-out.from-home .screen-home-body { padding: 0; overflow: auto; }
 .home20-transition-out.from-home .screen-home-body > div { height: 100%; min-height: 0; }
+
+.frontier-motion-option { display: flex; min-height: 44px; align-items: center; gap: 10px; }
+.frontier-motion-option input { width: 18px; height: 18px; flex: none; margin: 0; }
+html[data-frontier-reduce-motion] :is(#app,#nav,dialog,.home20-transition-out),
+html[data-frontier-reduce-motion] :is(#app,#nav,dialog) * {
+ animation-duration: 1ms!important;
+ animation-delay: 0ms!important;
+ animation-iteration-count: 1!important;
+ transition-duration: 1ms!important;
+ transition-delay: 0ms!important;
+}

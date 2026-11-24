@@ -121,7 +121,7 @@ window.FrontierVisualUI=(()=>{
   cancelAnimationFrame(gesture.paint);
   const panels=[gesture.content,gesture.preview].filter(Boolean);
   gesture.tabs.style.setProperty('--storage-slide',gesture.index-(destination?target/gesture.width:0));
-  const duration=matchMedia('(prefers-reduced-motion: reduce)').matches?0:155;
+  const duration=FrontierMotion.reduced()?0:155;
   const animationOptions={duration,easing:'cubic-bezier(.2,.7,.25,1)',fill:'forwards'};
   const animations=panels.map((panel,index)=>{
    const adjacent=index?gesture.step*gesture.width:0;
