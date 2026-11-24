@@ -275,3 +275,7 @@ dialog#modal.base-crafting>.row button{margin:0;width:100%;min-height:44px}
 
 .base-zoom-surface.base-zoom-staged137::after{display:none}
 .bag-ux-ghost.bag-ux-sized{opacity:.8;pointer-events:none;box-sizing:border-box;transform-origin:var(--gx,50%) var(--gy,50%)}.bag-ux-ghost.bag-ux-sized img{width:100%!important;height:100%!important;max-width:none!important;object-fit:contain}.bag-ux-ghost.bag-ux-sized .bag-picture{height:100%!important}
+
+.visual-storage-sliding { overflow-x: clip; }
+.visual-storage-neighbor { position: fixed; z-index: 12; overflow: hidden; pointer-events: none; }
+.visual-storage-neighbor > .visual-storage { box-sizing: border-box; width: 100%; height: 100%; background: #10191e; }

@@ -116,13 +116,14 @@ function routeMain(content){
  const oldGo=go;
  go=function(next){
   const previous=page;
+  const storageSliding=!!document.querySelector('.visual-storage-sliding');
   if(next!==previous){trail.push(previous);if(trail.length>30)trail.shift()}
   activeContext=null;
   const result=oldGo(next);
-  if(page!==previous&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+  if(page!==previous&&!storageSliding&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
    const app=document.querySelector('#app');
    const body=app?.querySelector('.screen-workspace-body')||app?.firstElementChild;
-   body?.animate?.([{opacity:.65},{opacity:1}],{duration:150,easing:'ease-out'});
+   body?.animate?.([{opacity:.78,translate:'0 6px'},{opacity:1,translate:'0 0'}],{duration:180,easing:'cubic-bezier(.2,.7,.25,1)'});
   }
   return result;
  };

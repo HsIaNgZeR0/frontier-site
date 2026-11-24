@@ -25,11 +25,12 @@ window.FrontierVisualUI=(()=>{
  function filterStorage(value){storageFilter=value;render()}
  function searchStorage(value){storageSearch=value;const q=value.trim().toLocaleLowerCase();let count=0;for(const node of document.querySelectorAll('.ui-stock-item')){const d=catalog[node.dataset.stockId],yes=!q||(d.name+' '+d.description).toLocaleLowerCase().includes(q);node.hidden=!yes;if(yes)count++}const label=document.querySelector('.ui-stock-count');if(label)label.textContent=count+'種持有物品'}
  function preciousTiles(){if(!['all','other'].includes(storageFilter))return '';const q=FrontierSurveyEngineV27.ensure(db),cards=[['wallet:ticket','尋訪憑證',db.recruitment?.tickets||0,"go('recruitment')"],...['silver','blue'].map(k=>['survey_pack_'+k,(k==='silver'?'銀':'藍')+'色材料自選包',q.packs[k],"FrontierSurveyV27.choosePack('"+k+"')"])];return '<div class="visual-item-grid ui-stock-grid precious-grid">'+cards.filter(x=>x[2]>0&&(!storageSearch||x[1].includes(storageSearch))).map(([id,name,n,click])=>'<button class="visual-item rarity-'+(id.includes('silver')?5:id.includes('blue')?4:6)+'" data-visual-item="'+id+'" aria-label="'+name+' ×'+n+'" onclick="'+click.replaceAll('"','&quot;')+'">'+FrontierIcons.html(id)+'<span class="visual-item-count">'+n+'</span></button>').join('')+'</div>'}
- function storage(body){const sequence=order();let html='<div class="visual-storage-head"><h2>'+tabs.find(([p])=>p===page)[1]+'</h2>'+(page==='warehouse'?'<button onclick="FrontierVisualUI.sort()">'+(sorted?'入庫順序':'快速整理')+'</button>':'')+'</div><nav class="visual-storage-tabs">'+tabs.map(([p,name])=>'<button class="'+(page===p?'active':'')+'" onclick="go(\''+p+'\')">'+name+'</button>').join('')+'</nav>';
+ const windowPage=()=>page;
+ function storage(body,page=windowPage(),preview=false){const sequence=order();let html='<div class="visual-storage-head"><h2>'+tabs.find(([p])=>p===page)[1]+'</h2>'+(page==='warehouse'?'<button onclick="FrontierVisualUI.sort()">'+(sorted?'入庫順序':'快速整理')+'</button>':'')+'</div><nav class="visual-storage-tabs">'+tabs.map(([p,name])=>'<button class="'+(page===p?'active':'')+'" onclick="go(\''+p+'\')">'+name+'</button>').join('')+'</nav>';
  if(page==='warehouse'){let rows=Object.values(catalog).filter(d=>!d.balance?.legacy&&!d.retired139&&!['container','collection','legacyRelic','equipment','runModule'].includes(d.category)&&quantity(d.id)>0&&(storageFilter==='all'||storageFilter==='material'&&['material','record'].includes(d.category)||storageFilter==='other'&&!['material','record','equipment','medicine','device'].includes(d.category)||d.category===storageFilter));rows.sort((a,b)=>sorted?b.rarity-a.rarity||group(a.id).localeCompare(group(b.id))||a.id.localeCompare(b.id):sequence.indexOf(a.id)-sequence.indexOf(b.id));html+='<label class="ui-stock-search">搜尋名稱或用途<input type="search" aria-label="搜尋持有物品" value="'+esc(storageSearch)+'" oninput="FrontierVisualUI.searchStorage(this.value)"></label><nav class="ui-stock-filters" aria-label="庫存品類">'+[['all','全部'],['material','材料和 EXP'],['medicine','戰術補給'],['other','珍貴物品']].map(([id,name])=>'<button class="'+(storageFilter===id?'active':'')+'" aria-pressed="'+(storageFilter===id)+'" onclick="FrontierVisualUI.filterStorage(\''+id+'\')">'+name+'</button>').join('')+'</nav><p class="ui-stock-count">'+rows.length+'種持有物品</p><div class="visual-item-grid ui-stock-grid">'+rows.flatMap(d=>d.category==='searchTool'?db.inventory.items.filter(item=>item.itemId===d.id).map(item=>'<div class="ui-stock-item" data-stock-id="'+d.id+'" data-access-instance="'+esc(item.uid)+'"><button class="visual-item rarity-'+d.rarity+'" data-visual-item="'+d.id+'" aria-label="'+esc(d.name)+'" onclick="FrontierVisualUI.accessDetails(&quot;'+esc(item.uid)+'&quot;)">'+FrontierIcons.access(item)+'</button></div>'):['<div class="ui-stock-item" data-stock-id="'+d.id+'">'+tile(d.id)+'</div>']).join('')+'</div>'+(rows.length?'':'<p class="visual-empty">安全帶回的物資會顯示在這裡。</p>')+preciousTiles()}
  if(page==='containers'){const boxes=db.inventory.items.filter(i=>catalog[i.itemId]?.category==='container');html+='<div class="visual-item-grid">'+boxes.map(i=>'<button class="visual-item rarity-'+catalog[i.itemId].rarity+'" data-visual-item="'+i.itemId+'" aria-label="'+esc(catalog[i.itemId].name)+'" onclick="FrontierContainers.openBase(\''+i.uid+'\')">'+FrontierIcons.html(i.itemId)+'<span class="visual-item-count">1</span></button>').join('')+'</div>'+(boxes.length?'':'<p class="visual-empty">目前沒有待開封存箱。</p>')}
  if(page==='collections'){const c=FrontierCollections.scan();html+='<p class="ui-stock-count">收藏需安全帶回才登錄。展開地區可查稀有度、大小和掉落來源。</p>'+FrontierExpedition.regions.map(region=>{const rows=FrontierCollections.entries.filter(d=>d.region===region.id);return '<section class="visual-collection-shelf"><button class="visual-shelf-heading" aria-expanded="'+expanded.has(region.id)+'" onclick="FrontierVisualUI.shelf(\''+region.id+'\')"><b>'+esc(region.name)+'</b><span>'+rows.filter(d=>c.archive[d.id]).length+' / '+rows.length+'　'+(expanded.has(region.id)?'−':'+')+'</span></button>'+(expanded.has(region.id)?'<div class="visual-item-grid">'+rows.map(d=>c.archive[d.id]?tile(d.id):'<div style="opacity:.55">'+tile(d.id,0)+'</div>').join('')+'</div>':'')+'</section>'}).join('')}
- if(page==='collection')html+=FrontierEquipmentUI139.shelf60();body.innerHTML=html;body.classList.add('visual-scroll-page','visual-storage');if(page==='warehouse')searchStorage(storageSearch);if(page==='containers'&&db.containers.activeBox){body.innerHTML='<nav class="visual-storage-tabs">'+tabs.map(([p,name])=>'<button onclick="go(\''+p+'\')">'+name+'</button>').join('')+'</nav>'+FrontierContainers.boxView(db.inventory.items.find(i=>i.uid===db.containers.activeBox))} }
+ if(page==='collection')html+=FrontierEquipmentUI139.shelf60();body.innerHTML=html;body.classList.add('visual-scroll-page','visual-storage');if(page==='warehouse'&&!preview)searchStorage(storageSearch);if(page==='containers'&&db.containers.activeBox){body.innerHTML='<nav class="visual-storage-tabs">'+tabs.map(([p,name])=>'<button onclick="go(\''+p+'\')">'+name+'</button>').join('')+'</nav>'+FrontierContainers.boxView(db.inventory.items.find(i=>i.uid===db.containers.activeBox))} }
  function equipment(){modal('裝備整備',FrontierEquipment.view(),'')}
  let dispatchType=null;
  function dispatchOpen(type){
@@ -75,7 +76,81 @@ window.FrontierVisualUI=(()=>{
  function itemSurfaces(){const r=R();if(page==='run'&&r?.event?.type==='loot'&&catalog[r.event.id]){const icon=document.querySelector('.event-panel .reward');if(icon){icon.dataset.itemId=r.event.id;icon.innerHTML=FrontierIcons.html(r.event.id)}}if(page==='run'&&r?.reward?.strategy?.stage==='choose'&&!r.equipment139){const button=document.querySelector('[onclick="FrontierStrategy.choose(\'material\')"]'),card=button?.closest('section');if(card&&!card.querySelector('[data-visual-item]'))card.insertAdjacentHTML('afterbegin',tile('mat_iron_t2',3,false))}for(const button of document.querySelectorAll('[onclick]')){const code=button.getAttribute('onclick'),id=code.match(/(?:FrontierInventory\.describe|FrontierMedicine\.use(?:Selected)?|FrontierTrading\.sellMaterial)\('([^']+)'/)?.[1];if(id&&catalog[id]){button.dataset.itemId=id;if(code.startsWith('FrontierMedicine.use')&&!button.querySelector('img')){const text=button.textContent;button.innerHTML=FrontierIcons.html(id)+'<span>'+esc(text)+'</span>';button.classList.add('ui-medicine-icon')}}if(code==="FrontierStrategy.camp('supply')")button.dataset.itemId='med_aid_t3';}}
  function decorate(){const body=document.querySelector('.screen-workspace-body');if(!body)return;if(page==='run'&&R()?.battle)fanHand();if(page==='run'&&!R())prep();document.body.classList.toggle('visual-non-exploration',page!=='run');if(page==='base')baseDiagrams(body);if(page==='shop'){shopBody(body);return}if(page==='dispatch'){dispatchBody(body);return}if(page==='tasks'){body.innerHTML=FrontierTasks.view();taskRewards(body);body.classList.add('visual-scroll-page','visual-full-rows');return}if(tabs.some(([p])=>p===page)){body.parentElement.querySelector('.terminal-subnav')?.remove();storage(body)}else if(['tasks','dispatch','doctor','statistics'].includes(page))body.classList.add('visual-scroll-page','visual-full-rows');if(page==='shop')body.classList.add('visual-scroll-page','visual-shop');}
  const oldDeposit=FrontierProgress.deposit;FrontierProgress.deposit=function(...args){const value=oldDeposit(...args);order();return value};const oldPhysicalDeposit=FrontierEquipment.deposit;FrontierEquipment.deposit=function(...args){const value=oldPhysicalDeposit(...args);order();return value};order();const previous=render;render=function(){previous();order();decorate();FrontierIcons.decorate();itemSurfaces()};
- let swipe=null;document.addEventListener('pointerdown',e=>{if(!e.target.closest?.('.visual-storage')||document.querySelector('#modal')?.open)return;swipe={x:e.clientX,y:e.clientY,pointer:e.pointerId}},true);document.addEventListener('pointerup',e=>{if(!swipe||e.pointerId!==swipe.pointer)return;const dx=e.clientX-swipe.x,dy=e.clientY-swipe.y;swipe=null;if(Math.abs(dx)>65&&Math.abs(dx)>Math.abs(dy)*1.6){const index=tabs.findIndex(([p])=>p===page),next=index+(dx>0?1:-1);if(tabs[next]){suppress=performance.now()+600;go(tabs[next][0])}}},true);document.addEventListener('pointercancel',()=>{swipe=null},true);
+ let swipe=null;
+ function positionStorage(gesture,offset){
+  gesture.offset=offset;
+  gesture.body.style.translate=offset+'px 0';
+  if(gesture.preview)gesture.preview.style.translate=(offset+gesture.step*gesture.width)+'px 0';
+ }
+ function finishStorage(gesture,commit){
+  const destination=commit?gesture.destination:null;
+  const target=destination?-gesture.step*gesture.width:0;
+  if(gesture.offset===undefined){swipe=null;return}
+  const panels=[gesture.body,gesture.preview].filter(Boolean);
+  const duration=matchMedia('(prefers-reduced-motion: reduce)').matches?0:155;
+  const animationOptions={duration,easing:'cubic-bezier(.2,.7,.25,1)',fill:'forwards'};
+  const animations=panels.map((panel,index)=>{
+   const adjacent=index?gesture.step*gesture.width:0;
+   return panel.animate([{translate:(gesture.offset+adjacent)+'px 0'},{translate:(target+adjacent)+'px 0'}],animationOptions);
+  });
+  Promise.allSettled(animations.map(animation=>animation.finished)).then(()=>{
+   try{if(destination&&gesture.body.isConnected)go(destination)}
+   finally{
+    animations.forEach(animation=>animation.cancel());
+    gesture.body.style.removeProperty('translate');
+    gesture.frame?.remove();
+    gesture.shell.classList.remove('visual-storage-sliding');
+    swipe=null;
+   }
+  });
+ }
+ document.addEventListener('pointerdown',e=>{
+  const body=e.target.closest?.('.visual-storage');
+  if(swipe||!e.isPrimary||e.button!==0||!body||e.target.closest('input,select,textarea')||document.querySelector('#modal')?.open)return;
+  swipe={body,shell:body.parentElement,pointer:e.pointerId,x:e.clientX,y:e.clientY,index:tabs.findIndex(([id])=>id===page),width:body.clientWidth};
+ },true);
+ document.addEventListener('pointermove',e=>{
+  const gesture=swipe;
+  if(!gesture||gesture.settling||gesture.pointer!==e.pointerId)return;
+  if(!gesture.body.isConnected){finishStorage(gesture,false);return}
+  const dx=e.clientX-gesture.x,dy=e.clientY-gesture.y;
+  if(gesture.offset===undefined){
+   if(Math.abs(dy)>10&&Math.abs(dy)>=Math.abs(dx)){swipe=null;return}
+   if(Math.abs(dx)<12||Math.abs(dx)<Math.abs(dy)*1.25)return;
+   gesture.shell.classList.add('visual-storage-sliding');
+  }
+  e.preventDefault();
+  const step=dx>0?-1:1;
+  if(gesture.step!==step){
+   gesture.frame?.remove();
+   gesture.frame=gesture.preview=null;
+   gesture.step=step;
+   gesture.destination=tabs[gesture.index+step]?.[0];
+   if(gesture.destination){
+    const rect=gesture.body.getBoundingClientRect(),frame=document.createElement('div'),preview=document.createElement('div');
+    frame.className='visual-storage-neighbor';
+    frame.inert=true;
+    frame.setAttribute('aria-hidden','true');
+    Object.assign(frame.style,{left:(rect.left-(gesture.offset||0))+'px',top:rect.top+'px',width:rect.width+'px',height:rect.height+'px'});
+    preview.className='screen-workspace-body';
+    storage(preview,gesture.destination,true);
+    preview.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id'));
+    frame.append(preview);
+    document.body.append(frame);
+    gesture.frame=frame;
+    gesture.preview=preview;
+   }
+  }
+  positionStorage(gesture,Math.max(-gesture.width,Math.min(gesture.width,gesture.destination?dx:dx*.23)));
+ },{capture:true,passive:false});
+ function releaseStorage(e){
+  const gesture=swipe;
+  if(!gesture||gesture.settling||gesture.pointer!==e.pointerId)return;
+  if(gesture.offset!==undefined){gesture.settling=true;suppress=performance.now()+650}
+  finishStorage(gesture,e.type==='pointerup'&&Math.abs(gesture.offset)>Math.min(75,gesture.width*.23));
+ }
+ document.addEventListener('pointerup',releaseStorage,true);
+ document.addEventListener('pointercancel',releaseStorage,true);
  function clear(){if(hold?.shown)suppress=performance.now()+600;if(hold)clearTimeout(hold.timer);hold=null;tip?.remove();tip=null}
  document.addEventListener('pointerdown',e=>{const el=e.target.closest?.('[data-visual-item],[data-item-id]'),id=el?.dataset.visualItem||el?.dataset.itemId;if(!catalog[id]&&!wallets[id]&&!id?.startsWith('survey_pack_')&&!relics.some(x=>x.id===id)&&!window.FrontierAdventure?.relics[id])return;clear();hold={x:e.clientX,y:e.clientY};hold.timer=setTimeout(()=>{if(!hold)return;suppress=performance.now()+10000;tip=document.createElement('aside');tip.className='visual-held-item';tip.setAttribute('role','tooltip');tip.innerHTML=info(id,el.closest('[data-equipment-uid]')?.dataset.equipmentUid);FrontierInspector.attach(tip);hold.shown=true},380)},true);
  document.addEventListener('pointermove',e=>{if(hold&&Math.hypot(e.clientX-hold.x,e.clientY-hold.y)>15){if(hold.shown)suppress=performance.now()+600;clear()}},true);document.addEventListener('pointerup',()=>{if(hold?.shown)suppress=performance.now()+600;clear()},true);document.addEventListener('pointercancel',clear,true);window.addEventListener('blur',clear);

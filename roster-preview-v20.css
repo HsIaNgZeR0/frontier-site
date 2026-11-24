@@ -8,3 +8,11 @@
 
 .growth-stage .growth-potential,.growth-squad .growth-potential{width:20px;height:20px;object-fit:contain;vertical-align:middle}
 .growth-portrait .growth-mastery{display:flex;flex-wrap:wrap;justify-content:center;gap:1px;margin-top:3px;min-height:16px;flex-wrap:nowrap}.growth-portrait .growth-mastery .mastery60-icon{width:16px;height:16px;flex:none;display:inline-grid;place-items:center;position:relative}.growth-portrait .growth-mastery .mastery60-icon img{width:16px;height:16px;object-fit:contain}.growth-portrait .growth-mastery .mastery60-text{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+.growth-portrait-media { position: relative; display: block; }
+.growth-portrait-media > img:first-child { display: block; }
+.roster20-preview .growth-portrait-media > .growth-prof-icon {
+  position: absolute; bottom: 4px; right: 4px; width: 22px; height: 22px;
+  padding: 3px; box-sizing: border-box; background: #12202a; border-radius: 3px;
+}
+.growth-rarity { padding-inline: 6px; color: #f2ce70; font-size: 12px; line-height: 1.2; letter-spacing: .04em; white-space: nowrap; }
