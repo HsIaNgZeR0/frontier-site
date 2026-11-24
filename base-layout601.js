@@ -2,8 +2,8 @@
 /* 基建佈局 v601：本家風格長方形房間、指揮中樞 2×2、自由拖動擺放（存於 db.baseLayout601）。 */
 window.FrontierBaseLayout601=(()=>{
  if(!document.querySelector('link[data-b601]')){const l=document.createElement('link');l.rel='stylesheet';l.href='base-layout601.css?v=601m';l.dataset.b601='';document.head.appendChild(l)}
- /* 底板 5×10 房間單位（每單位 RW×RH 小格），移動一律以整間房為單位；VB 為舊存檔驗證邊界。 */
- const U=16,RW=7,RH=4,COLS=RW*5,ROWS=RH*10,VB=40,LV=2;
+ /* 底板 6×10 房間單位（每單位 RW×RH 小格），移動一律以整間房為單位。 */
+ const U=16,RW=7,RH=4,COLS=RW*6,ROWS=RH*10,LV=2;
  const aligned=p=>p.x%RW===0&&p.y%RH===0;
  const esc=s=>String(s??'').replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));
  // 本家房間造型：色彩、圖示與英文標示。本家沒有的房間沿用模板換色。
@@ -45,7 +45,7 @@ window.FrontierBaseLayout601=(()=>{
    if(spot)put(r,spot)}
   return out}
  function valid(s){const l=s?.baseLayout601;if(l==null)return true;if(typeof l!=='object'||Array.isArray(l)||![1,LV].includes(l.v)||!l.rooms||typeof l.rooms!=='object'||Array.isArray(l.rooms))return false;const keys=Object.keys(l);if(keys.some(k=>!['v','rooms'].includes(k)))return false;const ids=Object.keys(l.rooms);if(ids.length>64)return false;const boxes=[];
-  for(const id of ids){const p=l.rooms[id];if(id.length>80||!p||typeof p!=='object'||Object.keys(p).some(k=>!['x','y'].includes(k))||!Number.isInteger(p.x)||!Number.isInteger(p.y))return false;if(l.v!==LV)continue;const box={x:p.x,y:p.y,...size(kindOf(s,id))};if(box.x<0||box.y<0||box.x+box.w>VB||box.y+box.h>VB||boxes.some(b=>overlap(b,box)))return false;boxes.push(box)}return true}
+  for(const id of ids){const p=l.rooms[id];if(id.length>80||!p||typeof p!=='object'||Object.keys(p).some(k=>!['x','y'].includes(k))||!Number.isInteger(p.x)||!Number.isInteger(p.y))return false;if(l.v!==LV)continue;const box={x:p.x,y:p.y,...size(kindOf(s,id))};if(box.x<0||box.y<0||box.x+box.w>COLS||box.y+box.h>ROWS||boxes.some(b=>overlap(b,box)))return false;boxes.push(box)}return true}
  const prior=validSave;validSave=function(s){return prior(s)&&valid(s)};
  const bars=n=>'<span class="b601-lv" aria-label="等級 '+n+'">'+Array.from({length:n},()=>'<i></i>').join('')+'</span>';
  /* 本家總覽房塊：左側色條（生產類）、名稱＋白色直槓、狀態列、右下人數、底部分段條、六角形浮水印。 */
