@@ -33,7 +33,7 @@ window.FrontierContainmentYard=(()=>{
  function region(i){const id=i.origin?.region;return FrontierExpedition.regions.find(r=>r.id===id)?.name||'舊收容檔案'}
  function view(){
   const n=instances().length;
-  return '<section class="yard" aria-label="收容管理場"><div class="yard-stage"><canvas class="yard-shadows" aria-hidden="true"></canvas><canvas class="yard-gl" aria-hidden="true"></canvas><canvas class="yard-fx" aria-hidden="true"></canvas><div class="yard-layer"></div></div><div class="yard-head"><button class="yard-back" data-yard-back aria-label="返回主頁"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><button class="yard-back yard-filter-btn" data-yard-filter-open aria-label="篩選" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 5h16l-6 7.5V19l-4 1.5v-8z"/></svg></button>'+filterHtml()+'<div class="yard-title"><small>CONTAINMENT YARD</small><b>收容管理場</b></div><span class="yard-count">收容個體 '+n+'</span></div>'+(n?'<p class="yard-hint">點擊查看 · 長按拖曳 · 左右滑動 · 雙指縮放</p>':'<p class="yard-empty">尚無收容個體。<br>於遠征中削弱敵人並使用收容裝置，成功撤離後會在這裡出現。</p>')+'<div class="yard-zoom"><button data-yard-zoom="1" aria-label="放大">＋</button><button data-yard-zoom="-1" aria-label="縮小">－</button></div></section>';
+  return '<section class="yard" aria-label="收容管理場"><div class="yard-stage"><canvas class="yard-shadows" aria-hidden="true"></canvas><canvas class="yard-gl" aria-hidden="true"></canvas><canvas class="yard-fx" aria-hidden="true"></canvas><div class="yard-layer"></div></div><div class="yard-head"><button class="yard-back" data-yard-back aria-label="返回主頁"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><button class="yard-back yard-filter-btn" data-yard-filter-open aria-label="篩選" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 5h16l-6 7.5V19l-4 1.5v-8z"/></svg></button>'+filterHtml()+'<div class="yard-title"><small>CONTAINMENT YARD</small><b>收容管理場</b></div><span class="yard-count">收容個體 '+n+'</span></div>'+(n?'<p class="yard-hint">點擊查看 · 長按拖曳 · 左右滑動 · 雙指縮放</p>':'<p class="yard-empty">尚無收容個體。<br>於遠征中削弱敵人並使用收容裝置，成功撤離後會在這裡出現。</p>')+'</section>';
  }
  /* ---------- Spine 共用渲染 ---------- */
  function makeShader(c){
@@ -244,7 +244,7 @@ window.FrontierContainmentYard=(()=>{
  }
  /* ---------- 指標：短按查看、長按拖曳、空白處拖曳平移、雙指縮放、滾輪縮放 ---------- */
  function down(e){
-  if(!yard?.isConnected||!e.target.closest?.('.yard')||e.target.closest('.yard-bubble,.yard-head,.yard-zoom,.yard-filter-panel'))return;
+  if(!yard?.isConnected||!e.target.closest?.('.yard')||e.target.closest('.yard-bubble,.yard-head,.yard-filter-panel'))return;
   e.preventDefault();pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
   if(pointers.size===2){if(gesture?.timer)clearTimeout(gesture.timer);if(gesture?.type==='drag')gesture.m.hop=6;const [a,b]=[...pointers.values()];gesture={type:'pinch',d:Math.hypot(a.x-b.x,a.y-b.y),z:cam.z};return}
   if(pointers.size>2)return;
@@ -279,7 +279,6 @@ window.FrontierContainmentYard=(()=>{
  document.addEventListener('click',e=>{
   if(e.target.closest?.('[data-home20-yard]')){FrontierRuntime.view(()=>go('yard'));return}
   if(e.target.closest?.('[data-yard-back]')){go('home');return}
-  const z=e.target.closest?.('[data-yard-zoom]');if(z){zoomAt(cam.z*(z.dataset.yardZoom==='1'?1.4:1/1.4));return}
   if(e.target.closest?.('[data-yard-pen]')&&focus){editing=true;fill();aim()}
   if(e.target.closest?.('[data-yard-heart]')&&focus){const live=(db.capture?.instances||[]).find(x=>x.uid===focus.i.uid);if(live){if(live.favorite)delete live.favorite;else live.favorite=true;focus.i=live;save();fill();aim();updateCount();toast(live.favorite?'已加入喜愛名單':'已移出喜愛名單')}}
   const fb=e.target.closest?.('[data-yard-filter-open]');if(fb){const p=yard.querySelector('.yard-filter-panel');p.hidden=!p.hidden;fb.setAttribute('aria-expanded',String(!p.hidden));return}

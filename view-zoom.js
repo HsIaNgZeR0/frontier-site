@@ -12,11 +12,35 @@ window.FrontierViewZoom=(()=>{
  const create=FrontierBagUX.create;FrontierBagUX.create=function(){const host=create(),bar=controls('bag');const group=document.createElement('div');group.className='bag-zoom-quality30';group.append(bar,host.querySelector('.bag-quality28'));host.querySelector('.bag-ux-controls').append(group);for(const button of host.querySelectorAll('.bag-ux-controls>button'))if(button.getAttribute('onclick')?.includes('FrontierContainers')){button.classList.add('bag-selected-action31');host.querySelector('.bag-ux-controls').after(button)}const s={key:'bag:'+R()?.number+':'+R()?.started,root:host,pane:host.querySelector('.bag-ux-pan'),kind:'bag'};layout(s,settings.get(s.key)||1);requestAnimationFrame(()=>{if(host.isConnected)layout(s,settings.get(s.key)||1)});host.querySelector('.bag-ux-hint').textContent='雙指縮放／按鈕調整 · 空白處移動 · 長按查看 · 拖近保險箱存入';return host};
  function enhanceBase(){const board=document.querySelector('.base151-board-wrap');if(board&&!board.dataset.zoomReady){board.dataset.zoomReady='1';board.before(controls('base'));const sc=scope(board);layout(sc,settings.get('base')||1);/* Fixed 8×8 board geometry does not require a measuring observer. */}const page=document.querySelector('.ui-base-page');if(!page||page.querySelector('.view-zoom-controls'))return;const groups=[...page.querySelectorAll(':scope>.ui-facility-group')];if(!groups.length)return;const bar=controls('base'),surface=document.createElement('div'),canvas=document.createElement('div');surface.className='base-zoom-surface';surface.setAttribute('aria-label','基建總覽，可縮放');canvas.className='base-zoom-canvas';groups[0].before(bar,surface);canvas.append(...groups);surface.append(canvas);const s=scope(surface);layout(s,settings.get('base')||1);new ResizeObserver(()=>{if(surface.isConnected)layout(s,settings.get('base')||1)}).observe(canvas)}
  new MutationObserver(enhanceBase).observe(document.querySelector('#app'),{childList:true,subtree:true});enhanceBase();
+ function basePinch(gesture,point){
+  const {s,zoom}=gesture,canvas=s.root.querySelector('.base-zoom-canvas');
+  if(!canvas?.matches('.base151-board'))return;
+  const pane=s.pane,rect=pane.getBoundingClientRect(),left=pane.scrollLeft,top=pane.scrollTop;
+  const stage=canvas.parentElement;
+  stage.style.overflow='visible';
+  canvas.style.willChange='transform';
+  gesture.base={canvas,stage,rect,left,top,x:(left+point.x-rect.left)/zoom,y:(top+point.y-rect.top)/zoom,min:Math.min(1,Math.max(.25,pane.clientHeight/650)),z:zoom};
+ }
+ function previewBase(gesture,z,point){
+  const b=gesture.base;
+  b.z=clamp(z,b.min,1.8);
+  b.leftTarget=b.x*b.z-(point.x-b.rect.left);
+  b.topTarget=b.y*b.z-(point.y-b.rect.top);
+  b.canvas.style.transform='translate3d('+(b.left-b.leftTarget)+'px,'+(b.top-b.topTarget)+'px,0) scale('+b.z+')';
+ }
+ function settleBase(gesture){
+  const b=gesture?.base;if(!b)return;
+  b.canvas.style.removeProperty('will-change');
+  b.stage.style.overflow='hidden';
+  if(!gesture.s.pane.isConnected)return;
+  settings.set(gesture.s.key,b.z);layout(gesture.s,b.z);
+  if(b.leftTarget!==undefined){gesture.s.pane.scrollLeft=b.leftTarget;gesture.s.pane.scrollTop=b.topTarget}
+ }
  const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y),center=(a,b)=>({x:(a.x+b.x)/2,y:(a.y+b.y)/2});
- window.addEventListener('pointerdown',e=>{if(internalCancel||e.pointerType!=='touch')return;const s=scope(e.target);if(!s)return;pointers.set(e.pointerId,{x:e.clientX,y:e.clientY,s,target:e.target});const same=[...pointers.entries()].filter(([,p])=>p.s.key===s.key);if(same.length!==2)return;const[a,b]=same;pinch={s:a[1].s,ids:[a[0],b[0]],distance:Math.max(1,distance(a[1],b[1])),zoom:settings.get(s.key)||1};internalCancel=true;for(const[id,p]of same){if(p.target.hasPointerCapture?.(id))p.target.releasePointerCapture(id);document.dispatchEvent(new PointerEvent('pointercancel',{pointerId:id,bubbles:true}))}internalCancel=false;e.preventDefault();e.stopImmediatePropagation();suppressUntil=performance.now()+700;},{capture:true,passive:false});
- let frame=0;window.addEventListener('pointermove',e=>{const p=pointers.get(e.pointerId);if(p){p.x=e.clientX;p.y=e.clientY}if(!pinch||!pinch.ids.includes(e.pointerId))return;e.preventDefault();e.stopImmediatePropagation();if(frame)return;frame=requestAnimationFrame(()=>{frame=0;if(!pinch)return;const a=pointers.get(pinch.ids[0]),b=pointers.get(pinch.ids[1]);if(!a||!b)return;set(pinch.s,pinch.zoom*distance(a,b)/pinch.distance,center(a,b))})},{capture:true,passive:false});
- function end(e){if(internalCancel)return;const was=pinch&&pinch.ids.includes(e.pointerId);pointers.delete(e.pointerId);if(was){suppressUntil=performance.now()+700;if(pinch.ids.every(id=>!pointers.has(id)))pinch=null;e.preventDefault();e.stopImmediatePropagation()}}
- window.addEventListener('pointerup',end,{capture:true,passive:false});window.addEventListener('pointercancel',end,{capture:true,passive:false});window.addEventListener('blur',()=>{pointers.clear();pinch=null});
+ window.addEventListener('pointerdown',e=>{if(internalCancel||e.pointerType!=='touch')return;const s=scope(e.target);if(!s)return;pointers.set(e.pointerId,{x:e.clientX,y:e.clientY,s,target:e.target});const same=[...pointers.entries()].filter(([,p])=>p.s.key===s.key);if(same.length!==2)return;const[a,b]=same;pinch={s:a[1].s,ids:[a[0],b[0]],distance:Math.max(1,distance(a[1],b[1])),zoom:settings.get(s.key)||1};if(s.kind==='base')basePinch(pinch,center(a[1],b[1]));internalCancel=true;for(const[id,p]of same){if(p.target.hasPointerCapture?.(id))p.target.releasePointerCapture(id);document.dispatchEvent(new PointerEvent('pointercancel',{pointerId:id,bubbles:true}))}internalCancel=false;e.preventDefault();e.stopImmediatePropagation();suppressUntil=performance.now()+700;},{capture:true,passive:false});
+ let frame=0;window.addEventListener('pointermove',e=>{const p=pointers.get(e.pointerId);if(p){p.x=e.clientX;p.y=e.clientY}if(!pinch||!pinch.ids.includes(e.pointerId))return;e.preventDefault();e.stopImmediatePropagation();if(frame)return;frame=requestAnimationFrame(()=>{frame=0;if(!pinch)return;const a=pointers.get(pinch.ids[0]),b=pointers.get(pinch.ids[1]);if(!a||!b)return;const zoom=pinch.zoom*distance(a,b)/pinch.distance,point=center(a,b);if(pinch.base)previewBase(pinch,zoom,point);else set(pinch.s,zoom,point)})},{capture:true,passive:false});
+ function end(e){if(internalCancel)return;const was=pinch&&pinch.ids.includes(e.pointerId);pointers.delete(e.pointerId);if(was){suppressUntil=performance.now()+700;if(pinch.ids.every(id=>!pointers.has(id))){settleBase(pinch);pinch=null;}e.preventDefault();e.stopImmediatePropagation()}}
+ window.addEventListener('pointerup',end,{capture:true,passive:false});window.addEventListener('pointercancel',end,{capture:true,passive:false});window.addEventListener('blur',()=>{pointers.clear();settleBase(pinch);pinch=null});
  window.addEventListener('click',e=>{if(performance.now()<suppressUntil&&scope(e.target)){e.preventDefault();e.stopImmediatePropagation()}},true);
  window.addEventListener('wheel',e=>{if(!e.ctrlKey)return;const s=scope(e.target);if(!s)return;e.preventDefault();set(s,(settings.get(s.key)||1)*Math.exp(-e.deltaY*.006),{x:e.clientX,y:e.clientY})},{capture:true,passive:false});
  return{refresh(){const s=current('bag');if(s)layout(s,settings.get(s.key)||1)},change,get pinching(){return !!pinch},get:kind=>settings.get(current(kind)?.key)||1};

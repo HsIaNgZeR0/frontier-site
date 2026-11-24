@@ -136,18 +136,24 @@ function routeMain(content){
   drag.moved=true;
   drag.offset=dx;
   drag.destination=mainTabs[drag.index+(dx<0?1:-1)];
-  navStrip.style.setProperty('--main-nav-shift',Math.max(-19,Math.min(19,dx/5))+'px');
-  const active=document.querySelector('#app')?.firstElementChild;
-  if(active&&!FrontierMotion.reduced()){
-   drag.surface=active;
-   drag.translation=Math.max(-22,Math.min(22,dx/4));
-   active.style.translate=drag.translation+'px 0';
-  }
+  if(drag.frame)return;
+  drag.frame=requestAnimationFrame(()=>{
+   drag.frame=0;
+   if(mainSwipe!==drag)return;
+   navStrip.style.setProperty('--main-nav-shift',Math.max(-19,Math.min(19,drag.offset/5))+'px');
+   const active=document.querySelector('#app')?.firstElementChild;
+   if(active&&!FrontierMotion.reduced()){
+    drag.surface=active;
+    drag.translation=Math.max(-22,Math.min(22,drag.offset/4));
+    active.style.translate=drag.translation+'px 0';
+   }
+  });
  },{passive:true});
  function finishMainSwipe(event){
   const drag=mainSwipe;
   if(!drag||event.pointerId!==drag.pointer)return;
   mainSwipe=null;
+  cancelAnimationFrame(drag.frame);
   navStrip.style.removeProperty('--main-nav-shift');
   drag.surface?.style.removeProperty('translate');
   if(!drag.moved)return;

@@ -17,8 +17,6 @@ body.yard-mode>header{visibility:hidden}
 .yard-count{margin-left:auto;font-size:12px;color:#9fb6c2;border-left:2px solid #f2c230;padding-left:8px}
 .yard-hint{position:absolute;top:calc(env(safe-area-inset-top,0px) + 66px);left:0;right:0;margin:0;text-align:center;font-size:11px;color:#6f8b99;letter-spacing:.08em;pointer-events:none;z-index:4}
 .yard-empty{position:absolute;inset:40% 24px auto;margin:0;text-align:center;color:#8aa3b0;line-height:1.7;font-size:14px}
-.yard-zoom{position:absolute;right:12px;bottom:14px;z-index:5;display:flex;flex-direction:column;gap:6px}
-.yard-zoom button{width:44px;height:44px;padding:0;border:1px solid rgba(232,238,242,.3);background:rgba(16,24,30,.85);color:#e8eef2;font-size:20px;line-height:1;border-radius:2px}
 .yard-bubble{position:absolute;left:0;top:0;z-index:6;min-width:180px;max-width:min(260px,calc(100% - 16px));padding:10px 12px;background:rgba(14,21,26,.96);border:1px solid rgba(127,164,182,.55);border-top:3px solid #f2c230;box-shadow:0 8px 24px rgba(0,0,0,.5);font-size:12px;color:#d7e2e8;animation:yard-pop .16s ease-out}
 .yard-bubble::after{content:"";position:absolute;left:calc(var(--tail,50%) - 7px);bottom:-8px;border:7px solid transparent;border-bottom:0;border-top-color:rgba(127,164,182,.55)}
 .yard-bubble.is-below::after{bottom:auto;top:-10px;border:7px solid transparent;border-top:0;border-bottom-color:#f2c230}

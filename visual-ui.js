@@ -35,7 +35,7 @@ window.FrontierVisualUI=(()=>{
  content.className='visual-storage-content';
  while(nav.nextSibling)content.append(nav.nextSibling);
  nav.after(content);
- if(!preview)prepareStorage(body,page);
+ if(!preview){storagePreviews.delete(body);prepareStorage(body,page);}
  }
  function equipment(){modal('裝備整備',FrontierEquipment.view(),'')}
  let dispatchType=null;
@@ -84,12 +84,13 @@ window.FrontierVisualUI=(()=>{
  const oldDeposit=FrontierProgress.deposit;FrontierProgress.deposit=function(...args){const value=oldDeposit(...args);order();return value};const oldPhysicalDeposit=FrontierEquipment.deposit;FrontierEquipment.deposit=function(...args){const value=oldPhysicalDeposit(...args);order();return value};order();const previous=render;render=function(){previous();order();decorate();FrontierIcons.decorate();itemSurfaces()};
  const storagePreviews=new WeakMap();
  function prepareStorage(body,section){
-  const previews=new Map();
+  const previews=storagePreviews.get(body)||new Map();
+  previews.delete(section);
   storagePreviews.set(body,previews);
   const index=tabs.findIndex(([id])=>id===section);
   for(const adjacent of [tabs[index-1],tabs[index+1]])if(adjacent){
    const build=()=>{if(body.isConnected)storagePreview(body,adjacent[0])};
-   if(window.requestIdleCallback)requestIdleCallback(build,{timeout:350});
+   if(window.requestIdleCallback)requestIdleCallback(build);
    else setTimeout(build,90);
   }
  }
@@ -148,7 +149,9 @@ window.FrontierVisualUI=(()=>{
    finally{
     animations.forEach(animation=>animation.cancel());
     gesture.content.style.removeProperty('translate');
+    gesture.content.style.removeProperty('will-change');
     gesture.tabs.style.removeProperty('--storage-slide');
+    gesture.preview?.style.removeProperty('will-change');
     gesture.frame?.remove();
     gesture.shell.classList.remove('visual-storage-sliding');
     swipe=null;
@@ -172,6 +175,7 @@ window.FrontierVisualUI=(()=>{
    if(Math.abs(dx)<12||Math.abs(dx)<Math.abs(dy)*1.25)return;
    gesture.shell.classList.add('visual-storage-sliding');
    gesture.bounds=gesture.content.getBoundingClientRect();
+   gesture.content.style.willChange='transform';
   }
   e.preventDefault();
   const step=dx>0?-1:1;
@@ -187,6 +191,7 @@ window.FrontierVisualUI=(()=>{
     frame.inert=true;
     frame.setAttribute('aria-hidden','true');
     Object.assign(frame.style,{left:rect.left+'px',top:top+'px',width:rect.width+'px',height:Math.max(0,gesture.body.getBoundingClientRect().bottom-top)+'px'});
+    preview.style.willChange='transform';
     preview.style.translate=gesture.step*gesture.width+'px 0';
     frame.append(preview);
     gesture.shell.append(frame);
