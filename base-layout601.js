@@ -1,8 +1,10 @@
-'use strict';
+﻿'use strict';
 /* 基建佈局 v601：本家風格長方形房間、指揮中樞 2×2、自由拖動擺放（存於 db.baseLayout601）。 */
 window.FrontierBaseLayout601=(()=>{
- if(!document.querySelector('link[data-b601]')){const l=document.createElement('link');l.rel='stylesheet';l.href='base-layout601.css?v=601l';l.dataset.b601='';document.head.appendChild(l)}
- const U=16,COLS=40,ROWS=40,RW=7,RH=4,LV=2;
+ if(!document.querySelector('link[data-b601]')){const l=document.createElement('link');l.rel='stylesheet';l.href='base-layout601.css?v=601m';l.dataset.b601='';document.head.appendChild(l)}
+ /* 底板 5×10 房間單位（每單位 RW×RH 小格），移動一律以整間房為單位；VB 為舊存檔驗證邊界。 */
+ const U=16,RW=7,RH=4,COLS=RW*5,ROWS=RH*10,VB=40,LV=2;
+ const aligned=p=>p.x%RW===0&&p.y%RH===0;
  const esc=s=>String(s??'').replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));
  // 本家房間造型：色彩、圖示與英文標示。本家沒有的房間沿用模板換色。
  const svg=d=>'<svg viewBox="0 0 16 16" aria-hidden="true">'+d+'</svg>',ico={
@@ -37,14 +39,13 @@ window.FrontierBaseLayout601=(()=>{
  /* 解析完整佈局：存檔中（v2）有效的座標優先，其餘依舊 8×8 位置順序放入預設槽位。v1 為舊尺寸佈局，直接改用預設。 */
  function resolve(s){const rooms=(s?.base151?.rooms||[]).filter(r=>r.kind!=='medical'&&!FrontierBaseEngine.types[r.kind]?.retired),saved=s?.baseLayout601?.v===LV?s.baseLayout601.rooms:{},placed=[],out={};
   const put=(r,p)=>{const box={...p,...size(r.kind),id:r.id};placed.push(box);out[r.id]=box};
-  for(const r of rooms){const p=saved[r.id];if(p){const box={x:p.x,y:p.y,...size(r.kind)};if(inside(box)&&!placed.some(b=>overlap(b,box)))put(r,p)}}
+  for(const r of rooms){let p=saved[r.id];if(p){p={x:Math.round(p.x/RW)*RW,y:Math.round(p.y/RH)*RH};const box={...p,...size(r.kind)};if(inside(box)&&!placed.some(b=>overlap(b,box)))put(r,p)}}
   const order=rooms.filter(r=>!out[r.id]).sort((a,b)=>(a.kind==='hub'?-1:0)-(b.kind==='hub'?-1:0)||a.y-b.y||a.x-b.x);
   for(const r of order){const sz=size(r.kind);let spot=null;for(let y=0;y+sz.h<=ROWS&&!spot;y+=RH)for(let x=0;x+sz.w<=COLS;x+=RW){const box={x,y,...sz};if(!placed.some(b=>overlap(b,box))){spot={x,y};break}}
-   if(!spot)for(let y=0;y+sz.h<=ROWS&&!spot;y++)for(let x=0;x+sz.w<=COLS;x++){if(!placed.some(b=>overlap(b,{x,y,...sz}))){spot={x,y};break}}
    if(spot)put(r,spot)}
   return out}
  function valid(s){const l=s?.baseLayout601;if(l==null)return true;if(typeof l!=='object'||Array.isArray(l)||![1,LV].includes(l.v)||!l.rooms||typeof l.rooms!=='object'||Array.isArray(l.rooms))return false;const keys=Object.keys(l);if(keys.some(k=>!['v','rooms'].includes(k)))return false;const ids=Object.keys(l.rooms);if(ids.length>64)return false;const boxes=[];
-  for(const id of ids){const p=l.rooms[id];if(id.length>80||!p||typeof p!=='object'||Object.keys(p).some(k=>!['x','y'].includes(k))||!Number.isInteger(p.x)||!Number.isInteger(p.y))return false;if(l.v!==LV)continue;const box={x:p.x,y:p.y,...size(kindOf(s,id))};if(!inside(box)||boxes.some(b=>overlap(b,box)))return false;boxes.push(box)}return true}
+  for(const id of ids){const p=l.rooms[id];if(id.length>80||!p||typeof p!=='object'||Object.keys(p).some(k=>!['x','y'].includes(k))||!Number.isInteger(p.x)||!Number.isInteger(p.y))return false;if(l.v!==LV)continue;const box={x:p.x,y:p.y,...size(kindOf(s,id))};if(box.x<0||box.y<0||box.x+box.w>VB||box.y+box.h>VB||boxes.some(b=>overlap(b,box)))return false;boxes.push(box)}return true}
  const prior=validSave;validSave=function(s){return prior(s)&&valid(s)};
  const bars=n=>'<span class="b601-lv" aria-label="等級 '+n+'">'+Array.from({length:n},()=>'<i></i>').join('')+'</span>';
  /* 本家總覽房塊：左側色條（生產類）、名稱＋白色直槓、狀態列、右下人數、底部分段條、六角形浮水印。 */
@@ -95,19 +96,28 @@ window.FrontierBaseLayout601=(()=>{
  let drag=null,suppressClick=0;
  const blockTouch=e=>{if(drag?.active&&e.cancelable)e.preventDefault()};
  document.addEventListener('touchmove',blockTouch,{passive:false,capture:true});
- function end(){if(!drag)return;clearTimeout(drag.timer);drag.el.classList.remove('b601-lift','b601-bad');drag.el.style.transform='';drag=null}
+ const clearSwap=()=>document.querySelectorAll('.b601-swap').forEach(x=>x.classList.remove('b601-swap'));
+ function end(){if(!drag)return;clearTimeout(drag.timer);clearSwap();drag.el.classList.remove('b601-lift','b601-bad');drag.el.style.transform='';drag=null}
  document.addEventListener('pointerdown',e=>{const el=e.target.closest?.('[data-room601]');if(!el||e.button>0)return;const b=el.closest('.b601-board');if(!b)return;drag={el,b,id:el.dataset.room601,pid:e.pointerId,sx:e.clientX,sy:e.clientY,active:false,t0:e.timeStamp,touch:e.pointerType!=='mouse'};
   if(drag.touch)drag.timer=setTimeout(()=>{if(drag){drag.active=true;el.classList.add('b601-lift');navigator.vibrate?.(15)}},350)},true);
  document.addEventListener('pointermove',e=>{const d=drag;if(!d||e.pointerId!==d.pid)return;const dx=e.clientX-d.sx,dy=e.clientY-d.sy;
   if(!d.active){if(d.touch&&e.timeStamp-d.t0>=350){clearTimeout(d.timer);d.active=true;d.el.classList.add('b601-lift')}else{if(Math.hypot(dx,dy)<8)return;if(d.touch){end();return}d.active=true}d.el.classList.add('b601-lift')}
-  e.preventDefault();e.stopImmediatePropagation();const scale=d.b.getBoundingClientRect().width/d.b.offsetWidth||1;d.el.style.transform='translate('+dx/scale+'px,'+dy/scale+'px)';const t=target(d,dx/scale,dy/scale);d.el.classList.toggle('b601-bad',!t.ok)},{capture:true,passive:false});
- function target(d,dx,dy){const s=db,lay=resolve(s),me=lay[d.id];if(!me)return{ok:false};const box={...me,x:Math.round((me.x*U+dx)/U),y:Math.round((me.y*U+dy)/U)};box.x=Math.max(0,Math.min(COLS-box.w,box.x));box.y=Math.max(0,Math.min(ROWS-box.h,box.y));return{box,lay,ok:!Object.values(lay).some(b=>b.id!==d.id&&overlap(b,box))}}
- document.addEventListener('pointerup',e=>{const d=drag;if(!d||e.pointerId!==d.pid)return;if(!d.active){end();return}e.preventDefault();e.stopImmediatePropagation();suppressClick=performance.now()+500;const scale=d.b.getBoundingClientRect().width/d.b.offsetWidth||1,t=target(d,(e.clientX-d.sx)/scale,(e.clientY-d.sy)/scale),id=d.id;end();if(!t.ok){toast('該位置與其他房間重疊。');return}move(id,t.box.x,t.box.y,t.lay)},{capture:true,passive:false});
+  e.preventDefault();e.stopImmediatePropagation();const scale=d.b.getBoundingClientRect().width/d.b.offsetWidth||1;d.el.style.transform='translate('+dx/scale+'px,'+dy/scale+'px)';const t=target(d,dx/scale,dy/scale);d.el.classList.toggle('b601-bad',!t.ok);clearSwap();for(const id of Object.keys(t.swap||{}))d.b.querySelector('[data-room601="'+CSS.escape(id)+'"]')?.classList.add('b601-swap')},{capture:true,passive:false});
+ /* 以整間房為單位吸附；落點上的房間若完全落在新位置內，且平移到原位不衝突，即互換位置。 */
+ function target(d,dx,dy){const s=db,lay=resolve(s),me=lay[d.id];if(!me)return{ok:false};const box={...me,x:Math.round((me.x*U+dx)/(U*RW))*RW,y:Math.round((me.y*U+dy)/(U*RH))*RH};box.x=Math.max(0,Math.min(COLS-box.w,box.x));box.y=Math.max(0,Math.min(ROWS-box.h,box.y));
+  if(box.x===me.x&&box.y===me.y)return{box,lay,ok:false,same:true};
+  const hit=Object.values(lay).filter(b=>b.id!==d.id&&overlap(b,box));if(!hit.length)return{box,lay,ok:true};
+  if(overlap(me,box)||hit.some(b=>b.x<box.x||b.y<box.y||b.x+b.w>box.x+box.w||b.y+b.h>box.y+box.h))return{box,lay,ok:false};
+  const ox=me.x-box.x,oy=me.y-box.y,swap={};for(const b of hit)swap[b.id]={x:b.x+ox,y:b.y+oy};
+  const rest=Object.values(lay).filter(b=>b.id!==d.id&&!swap[b.id]);
+  for(const b of hit){const nb={...b,...swap[b.id]};if(!inside(nb)||rest.some(o=>overlap(o,nb)))return{box,lay,ok:false}}
+  return{box,lay,ok:true,swap}}
+ document.addEventListener('pointerup',e=>{const d=drag;if(!d||e.pointerId!==d.pid)return;if(!d.active){end();return}e.preventDefault();e.stopImmediatePropagation();suppressClick=performance.now()+500;const scale=d.b.getBoundingClientRect().width/d.b.offsetWidth||1,t=target(d,(e.clientX-d.sx)/scale,(e.clientY-d.sy)/scale),id=d.id;end();if(t.same)return;if(!t.ok){toast('無法放在這裡：房間大小不合，無法互換。');return}move(id,t.box.x,t.box.y,t.lay,t.swap)},{capture:true,passive:false});
  document.addEventListener('pointercancel',e=>{if(drag&&!drag.active)end();else if(drag&&e.pointerId===drag.pid)end()},true);
  document.addEventListener('contextmenu',e=>{if(e.target.closest?.('[data-room601]'))e.preventDefault()},true);
  document.addEventListener('click',e=>{const el=e.target.closest?.('[data-room601]');if(!el)return;if(performance.now()<suppressClick){e.preventDefault();e.stopImmediatePropagation();return}FrontierBase151.room(el.dataset.room601)});
- async function move(id,x,y,lay){lay=lay||resolve(db);const me=lay[id];if(!me)return false;const box={...me,x,y};if(!inside(box)||Object.values(lay).some(b=>b.id!==id&&overlap(b,box)))return false;
-  return FrontierRuntime.perform('base-layout601',()=>{const cur=resolve(db),rooms={};for(const [k,b]of Object.entries(cur))rooms[k]={x:b.x,y:b.y};rooms[id]={x,y};db.baseLayout601={v:LV,rooms};if(typeof render==='function')render()})}
+ async function move(id,x,y,lay,swap){lay=lay||resolve(db);swap=swap||{};const me=lay[id];if(!me)return false;const box={...me,x,y};if(!inside(box)||!aligned(box)||Object.values(lay).some(b=>b.id!==id&&!swap[b.id]&&overlap(b,box)))return false;
+  return FrontierRuntime.perform('base-layout601',()=>{const cur=resolve(db),rooms={};for(const [k,b]of Object.entries(cur))rooms[k]={x:b.x,y:b.y};Object.assign(rooms,swap);rooms[id]={x,y};db.baseLayout601={v:LV,rooms};if(typeof render==='function')render()})}
  /* 在彈窗標題列（房間名稱右側）插入動作按鈕；screen 版標題會跳脫 HTML，所以開窗後再插入。 */
  function titleAction(html){const m=document.querySelector('#modal');if(!m)return;const head=m.querySelector('.screen-tool-head')||m.querySelector('h2');if(!head)return;head.classList.add('b601-mtitle');const w=document.createElement('span');w.className='b601-mtitle-act';w.innerHTML=html;const title=head.matches('h2')?null:head.querySelector(':scope>b');if(title)title.after(w);else head.append(w)}
  return {titleAction,resolve,valid,move,board,U,COLS,ROWS};
