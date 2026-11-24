@@ -258,7 +258,7 @@ window.FrontierFieldDock=(()=>{
   const ticket=r.recruitment144?{id:'ticket144',type:'ticket144',role:roleList[rnd('role')%roleList.length],qty:1,price:20+Math.min(10,Math.round(layer*2.5))}:null;
   const tiers=[3,3,4,4,5,5,5],count=2+rnd('matcount')%2,families=Object.keys(FrontierProgress.families),mats=[];
   for(let i=0;i<count;i++){const tier=Math.max(3,Math.min(5,tiers[layer]+(rnd('tier'+i)%3===0?1:0)));mats.push({id:'material:'+i,type:'material',item:FrontierProgress.materialId(families[rnd('fam'+i)%families.length],Math.min(5,tier)),qty:tier===3?3:tier===4?2:1,price:{3:14,4:22,5:38}[Math.min(5,tier)]})}
-  e.rows=[box,ticket,...curios,...(r.equipment139?modules:[]),...mats].filter(Boolean);e.format149=true;save();render()}}
+  e.rows=[box,ticket,...curios,...(r.equipment139?modules:[]),...mats].filter(Boolean);e.rows=e.rows.filter(row=>FrontierEnvironment.marketAvailable(row));for(const row of e.rows)row.price=FrontierEnvironment.marketPrice(row.price);e.format149=true;save();render()}}
  if(window.FrontierTrading?.fieldBuy){const buyField=FrontierTrading.fieldBuy;FrontierTrading.fieldBuy=function(id){const r=R(),e=r?.event,row=e?.rows?.find(x=>x.id===id);if(row?.type!=='ticket144')return buyField(id);
   if(e.bought[id]||r.fieldPoints<row.price){toast('源石碇不足。');return}const g=r.recruitment144,E=FrontierExpeditionRecruit144;
   return FrontierRuntime.perform('merchant-ticket',()=>{r.recruitment144=E.command(g,{id:crypto.randomUUID(),seq:g.seq+1,type:'shopTicket',args:{role:row.role,key:'shop:'+r.number+':'+e.node+':'+(e.talentRefresh43||0)}},FrontierCapture.units);r.fieldPoints-=row.price;e.bought[id]=true;save();render();toast('已購入'+(roleName[row.role]||row.role)+'招募券。');return true})}}

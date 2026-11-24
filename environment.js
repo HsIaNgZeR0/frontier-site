@@ -7,19 +7,19 @@ window.FrontierEnvironment=(()=>{
  const tideNames=['低潮','漲潮','滿潮','退潮'];
  const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
  const regionalRules={
-  chernobog:'搜查污染物及交戰會累積污染，緊急作戰暴露更高；休整降污染。污染 3 起治療 −10%，5 起接戰時隊伍受到毒霧。',
-  lungmen:'交戰和搜查提高通緝，休整或情報交涉可避風頭。3 星起首名敵人攻擊提高；4 星起行商停售容器。',
-  siesta:'搜查、緊急作戰和長時間移動會累積熱壓；行商與營地可降溫。3 起接戰時全隊灼燒，5 起每輪增加一名受灼燒的目標。',
-  sargon:'每兩次行動耗 1 份水，開箱搜尋額外耗水；營地與行商可補水。缺水時開局少抽 1 張，尚未辨識的路線能見度降低。',
-  kazimierz:'交戰提高曝光，緊急作戰增幅較高；休整及情報路線能降低曝光。3 起先鋒更強，勝利多 5 源石碇。',
-  kjerag:'長時間移動、搜查和緊急作戰累積寒冷，行商與營地可取暖。3 起首回合少 1 AP，5 起每回合少 1 AP。',
-  siracusa:'交戰增加敵意，休整可降低敵意；情報交涉累積信任。信任降低商價，敵意 3 起提高商品價格及首名敵人攻擊。',
-  columbia:'作戰及搜查提高干擾；營地、行商和情報路線能緩解。干擾 2 起敵方先鋒有 40 護盾，滿干擾時後方敵人也獲得護盾。',
-  victoria:'高強度交戰使戰線後退；情報支援與營地休整讓戰線前進。推進時全隊有開場護盾，勝利額外有物資；退卻時敵方先鋒更強。',
-  iberia:'每兩次行動切換潮段；搜查深水、緊急作戰會加速，營地整備或燈塔可回到低潮。低潮我方有開場護盾，滿潮敵方有開場護盾，每輪前排累積神經損傷，3 層使下輪 −1 AP。',
-  sami:'緊急作戰、異常節點和長時間探索推高坍縮；休整可回落。4 起前方能見度降低，8 起首手一牌多耗 1 AP，12 起敵方攻擊提高。',
-  kazdel:'交戰使殘響升高，緊急作戰增幅更大；情報與營地可平復殘響。4 起敵方先鋒更強，自願簽約仍可換取出牌傷害加成。',
-  yan:'交戰、緊急作戰與未知路線使歲夢加深，營地休整與明處事件能讓夢境回落。3 起敵方先鋒開場有 40 墨痕護盾、攻擊＋10；5 起敵方全體攻擊＋10，器倀與墨魎躁動。'
+  chernobog:'交戰與搜查累積污染，緊急作戰＋2，明處事件與營地可減少污染。污染 3 起治療 −20%，5 起 −30%，且開場前兩人各中毒 3 層、每輪另有一人中毒 2 層。',
+  lungmen:'交戰和搜查提高通緝，明處事件、營地與交涉可降低。3 星起先鋒 ATK＋25，4 星起行商停售封存箱，5 星起其餘敵人 ATK＋15。',
+  siesta:'搜查、緊急作戰和每兩次行動累積熱壓，營地和行商降低。3 起全隊開場灼燒 2 層，5 起每輪另有一人灼燒 2 層。',
+  sargon:'每兩次行動消耗 1 份水，開箱搜索額外耗水，營地和行商可補水。剩 1 份時開場少抽 1 張，缺水時少抽 2 張且勘察視野縮短。',
+  kazimierz:'交戰提高曝光，緊急作戰＋2，明處事件與營地降低。3 起先鋒 ATK＋25、勝利多 8 源石碇；5 起先鋒另有 60 護盾、勝利多 12 源石碇。',
+  kjerag:'長時間移動、搜查和緊急作戰累積寒冷，行商與營地可取暖。3 起首回合 −1 AP，5 起每回合 −1 AP，最低 2 AP。',
+  siracusa:'交戰增加敵意，明處事件與營地可降低。交涉增加信任，每層信任使商價 −5%；敵意 3 起先鋒 ATK＋30、商價＋20%。',
+  columbia:'交戰及搜查提高干擾，營地、行商和明處事件可降低。干擾 2 時先鋒開場有 80 護盾，3 時全體敵人各有 100 護盾。',
+  victoria:'緊急作戰與首領使戰線後退，明處事件及營地推進戰線。推進開場全隊獲得 40／60 護盾，勝利額外取得物資。退卻時先鋒 ATK＋30，最低戰線全體敵人 ATK＋30。',
+  iberia:'每兩次行動切換潮段，搜查深水與緊急作戰加速，營地或燈塔重設潮段。低潮我方全隊開場各有 40 護盾。滿潮封閉部分淺灘，敵方先鋒有 100 護盾，每輪前排累積 2 層神經損傷，滿 3 層使下輪 −1 AP。',
+  sami:'緊急作戰、未知節點與長時間移動增加坍縮，營地與行商降低。4 起勘察視野縮短，8 起開場兩張牌各＋1 AP，12 起敵方全體 ATK＋25。',
+  kazdel:'交戰和緊急作戰提高殘響，明處事件與營地可降低。4 起先鋒 ATK＋25，6 時先鋒另有 80 護盾。接受契約可用負面牌換取出牌傷害＋15%。',
+  yan:'交戰及未知路線提高歲夢，緊急作戰＋2，明處事件、行商和營地可降低。3 起先鋒開場有 80 墨痕護盾、ATK＋20；5 起敵方全體 ATK＋20。'
  };
  function travelPlan(s,node){
   const combat=['battle','elite','boss','ambush'].includes(node.type),heavy=['elite','boss','ambush'].includes(node.type);
@@ -27,13 +27,13 @@ window.FrontierEnvironment=(()=>{
   const camp=node.type==='camp',merchant=node.type==='merchant',quiet=node.type==='event'&&!node.hidden;
   const even=(s.actions+1)%2===0;
   switch(s.region){
-   case 'chernobog':return {delta:camp?-2:heavy?2:search||combat?1:0};
+   case 'chernobog':return {delta:camp?-2:quiet?-1:heavy?2:search||combat?1:0};
    case 'lungmen':return {delta:camp||quiet?-1:heavy?2:combat||search?1:0};
    case 'siesta':return {delta:camp||merchant?-2:heavy||search||even?1:0};
    case 'sargon':return {delta:camp||merchant?1:-(Number(even)+Number(!!node.searchAction))};
    case 'kazimierz':return {delta:camp||quiet?-1:heavy?2:combat?1:0};
    case 'kjerag':return {delta:camp?-2:merchant?-1:heavy||search||even?1:0};
-   case 'siracusa':return {key:'hostility',delta:camp?-1:heavy?2:combat?1:0};
+   case 'siracusa':return {key:'hostility',delta:camp?-2:quiet?-1:heavy?2:combat?1:0};
    case 'columbia':return {delta:camp?-2:merchant||quiet?-1:combat||search?1:0};
    case 'victoria':return {key:'front',delta:camp||quiet&&node.storyEvent!=='battlefield'?1:heavy?-1:0};
    case 'iberia':return {tide:true,tick:camp?0:((s.value===Math.floor((s.tideStep||0)/2)?s.tideStep||0:s.value*2)+1+Number(heavy||!!node.searchAction))%8};
@@ -55,7 +55,8 @@ window.FrontierEnvironment=(()=>{
   if(next===now)return '';
   const name=plan.key==='hostility'?'敵意':definitions[s.region].name;
   const delta=next-now,improves=plan.key==='front'||s.region==='sargon'?delta>0:delta<0;
-  return {text:name+' '+adjustText(plan,now)+' → '+adjustText(plan,next),mark:plan.tide?'≈':(delta>0?'+':'−')+Math.abs(delta),tone:plan.tide?'tide':improves?'relief':'pressure'};
+  const upcoming=effect({...s,[plan.key||'value']:next}),change=upcoming!==effect(s);
+  return {text:name+' '+adjustText(plan,now)+' → '+adjustText(plan,next)+(change&&upcoming?' · '+upcoming:''),mark:plan.tide?'≈':(delta>0?'+':'−')+Math.abs(delta),tone:plan.tide?'tide':improves?'relief':'pressure'};
  }
  function travelHint(node){
   return routeImpact(node)?.text||'';
@@ -99,31 +100,62 @@ window.FrontierEnvironment=(()=>{
   else adjust(s.region==='sargon'?-1:1,'不期而遇暴露');
  }
  function energy(base,turn){const s=current();if(s?.region==='kjerag'&&(s.value>=5||s.value>=3&&turn===1))return Math.max(2,base-1);return base}
- function healing(n){return current()?.region==='chernobog'&&current().value>=3?Math.floor(n*.9):n}
+ function healing(n){const s=current();if(s?.region!=='chernobog'||s.value<3)return n;return Math.floor(n*(s.rulesVersion>=3?(s.value>=5?.7:.8):.9))}
  function battleV3(s,r,b){
-  const lead=b.enemies.find(e=>e.hp>0),team=r.team.filter(a=>a.hp>0&&!a.exited);
+  const enemies=b.enemies.filter(e=>e.hp>0),lead=enemies[0],team=r.team.filter(a=>a.hp>0&&!a.exited);
   if(!lead||!team.length)return;
-  if(s.region==='lungmen'&&s.value>=3)lead.atk+=15;
-  if(s.region==='kazdel'&&s.value>=4)lead.atk+=15;
-  if(s.region==='yan'&&s.value>=3){lead.block=(lead.block||0)+40;lead.atk+=10;}
-  if(s.region==='yan'&&s.value>=5)b.enemies.forEach(e=>{if(e!==lead)e.atk+=10});
-  if(s.region==='kazimierz'&&s.value>=3)lead.atk+=10;
-  if(s.region==='siracusa'&&s.hostility>=3)lead.atk+=20;
-  if(s.region==='sargon'&&!s.value&&b.hand.length)b.draw.push(b.hand.pop());
-  if(s.region==='columbia'&&s.value>=2)(s.value===3?b.enemies:[lead]).forEach(e=>e.block=(e.block||0)+40);
-  if(s.region==='victoria'&&s.front<0)lead.atk+=15;
-  if(s.region==='victoria'&&s.front>0||s.region==='iberia'&&!s.value)team.forEach(a=>a.block=(a.block||0)+20);
-  if(s.region==='iberia'&&s.value===2)lead.block=(lead.block||0)+60;
-  if(s.region==='siesta'&&s.value>=3)for(const a of team)burn(a);
-  if(s.region==='chernobog'&&s.value>=5)pollute(team.slice(0,2));
-  if(s.region==='sami'&&s.value>=8&&b.hand.length)b.hand.at(-1).environmentCost=1;
-  if(s.region==='sami'&&s.value>=12)b.enemies.forEach(e=>e.atk+=10);
+  const shield=(targets,amount)=>targets.forEach(a=>a.block=(a.block||0)+amount);
+  const attack=(targets,amount)=>targets.forEach(a=>a.atk+=amount);
+  switch(s.region){
+   case 'lungmen':
+    if(s.value>=3)attack([lead],25);
+    if(s.value>=5)attack(enemies.slice(1),15);
+    break;
+   case 'kazdel':
+    if(s.value>=4)attack([lead],25);
+    if(s.value===6)shield([lead],80);
+    break;
+   case 'yan':
+    if(s.value>=3){shield([lead],80);attack(s.value>=5?enemies:[lead],20);}
+    break;
+   case 'kazimierz':
+    if(s.value>=3)attack([lead],25);
+    if(s.value>=5)shield([lead],60);
+    break;
+   case 'siracusa':
+    if(s.hostility>=3)attack([lead],30);
+    break;
+   case 'sargon':
+    for(let i=0;i<2-s.value&&b.hand.length>2;i++)b.draw.push(b.hand.pop());
+    break;
+   case 'columbia':
+    if(s.value>=2)shield(s.value===3?enemies:[lead],s.value===3?100:80);
+    break;
+   case 'victoria':
+    if(s.front<0)attack(s.front===-2?enemies:[lead],30);
+    if(s.front>0)shield(team,s.front===2?60:40);
+    break;
+   case 'iberia':
+    if(!s.value)shield(team,40);
+    if(s.value===2)shield([lead],100);
+    break;
+   case 'siesta':
+    if(s.value>=3)team.forEach(actor=>burn(actor));
+    break;
+   case 'chernobog':
+    if(s.value>=5)pollute(team.slice(0,2),3);
+    break;
+   case 'sami':
+    if(s.value>=8)for(const card of b.hand.slice(-2))card.environmentCost=1;
+    if(s.value>=12)attack(enemies,25);
+    break;
+  }
  }
- function pollute(team){
-  if(FrontierMedicine.poisonFog(team,1))for(const a of team)if(a.status?.poison>0)(a.regionalAilments??={}).poison=true;
+ function pollute(team,amount){
+  if(amount>0&&FrontierMedicine.poisonFog(team,amount))for(const a of team)if(a.status?.poison>0)(a.regionalAilments??={}).poison=true;
  }
- function burn(a){
-  FrontierMedicine.inflict(a,'burn',1);
+ function burn(a,amount=2){
+  if(amount>0)FrontierMedicine.inflict(a,'burn',amount);
   if(a.status?.burn>0)(a.regionalAilments??={}).burn=true;
  }
  function battleBase(){const s=current(),r=R(),b=r?.battle;if(!s||!b||b.environmentReady||r.expedition&&!b.regionStatsReady||r.operatorSystemVersion===113&&b.operatorVersion!==113)return;b.environmentReady=true;b.energy=energy(b.energy,1);if(s.rulesVersion>=3){battleV3(s,r,b);return}if(s.region==='sami'&&s.value>=8&&b.hand.length){const c=b.hand[b.hand.length-1];c.environmentCost=1}if(s.region==='sami'&&s.value>=12)b.enemies.forEach(e=>{e.intent='attack';e.atk+=10});if(s.region==='lungmen'&&s.value>=3)b.enemies[0].intent='attack';if(s.region==='siracusa'&&s.hostility>=3){b.enemies[0].intent='attack';b.enemies[0].atk+=20}if(s.region==='columbia'&&s.value>=2)b.enemies[0].block+=40;if(s.region==='kazimierz'&&s.value>=3)b.enemies[0].atk+=10;if(s.region==='victoria'&&s.front<0){b.enemies[0].intent='attack';if(s.rulesVersion>=2)b.enemies[0].atk+=10}if(s.region==='victoria'&&s.front>0)r.team.filter(a=>a.hp>0).forEach(a=>a.block+=20)}
@@ -131,13 +163,13 @@ window.FrontierEnvironment=(()=>{
  if(s.rulesVersion>=3){
   const exposed=alive[(b.turn-1)%alive.length];
   if(!exposed)return;
-  if(b.turn>1&&s.region==='siesta'&&s.value>=5)burn(exposed);
+  if(b.turn>1&&s.region==='siesta'&&s.value>=5)burn(exposed,Math.max(0,2-(exposed.status?.burn||0)));
   if(s.region==='iberia'&&s.value===2){
    const lead=alive[0];
-   FrontierMedicine.inflict(lead,'neural',1);
+   FrontierMedicine.inflict(lead,'neural',2);
    if(lead.status?.neural>=3){lead.status.neural-=3;b.regionalApTax=Math.max(b.regionalApTax||0,1);}
   }
-  if(s.region==='chernobog'&&s.value>=5)pollute([exposed]);
+  if(s.region==='chernobog'&&s.value>=5)pollute([exposed],Math.max(0,2-(exposed.status?.poison||0)));
   return;
  }
  if(s.region==='siesta'&&s.value>=3)alive.forEach(a=>FrontierMedicine.inflict(a,'burn',1));if(s.region==='iberia'&&s.value===3&&alive.length)FrontierMedicine.inflict(alive[0],'neural',1);if(s.region==='chernobog'&&s.value>=5&&alive.length)FrontierMedicine.poisonFog([alive[0]],1)}
@@ -145,15 +177,20 @@ window.FrontierEnvironment=(()=>{
  function attackMultiplier(){return current()?.region==='kazdel'&&R().story?.flags.pact?1.15:1}
  function effect(s){
   if(s.rulesVersion>=3){
-   if(s.region==='iberia')return ['我方開場＋20盾','','敵方開場＋60盾 · 神經損傷',''][s.value];
-   if(s.region==='sargon'&&!s.value)return '缺水 · 開場少抽1張';
-   if(s.region==='yan'&&s.value>=3)return s.value>=5?'先鋒＋40盾 · 敵方全體 ATK＋10':'敵方先鋒＋40盾 · ATK＋10';
-   if(s.region==='kazdel'&&s.value>=4)return '敵方先鋒 ATK＋15'+(R().story?.flags.pact?' · 契約已啟用':'');
-   if(s.region==='columbia'&&s.value>=2)return (s.value===3?'敵方全隊':'敵方先鋒')+'開場＋40盾';
-   if(s.region==='siesta'&&s.value>=3)return s.value>=5?'全隊開場灼燒 · 後續輪流暴露':'全隊開場灼燒';
-   if(s.region==='lungmen'&&s.value>=3)return '先鋒 ATK＋15'+(s.value>=4?' · 容器停售':'');
-   if(s.region==='siracusa'&&s.hostility>=3)return '先鋒 ATK＋20 · 商價受敵意影響';
-   if(s.region==='victoria'&&s.front!==0)return s.front>0?'開場全隊＋20盾':'敵方先鋒 ATK＋15';
+   switch(s.region){
+    case 'chernobog':return s.value>=5?'毒霧 · 治療 −30%':s.value>=3?'治療 −20%':'';
+    case 'lungmen':return s.value>=3?'先鋒 ATK＋25'+(s.value>=5?' · 其餘敵人 ATK＋15':'')+(s.value>=4?' · 封存箱停售':''):'';
+    case 'siesta':return s.value>=3?'全隊開場灼燒 2 層'+(s.value>=5?' · 各輪另有一人灼燒':''):'';
+    case 'sargon':return s.value===0?'缺水 · 開場最多少抽 2 張':s.value===1?'開場少抽 1 張':'';
+    case 'kazimierz':return s.value>=5?'先鋒 ATK＋25／60 盾 · 勝利＋12 源石碇':s.value>=3?'先鋒 ATK＋25 · 勝利＋8 源石碇':'';
+    case 'siracusa':return s.hostility>=3?'先鋒 ATK＋30 · 商價受敵意影響':s.trust>0?'行商折扣':'';
+    case 'columbia':return s.value===3?'敵方全體開場＋100 盾':s.value===2?'敵方先鋒開場＋80 盾':'';
+    case 'victoria':return s.front>0?'開場全隊＋'+(s.front===2?60:40)+' 盾':s.front<0?(s.front===-2?'敵方全體':'敵方先鋒')+' ATK＋30':'';
+    case 'iberia':return ['我方開場＋40 盾','','敵方先鋒＋100 盾 · 神經損傷',''][s.value];
+    case 'sami':return s.value>=12?'敵方全體 ATK＋25 · 首手兩牌各＋1 AP':s.value>=8?'首手兩牌各＋1 AP':s.value>=4?'勘察視野縮短':'';
+    case 'kazdel':return [s.value>=4?'先鋒 ATK＋25'+(s.value===6?'／80 盾':''):'',R().story?.flags.pact?'契約 · 出牌傷害＋15%':''].filter(Boolean).join(' · ');
+    case 'yan':return s.value>=5?'先鋒＋80 盾 · 敵方全體 ATK＋20':s.value>=3?'先鋒＋80 盾 · ATK＋20':'';
+   }
   }
   const effects={chernobog:()=>s.value>=5?'毒霧 · 治療−10%':s.value>=3?'治療−10%':'',
    lungmen:()=>s.value>=4?'封存箱停售':s.value>=3?'先鋒盤查':'',
@@ -190,12 +227,20 @@ window.FrontierEnvironment=(()=>{
  const oldBattle=battleView;battleView=function(){battle();oldBattle()};
  const oldStats=cardStats;cardStats=function(c){const d=oldStats(c);if(c.environmentCost)d.cost+=c.environmentCost;return d};
  const oldTurn=endTurn;endTurn=function(){const b=R()?.battle;if(b){turn();for(const pile of ['hand','draw','discard','exhaust'])for(const c of b[pile])delete c.environmentCost}return oldTurn()};
- const oldCheck=checkBattle;checkBattle=function(){const r=R(),b=r?.battle,s=current();if(b&&s&&r.hp>0&&b.enemies.every(e=>e.hp<=0)&&!b.envReward){b.envReward=true;if(s.region==='kazimierz'&&s.value>=3)r.fieldPoints+=5;if(s.region==='victoria'&&s.front>0)r.field.materials.mat_iron_t1=(r.field.materials.mat_iron_t1||0)+2}return oldCheck()};
+ const oldCheck=checkBattle;checkBattle=function(){const r=R(),b=r?.battle,s=current();if(b&&s&&r.hp>0&&b.enemies.every(e=>e.hp<=0)&&!b.envReward){b.envReward=true;if(s.region==='kazimierz'&&s.value>=3)r.fieldPoints+=s.rulesVersion>=3?(s.value>=5?12:8):5;if(s.region==='victoria'&&s.front>0)r.field.materials.mat_iron_t1=(r.field.materials.mat_iron_t1||0)+2}return oldCheck()};
  const oldUse=FrontierMedicine.use;FrontierMedicine.use=function(id,target){const before=R()?.field.materials[id]||0;oldUse(id,target);if(current()&&(R()?.field.materials[id]||0)<before){const family=FrontierInventory.definitions[id]?.family;if(family==='cold'&&current().region==='kjerag'||family==='fire'&&current().region==='siesta'||family==='purify'&&['sami','chernobog','columbia'].includes(current().region))adjust(-2,'環境使用補給');save();render()}};
  const oldPrepare=prepare;prepare=function(){oldPrepare();const select=document.querySelector('#exp-region');if(select){const panel=document.createElement('section');panel.className='panel';panel.id='environment-forecast';panel.innerHTML=forecast(select.value);select.after(panel);select.addEventListener('change',()=>{panel.innerHTML=forecast(select.value)})}};
- const oldMerchant=FrontierTrading.fieldMerchant;FrontierTrading.fieldMerchant=function(node){oldMerchant(node);const s=current(),e=R()?.event;if(s?.region==='siracusa'&&e?.type==='fieldMerchant'){for(const row of e.rows)row.price=Math.max(1,Math.ceil(row.price*(1-Math.min(5,s.trust)*.03+(s.hostility>=3?.10:0))));save();render()}};
- const oldBuy=FrontierTrading.fieldBuy;FrontierTrading.fieldBuy=function(id){const s=current();if(s?.region==='lungmen'&&s.value>=4&&id==='sealed'){toast('通緝4星以上：行商拒絕出售封存箱。可透過區域情報事件降低通緝。');return}return oldBuy(id)};
+ function marketPrice(price,s=current()){
+  if(s?.region!=='siracusa')return price;
+  return Math.max(1,Math.ceil(price*(100-Math.min(5,s.trust)*5+(s.hostility>=3?20:0))/100));
+ }
+ function marketAvailable(row,s=current()){return !(s?.region==='lungmen'&&s.value>=4&&row?.type==='container')}
+ const oldBuy=FrontierTrading.fieldBuy;FrontierTrading.fieldBuy=function(id){
+  const row=R()?.event?.rows?.find(row=>row.id===id);
+  if(!marketAvailable(row)){toast('通緝 4 星以上：行商停售封存箱。');return}
+  return oldBuy(id);
+ };
  const oldSkill=FrontierCombat.skill;FrontierCombat.skill=function(id){const b=R()?.battle,before=b?.energy;oldSkill(id);if(b&&R()?.battle===b&&b.energy<before&&current()?.region==='columbia'&&current().value>=2){const a=R().team.find(a=>a.id===id);if(a)a.cooldown++;save();render()}};
  const oldValid=validSave;validSave=function(v){if(!oldValid(v))return false;const s=v.run?.environment;return !s||s.version===1&&(s.tideStep===undefined||s.region==='iberia'&&Number.isInteger(s.tideStep)&&s.tideStep>=0&&s.tideStep<8)&&definitions[s.region]?.id===s.id&&Number.isInteger(s.value)&&s.value>=0&&s.value<=definitions[s.region].max&&Number.isInteger(s.actions)&&s.actions>=0&&Array.isArray(s.forecasts)&&s.forecasts.length<=40&&Number.isInteger(s.trust)&&Number.isInteger(s.hostility)&&Number.isInteger(s.front)};
- return{effect,label,rules,needsRelief,pressure,routeImpact,travelHint,visibilityPenalty,attackMultiplier,definitions,current,create,adjust,enter,forceMove,energy,healing,battle,turn,treat,view,forecast,routeAccessible};
+ return{marketPrice,marketAvailable,effect,label,rules,needsRelief,pressure,routeImpact,travelHint,visibilityPenalty,attackMultiplier,definitions,current,create,adjust,enter,forceMove,energy,healing,battle,turn,treat,view,forecast,routeAccessible};
 })();
