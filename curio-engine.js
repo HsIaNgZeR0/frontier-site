@@ -5,11 +5,11 @@ globalThis.FrontierCurioEngine=(()=>{
  for(const d of Object.values(data()))if(d.hope144||d.ticket144)implemented.add(d.id);
  const initial=()=>({version:1,owned:[],order:0,runUsed:{},floor:{index:-1,used:{},flags:{}},battle:null,history:[],rewards:{},routes:{}});
  const active=(s,id)=>s.owned.some(x=>x.id===id&&(data()[id].rank!=='core'||x.enabled));
- function counts(s){const values=Array(6).fill(0);for(const x of s.owned)if(active(s,x.id))values[data()[x.id].category]++;return values}
+ function counts(s){const values=Array(6).fill(0);for(const x of s.owned)if(active(s,x.id))values[(s.rules137?data():FrontierCurioData.legacyEntries||data())[x.id].category]++;return values}
  function activate(s,ids,inBattle=false){if(inBattle||!Array.isArray(ids)||ids.length>2||new Set(ids).size!==ids.length||ids.some(id=>data()[id]?.rank!=='core'||!s.owned.some(x=>x.id===id)))throw Error('PRTS｜只能在非戰鬥節點啟用最多兩件核心收藏品。');for(const x of s.owned)if(data()[x.id].rank==='core')x.enabled=ids.includes(x.id)}
  function gain(s,id){if(!data()[id]||!implemented.has(id)||s.owned.some(x=>x.id===id))return false;s.owned.push({id,order:++s.order,enabled:data()[id].rank!=='core'||s.owned.filter(x=>data()[x.id].rank==='core'&&x.enabled).length<2});return true}
  function valid(s){if(!s)return true;const counter=x=>x&&typeof x==='object'&&!Array.isArray(x)&&Object.values(x).every(n=>Number.isSafeInteger(n)&&n>=0);if(s.version!==1||!Array.isArray(s.owned)||!Number.isSafeInteger(s.order)||s.order<0||new Set(s.owned.map(x=>x.id)).size!==s.owned.length||new Set(s.owned.map(x=>x.order)).size!==s.owned.length||s.owned.some(x=>!data()[x.id]||!Number.isInteger(x.order)||x.order<1||typeof x.enabled!=='boolean')||!counter(s.runUsed)||!s.floor||!Number.isInteger(s.floor.index)||s.floor.index< -1||!counter(s.floor.used))return false;if(s.battle&&(!counter(s.battle.used)||!counter(s.battle.turn?.used)||!counter(s.battle.totals)))return false;if(s.offers&&(!Array.isArray(s.offers)||s.offers.some(o=>typeof o.key!=='string'||!Array.isArray(o.ids)||o.ids.length<1||o.ids.length>3||new Set(o.ids).size!==o.ids.length||o.ids.some(id=>!data()[id]))))return false;return s.owned.filter(x=>data()[x.id].rank==='core'&&x.enabled).length<=2&&s.owned.every(x=>x.order<=s.order)}
- function register(id,event,scope,condition,effect,key=''){implemented.add(id);const list=hooks.get(event)||[];list.push({id,scope,condition,effect,key});hooks.set(event,list)}
+ function register(id,event,scope,condition,effect,key='',version=0){implemented.add(id);const list=hooks.get(event)||[];list.push({id,scope,condition,effect,key,version});hooks.set(event,list)}
  function bucket(s,scope){if(scope==='run')return s.runUsed;if(scope==='floor')return s.floor.used;if(scope==='battle')return s.battle?.used;if(scope==='turn')return s.battle?.turn.used;return null}
  function once(s,id,scope,key=''){if(!scope)return true;const b=bucket(s,scope);if(!b||b[id+key])return false;b[id+key]=1;return true}
  function dispatch(s,event,c){if(!s||c.origin==='curio'&&!c.chain&&!['counter','pursuit'].includes(event.type)||c.preview)return event;if(c.chain&&++c.chain.events>128){s.guardStops=(s.guardStops||0)+1;return event}const e=event,b=s.battle;
@@ -17,7 +17,7 @@ globalThis.FrontierCurioEngine=(()=>{
   if(e.type==='battleStart'){if(b?.key===c.battleKey)return e;if(b){s.history.push({key:b.key,used:b.used,totals:b.totals});if(s.history.length>100)s.history.shift()}s.battle={key:c.battleKey,used:{},totals:{},flags:{},turn:{index:c.turn,used:{},flags:{}}}}
   if(s.battle&&c.inBattle!==false&&s.battle.turn.index!==c.turn)s.battle.turn={index:c.turn,used:{},flags:{}};
   const battle=s.battle,flags=battle?.flags||{},turn=battle?.turn.flags||{};c={...c,s,flags,turn,once:(id,scope,key)=>once(s,id,scope,key),active:id=>active(s,id),counts:()=>counts(s)};
-  for(const h of hooks.get(e.type)||[]){if(c.inBattle===false&&['battle','turn'].includes(h.scope))continue;if(c.chain?.active.includes(h.id))continue;if(!active(s,h.id)&&!(e.type==='acquire'&&e.id===h.id))continue;if(e.type==='acquire'&&e.id!==h.id)continue;if(h.condition(e,c)&&once(s,h.id,h.scope,h.key)){c.chain?.active.push(h.id);try{h.effect(e,c)}finally{c.chain?.active.pop()}s.triggerTotals??={};s.triggerTotals[h.id]=(s.triggerTotals[h.id]||0)+1;if(battle)battle.totals[h.id]=(battle.totals[h.id]||0)+1}}
+  for(const h of hooks.get(e.type)||[]){if(h.version===137&&!s.rules137||!h.version&&s.rules137&&data()[h.id]?.mechanics137)continue;if(c.inBattle===false&&['battle','turn'].includes(h.scope))continue;if(c.chain?.active.includes(h.id))continue;if(!active(s,h.id)&&!(e.type==='acquire'&&e.id===h.id))continue;if(e.type==='acquire'&&e.id!==h.id)continue;if(h.condition(e,c)&&once(s,h.id,h.scope,h.key)){c.chain?.active.push(h.id);try{h.effect(e,c)}finally{c.chain?.active.pop()}s.triggerTotals??={};s.triggerTotals[h.id]=(s.triggerTotals[h.id]||0)+1;if(battle)battle.totals[h.id]=(battle.totals[h.id]||0)+1}}
   resonance(s,e,c);return e;
  }
  const add=(e,n)=>{e.mult=(e.mult||0)+n},flag=(key,value)=>((e,c)=>{c.flags[key]=typeof value==='function'?value(e,c):value}),target=e=>!!e.target;
@@ -94,5 +94,5 @@ globalThis.FrontierCurioEngine=(()=>{
   if(e.type==='intel'&&use(5,6))c.revealNodes(1,true);
  }
  function diminish(value){return Math.min(.3,value)+Math.min(.2,Math.max(0,value-.3))*.5+Math.max(0,value-.5)*.25}
- return{initial,active,counts,activate,gain,valid,dispatch,implemented,once,diminish};
+ return{registerOriginal:(...args)=>register(...args.slice(0,5),args[5]||'',137),initial,active,counts,activate,gain,valid,dispatch,implemented,once,diminish};
 })();

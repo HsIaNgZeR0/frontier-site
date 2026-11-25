@@ -22,12 +22,12 @@ window.FrontierEncounters=(()=>{
  function add(item){const d=catalog[item.itemId],kind=['material','medicine','record','captureDevice'].includes(d.category)?'material':'equipment';if(!FrontierGrid.canTake(d.id,kind)){toast('請先整理出完整物資空間。');return false}if(kind==='material')R().field.materials[d.id]=(R().field.materials[d.id]||0)+item.qty;else R().itemCargo.push(FrontierInventory.create(d.id,item.qty,{source:'event.'+R().event.id,region:R().expedition.regionId,run:R().number}));FrontierGrid.sync();return true}
  function choose(index){const e=R()?.event;if(e?.id!=='gift_choice'||e.claimed||!e.gifts?.[index])return;if(!add(e.gifts[index]))return;e.claimed=true;FrontierAdventure.note('gift_choice','得償所願：選擇 '+catalog[e.gifts[index].itemId].name);completeNode()}
  const exchangeEvents=['gift_exchange','ending_exchange_entry'];
- const definition=(kind,id)=>kind==='curio'?FrontierCurioData.entries[id]:catalog[id]?.category==='runModule'?catalog[id]:null;
+ const definition=(kind,id)=>kind==='curio'?FrontierCurioData.forRun(R())[id]:catalog[id]?.category==='runModule'?catalog[id]:null;
  const icon=(kind,id)=>kind==='curio'?FrontierCurios.icon(id):FrontierIcons.html(id);
  function poolFor(r,kind){
   if(kind==='curio'){
    const excluded=new Set((r.curios?.owned||[]).map(x=>x.id).concat(r.exchangeCuriosSeen||[]));
-   return Object.keys(FrontierCurioData.entries).filter(id=>FrontierCurioEngine.implemented.has(id)&&!excluded.has(id)).sort();
+   return Object.keys(FrontierCurioData.forRun(R())).filter(id=>(!window.FrontierCurioOriginal137||FrontierCurioOriginal137.eligible(R(),id))&&FrontierCurioEngine.implemented.has(id)&&!excluded.has(id)).sort();
   }
   const excluded=new Set((r.equipment139?.modules||[]).map(x=>x.id));
   return Object.values(catalog).filter(d=>d.category==='runModule'&&!excluded.has(d.id)).map(d=>d.id).sort();

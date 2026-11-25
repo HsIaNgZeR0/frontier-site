@@ -207,7 +207,7 @@ window.FrontierAdventure=(()=>{
  function renderRegional(r,e,d){
   if(e.claimed){
    const o=r.curios?.offers?.find(x=>x.key==='encounter:'+r.number+':'+e.id);
-   const choices=o?o.ids.map(id=>'<button data-curio="'+id+'" onclick="FrontierAdventure.resolveRegional(\''+id+'\')">'+FrontierCurios.icon(id)+'<b>'+escapeEvent(FrontierCurioData.entries[id].name)+'</b><small>'+escapeEvent(FrontierCurioData.entries[id].effect)+'</small></button>').join(''):'';
+   const choices=o?o.ids.map(id=>'<button data-curio="'+id+'" onclick="FrontierAdventure.resolveRegional(\''+id+'\')">'+FrontierCurios.icon(id)+'<b>'+escapeEvent(FrontierCurioData.forRun(R())[id].name)+'</b><small>'+escapeEvent(FrontierCurioData.forRun(R())[id].effect)+'</small></button>').join(''):'';
    $('#app').innerHTML=runHeader()+'<section class="panel event-panel regional-encounter121"><small>不期而遇</small><h2>'+escapeEvent(d.title)+'</h2><div>'+choices+'<button onclick="FrontierAdventure.resolveRegional(\'skip\')">'+(o?'放棄收藏品':'繼續前進')+'</button></div></section>';
    return;
   }
