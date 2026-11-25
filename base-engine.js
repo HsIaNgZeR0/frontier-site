@@ -88,7 +88,7 @@ globalThis.FrontierBaseEngine=((old)=>{
  const feedFamilies=['rock','iron','device','sugar','polyester','ketone','manganese','grindstone','rma','gel'];
  function affinityOf(unit){const n=unit?.affinity||0;return unit?.affinityScale===4?n:Math.round(n/4)}
  function feedStock(s,type){return s.capture?.feed?.[type]||0}
- function feedIcon(type){const d=feedTypes.find(x=>x.id===type);return d?'<span class="feed-emblem" style="--feed-color:'+d.color+'" aria-hidden="true"><i></i><i></i><i></i></span>':''}
+ function feedIcon(type){const d=feedTypes.find(x=>x.id===type);return d?'<span class="feed-emblem" style="--feed-color:'+d.color+'" aria-hidden="true"><img src="assets/feed-'+type+'.png" alt="" style="width:100%;height:100%;object-fit:contain"></span>':''}
  function feedOptions(r){return r.feedOffers||[]}
  function generateFeed(s,r,c){
   const queue=r.feedOffers??=[];

@@ -12,7 +12,7 @@ window.FrontierOffline=(()=>{
    const response=await fetch('./offline-assets.json');
    if(!response.ok)throw Error('暫時讀不到下載清單。');
    const data=await response.json();
-   if(!/^frontier-pack-[a-f0-9]{16}$/.test(data.pack)||!Array.isArray(data.assets)||!data.assets.length||!data.assets.every(path=>path.startsWith('assets/')))throw Error('離線下載清單無法使用。');
+   if(!/^frontier-pack-[a-z0-9]+$/.test(data.pack)||!Array.isArray(data.assets)||!data.assets.length||!data.assets.every(path=>path.startsWith('assets/')))throw Error('離線下載清單無法使用。');
    pack.manifest=data;pack.total=data.assets.length;
    if(await caches.has(data.pack)){
     const cache=await caches.open(data.pack);
