@@ -6,6 +6,8 @@ window.FrontierRender32=(()=>{
  window.rosterView=function(){if(window.FrontierGrowth&&window.FrontierRosterPreviewV20?.enabled){document.getElementById('app').replaceChildren();return}return legacyRoster()};
  const legacyShop=window.shopView;
  window.shopView=function(){if(window.FrontierVisualUI&&matchMedia('(max-width:720px)').matches){document.getElementById('app').replaceChildren();return}return legacyShop()};
+ const legacyCollection=window.collection;
+ window.collection=function(){if(window.FrontierVisualUI&&matchMedia('(max-width:720px)').matches){document.getElementById('app').replaceChildren();return}return legacyCollection()};
  let batching=false,pending=false,painting=false;const original=render,metrics={requests:0,paints:0,paintMs:0};
  const motions=new WeakMap();
  let scene=null,motion=null;
