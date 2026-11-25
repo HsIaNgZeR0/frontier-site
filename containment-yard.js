@@ -5,6 +5,10 @@ window.FrontierContainmentYard=(()=>{
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const BASE='assets/enemy-spine/',UNIT=.12,ELITE=1.15,HOLD_MS=360,NAME_MAX=12,PHASES=2,MAX_ZOOM=3;
  /* 收容區畫面（標題列下方），與上方按鈕分開不重疊 */let stage=null,srcArr=null,mobs=[],raf=0,last=0,yard=null,gl=null,fx=null,shadow=null,bubble=null,focus=null,editing=false,cam={x:0,y:0,z:1},world={w:400,h:700},minZoom=.5;
+ const feedUi={open:false,selected:null,busy:false},foodNodes=new Map(),foodPoints=new Map(),arrivals=new Map(),claims=new Set(),emptyFoods=[];let foodSource=null,foodRetry=0;
+ const affinityIcon='<svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="6" cy="7" rx="2" ry="3"/><ellipse cx="12" cy="5" rx="2" ry="3"/><ellipse cx="18" cy="7" rx="2" ry="3"/><path d="M5 17c0-3 4-7 7-7s7 4 7 7c0 5-4 2-7 2s-7 3-7-2z"/></svg>';
+ const feedToolIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 12h18l-2 7H5zM2 12h20M8 8l1-3m4 3 1-4m3 4 1-2"/></svg>';
+ const fallbackImages=new Map();
  const species=new Map(),pointers=new Map(),perf={ms:0,n:0};
  /* 篩選：一區 普通／菁英，二區 普通／閃光／色違，三區 已命名／喜愛（勾了才限制，符合任一即可） */
  const filt={common:true,elite:true,normal:true,shiny:true,color:true,named:false,fav:false};
@@ -17,13 +21,8 @@ window.FrontierContainmentYard=(()=>{
  const variantOf=i=>V()?.of(i)||null;
  const instances=()=>(db.capture?.instances||[]).filter(i=>FrontierCapture.units[i.species]?.kind==='enemy');
  const nameOf=i=>(i.nickname||FrontierCapture.units[i.species].name)+(V()?.suffix(variantOf(i))||'');
- /* 沒有模型的個體自動移除（派駐遠征中的等歸隊後再處理） */
- function purge(){
-  const c=db.capture;if(!c?.instances||!window.FrontierEnemySpine)return 0;
-  const gone=c.instances.filter(i=>!i.assignment&&!FrontierEnemySpine.has(i.species));
-  if(!gone.length)return 0;const ids=new Set(gone.map(i=>i.uid));
-  c.instances=c.instances.filter(i=>!ids.has(i.uid));if(ids.has(c.support))c.support=null;save();return gone.length;
- }
+ /* 缺少模型仍保留收容資料，以官方靜態圖暫代，禁止因素材缺失刪除個體。 */
+ function purge(){return 0}
  function difficulty(i){
   const u=FrontierCapture.units[i.species],r=u.rarity||1,v=variantOf(i);
   const [label,cls]=u.boss?['極高','x']:r>=3?['高','h']:r===2?['中','m']:['低','l'];
@@ -33,7 +32,7 @@ window.FrontierContainmentYard=(()=>{
  function region(i){const id=i.origin?.region;return FrontierExpedition.regions.find(r=>r.id===id)?.name||'舊收容檔案'}
  function view(){
   const n=instances().length;
-  return '<section class="yard" aria-label="收容管理場"><div class="yard-stage"><canvas class="yard-shadows" aria-hidden="true"></canvas><canvas class="yard-gl" aria-hidden="true"></canvas><canvas class="yard-fx" aria-hidden="true"></canvas><div class="yard-layer"></div></div><div class="yard-head"><button class="yard-back" data-yard-back aria-label="返回主頁"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><button class="yard-back yard-filter-btn" data-yard-filter-open aria-label="篩選" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 5h16l-6 7.5V19l-4 1.5v-8z"/></svg></button>'+filterHtml()+'<div class="yard-title"><small>CONTAINMENT YARD</small><b>收容管理場</b></div><span class="yard-count">收容個體 '+n+'</span></div>'+(n?'<p class="yard-hint">點擊查看 · 長按拖曳 · 左右滑動 · 雙指縮放</p>':'<p class="yard-empty">尚無收容個體。<br>於遠征中削弱敵人並使用收容裝置，成功撤離後會在這裡出現。</p>')+'</section>';
+  return '<section class="yard" aria-label="收容管理場"><div class="yard-stage"><canvas class="yard-shadows" aria-hidden="true"></canvas><canvas class="yard-gl" aria-hidden="true"></canvas><canvas class="yard-fx" aria-hidden="true"></canvas><div class="yard-food-layer" aria-label="地面飼料"></div><div class="yard-layer"></div></div><div class="yard-head"><button class="yard-back" data-yard-back aria-label="返回主頁"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><button class="yard-back yard-filter-btn" data-yard-filter-open aria-label="篩選" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 5h16l-6 7.5V19l-4 1.5v-8z"/></svg></button>'+filterHtml()+'<div class="yard-title"><small>CONTAINMENT YARD</small><b>收容管理場</b></div><span class="yard-count">收容個體 '+n+'</span></div>'+(n?'<p class="yard-hint">點擊查看 · 長按拖曳 · 左右滑動 · 雙指縮放</p>':'<p class="yard-empty">尚無收容個體。<br>於遠征中削弱敵人並使用收容裝置，成功撤離後會在這裡出現。</p>')+feedToolbar()+'</section>';
  }
  /* ---------- Spine 共用渲染 ---------- */
  function makeShader(c){
@@ -55,7 +54,7 @@ window.FrontierContainmentYard=(()=>{
   ctx=new spine.webgl.ManagedWebGLRenderingContext(g);renderer=new spine.webgl.SceneRenderer(canvas,ctx,true);shader=makeShader(ctx);renderer.batcherShader=shader;
   assets=new spine.webgl.AssetManager(ctx,BASE);species.clear();return true;
  }
- function resolveId(id){const I=window.FrontierEnemySpineIndex||{};if(I[id])return id;const b=String(id).replace(/_\d+$/,'');return I[b]?b:null}
+ function resolveId(id){const I=window.FrontierEnemySpineIndex||{};for(const key of [id,FrontierCapture.units[id]?.image]){if(!key)continue;if(I[key])return key;const b=String(key).replace(/_\d+$/,'');if(I[b])return b}return null}
  function speciesOf(id){
   const sid=resolveId(id);if(!sid)return null;let sp=species.get(sid);
   if(!sp){sp={id:sid,state:'loading'};species.set(sid,sp);assets.loadBinary(sid+'/'+sid+'.skel');assets.loadTextureAtlas(sid+'/'+sid+'.atlas')}
@@ -63,7 +62,7 @@ window.FrontierContainmentYard=(()=>{
  }
  const animNames=d=>d.animations.map(a=>a.name);
  function idleName(d){const n=animNames(d);return n.find(x=>/^idle$/i.test(x))||n.find(x=>/^(a_)?idle(_a)?$/i.test(x))||n.find(x=>/idle/i.test(x)&&!/die|_b/i.test(x))||n.find(x=>/default/i.test(x))||n[0]}
- function moveName(d){const n=animNames(d);return n.find(x=>/^move_loop$/i.test(x))||n.find(x=>/^move$/i.test(x))||n.find(x=>/^run_loop$/i.test(x))||n.find(x=>/^(a_)?move(_a)?$/i.test(x))||n.find(x=>/move/i.test(x)&&!/begin|start|end|die/i.test(x))||idleName(d)}
+ function moveName(d){const n=animNames(d);return n.find(x=>/^move_loop$/i.test(x))||n.find(x=>/^move$/i.test(x))||n.find(x=>/^run_loop$/i.test(x))||n.find(x=>/^(a_)?move(_a)?$/i.test(x))||n.find(x=>/move|walk|run|fly|riding/i.test(x)&&!/begin|start|end|die/i.test(x))||idleName(d)}
  function prepare(sp){
   if(sp.state!=='loading')return;const sid=sp.id,ap=sid+'/'+sid+'.atlas',sk=sid+'/'+sid+'.skel';
   if(assets.isLoadingComplete()||(assets.get(ap)&&assets.get(sk))){
@@ -104,9 +103,9 @@ window.FrontierContainmentYard=(()=>{
   stage=yard.querySelector('.yard-stage');fx=yard.querySelector('.yard-fx');shadow=yard.querySelector('.yard-shadows');
   const list=instances();layoutWorld(list.length);const pts=spread(list.length);cam={x:0,y:world.h/2,z:1,vx:0,vy:0};clampCam();
   mobs=list.map((i,k)=>{const u=FrontierCapture.units[i.species];return{i,v:variantOf(i),sp:null,phase:k%PHASES,zone:pts[k].zone,x:pts[k].x,y:pts[k].y,tx:pts[k].x,ty:pts[k].y,dir:Math.random()<.5?-1:1,mode:'idle',wait:rnd(.2,4),speed:rnd(9,16)*(u.rarity>=3?.9:1),s:UNIT*(u.rarity>=3?ELITE:1)*(i.mutation?1.05:1),hop:0,lift:0,motion:'idle',seed:Math.random()*10}});
-  updateCount();loadRuntime().then(ok=>{if(!ok||!yard?.isConnected)return;if(!setupGL()){toast('此裝置不支援 WebGL，無法顯示模型。');return}for(const m of mobs)m.sp=speciesOf(m.i.species);last=0;raf=requestAnimationFrame(tick)});
+  updateCount();updateFeedToolbar();syncFood();loadRuntime().then(ok=>{if(!ok||!yard?.isConnected)return;if(!setupGL()){toast('此裝置不支援 WebGL，無法顯示模型。');return}for(const m of mobs)m.sp=speciesOf(m.i.species);last=0;raf=requestAnimationFrame(tick)});
  }
- function stop(){if(raf)cancelAnimationFrame(raf);raf=0;mobs=[];focus=null;bubble=null;editing=false;gesture=null;pointers.clear();try{ctx?.gl.getExtension('WEBGL_lose_context')?.loseContext()}catch{}ctx=null;renderer=null;assets=null;species.clear()}
+ function stop(){if(raf)cancelAnimationFrame(raf);raf=0;mobs=[];foodNodes.clear();foodPoints.clear();arrivals.clear();foodSource=null;feedUi.open=false;feedUi.selected=null;focus=null;bubble=null;editing=false;gesture=null;pointers.clear();try{ctx?.gl.getExtension('WEBGL_lose_context')?.loseContext()}catch{}ctx=null;renderer=null;assets=null;species.clear()}
  function clampCam(){
   const vw=stage.clientWidth/cam.z,vh=stage.clientHeight/cam.z;
   cam.x=vw>=world.w?world.w/2:clamp(cam.x,vw/2,world.w-vw/2);cam.y=vh>=world.h?world.h/2:clamp(cam.y,vh/2,world.h-vh/2);
@@ -124,7 +123,9 @@ window.FrontierContainmentYard=(()=>{
   for(const sp of species.values())prepare(sp);
   /* 存檔物件可能被重新載入替換；以 uid 重新連結，名牌／愛心／篩選才會跟上 */
   if(db.capture?.instances!==srcArr){srcArr=db.capture?.instances;const map=new Map((srcArr||[]).map(i=>[i.uid,i]));for(const m of mobs){const i=map.get(m.i.uid);if(i){m.i=i;m.v=variantOf(i)}}updateCount()}
+  syncFood();arrivals.clear();
   for(const m of mobs)step(m,dt);
+  claimFood();positionFood();
   if(!gesture&&(Math.abs(cam.vx)>5||Math.abs(cam.vy)>5)){cam.x-=cam.vx*dt/cam.z;cam.y-=cam.vy*dt/cam.z;const k=Math.exp(-dt*4);cam.vx*=k;cam.vy*=k;const bx=cam.x,by=cam.y;clampCam();if(cam.x!==bx)cam.vx=0;if(cam.y!==by)cam.vy=0}
   const t0=performance.now();draw(dt);perf.ms=perf.ms*.9+(performance.now()-t0)*.1;perf.n++;if(bubble&&focus)aim();
   raf=requestAnimationFrame(tick);
@@ -132,7 +133,11 @@ window.FrontierContainmentYard=(()=>{
  function step(m,dt){
   if(m.hop>0)m.hop=Math.max(0,m.hop-dt*50);
   const held=gesture?.type==='drag'&&gesture.m===m;m.lift+=((held?10:0)-m.lift)*Math.min(1,dt*14);
-  if(held||focus===m){m.motion='idle';return}
+  if(held){m.foodArrival=null;m.motion='idle';return}
+  const food=nearestFood(m);
+  if(food){const p=foodPoint(food),dx=p.x-m.x,dy=p.y-m.y,d=Math.hypot(dx,dy),travel=Math.min(d,m.speed*3.8*dt);m.food=food.id;if(d>5){m.x+=dx/d*travel;m.y+=dy/d*travel;if(Math.abs(dx)>.5)m.dir=dx<0?-1:1;m.motion='move'}else m.motion='idle';const remaining=Math.max(0,d-travel);if(remaining<=6){if(m.foodArrival?.id!==food.id)m.foodArrival={id:food.id,at:clock-dt+Math.max(0,d-6)/(m.speed*3.8)};const prior=arrivals.get(food.id);if(!prior||m.foodArrival.at<prior.at)arrivals.set(food.id,{m,at:m.foodArrival.at})}else m.foodArrival=null;return}
+  m.food=null;m.foodArrival=null;
+  if(focus===m){m.motion='idle';return}
   if(m.mode==='idle'){m.motion='idle';m.wait-=dt;if(m.wait<=0){const far=Math.random()<.25,r=far?rnd(90,200):rnd(25,90),a=rnd(0,Math.PI*2);m.tx=clamp(m.x+Math.cos(a)*r,m.zone*world.zw+24,(m.zone+1)*world.zw-24);m.ty=clamp(m.y+Math.sin(a)*r*.6,50,world.h-10);m.mode='walk'}}
   else{const dx=m.tx-m.x,dy=m.ty-m.y,d=Math.hypot(dx,dy);if(d<1.5){m.mode='idle';m.wait=rnd(1.5,7)}else{const s=Math.min(d,m.speed*dt);m.x+=dx/d*s;m.y+=dy/d*s;if(Math.abs(dx)>.5)m.dir=dx<0?-1:1;m.motion='move'}}
  }
@@ -191,6 +196,7 @@ window.FrontierContainmentYard=(()=>{
   }
   // 閃光星芒
   const [fw,fh]=sizeCanvas(fx,dpr),f2=fx.getContext('2d');f2.setTransform(1,0,0,1,0,0);f2.clearRect(0,0,fw,fh);f2.setTransform(k,0,0,k,ox,oy);
+  for(const m of vis)if(m.sp?.state!=='ready'){const id=FrontierCapture.units[m.i.species]?.image;let img=fallbackImages.get(id);if(!img){img=new Image();img.src='assets/'+id+'.png';img.onerror=()=>{if(!img.dataset?.fallback){img.onerror=null;img.src='assets/rhodes-logo.png'}};fallbackImages.set(id,img)}if(img.complete&&img.naturalWidth){const b=box(m),w=Math.max(26,b.w),h=w*img.naturalHeight/img.naturalWidth;f2.drawImage(img,m.x-w/2,m.y-h,w,h)}}
   for(const m of vis){if(m.v!=='shiny')continue;const b=box(m);for(let q=0;q<4;q++){const p=(clock*.55+m.seed+q*.25)%1,a=Math.sin(p*Math.PI),x=b.cx+Math.sin(m.seed*7+q*2.3)*b.w*.45,y=b.t+b.h*(.1+.75*((q*.37+m.seed)%1))-p*6,sz=(1.6+1.3*a)*Math.max(.6,b.w/30);star(f2,x,y,sz,a)}}
   /* 已命名個體常駐名牌（固定字級，不隨縮放） */
   f2.setTransform(dpr,0,0,dpr,0,0);
@@ -231,19 +237,57 @@ window.FrontierContainmentYard=(()=>{
  function show(m){focus=m;editing=false;bubble?.remove();bubble=document.createElement('div');bubble.className='yard-bubble';bubble.setAttribute('role','dialog');fill();yard.querySelector('.yard-layer').append(bubble);aim()}
  function fill(){
   const i=focus.i,u=FrontierCapture.units[i.species],v=variantOf(i);
-  bubble.innerHTML=(editing?'<form class="yard-rename"><input maxlength="'+NAME_MAX+'" value="'+esc(i.nickname||'')+'" placeholder="'+esc(u.name)+'" aria-label="自訂名稱"><button type="submit">確定</button></form>':'<div class="yard-name"><button class="yard-heart'+(i.favorite?' is-on':'')+'" data-yard-heart aria-pressed="'+!!i.favorite+'" aria-label="喜愛"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7.5-4.6-9-9.2C2 7.4 4.3 4.5 7.4 4.5c2 0 3.6 1.1 4.6 2.7 1-1.6 2.6-2.7 4.6-2.7 3.1 0 5.4 2.9 4.4 6.3-1.5 4.6-9 9.2-9 9.2z"/></svg></button><b>'+esc(nameOf(i))+'</b><button class="yard-pen" data-yard-pen aria-label="自訂名稱"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4"/></svg></button></div>')+(i.nickname?'<small class="yard-species">'+esc(u.name+(V()?.suffix(v)||''))+'</small>':'')+'<dl><dt>收容時間</dt><dd>'+when(i.capturedAt)+'</dd><dt>收容難度</dt><dd>'+difficulty(i)+'</dd><dt>收容地區</dt><dd>'+esc(region(i))+'</dd></dl><div class="yard-affinity"><b>好感度 '+FrontierBaseEngine.affinityOf(i)+'</b><button type="button" data-yard-feed>投餵</button></div>';
+  bubble.innerHTML=(editing?'<form class="yard-rename"><input maxlength="'+NAME_MAX+'" value="'+esc(i.nickname||'')+'" placeholder="'+esc(u.name)+'" aria-label="自訂名稱"><button type="submit">確定</button></form>':'<div class="yard-name"><button class="yard-heart'+(i.favorite?' is-on':'')+'" data-yard-heart aria-pressed="'+!!i.favorite+'" aria-label="喜愛"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7.5-4.6-9-9.2C2 7.4 4.3 4.5 7.4 4.5c2 0 3.6 1.1 4.6 2.7 1-1.6 2.6-2.7 4.6-2.7 3.1 0 5.4 2.9 4.4 6.3-1.5 4.6-9 9.2-9 9.2z"/></svg></button><b>'+esc(nameOf(i))+'</b><button class="yard-pen" data-yard-pen aria-label="自訂名稱"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4"/></svg></button></div>')+(i.nickname?'<small class="yard-species">'+esc(u.name+(V()?.suffix(v)||''))+'</small>':'')+'<dl><dt>收容時間</dt><dd>'+when(i.capturedAt)+'</dd><dt>收容難度</dt><dd>'+difficulty(i)+'</dd><dt>收容地區</dt><dd>'+esc(region(i))+'</dd></dl><div class="yard-affinity" aria-label="好感度 '+FrontierBaseEngine.affinityOf(i)+'" title="好感度">'+affinityIcon+'<b>'+FrontierBaseEngine.affinityOf(i)+'</b></div>';
   if(editing){const input=bubble.querySelector('input');input.focus();input.select()}
  }
  function aim(){const fw=stage.clientWidth,bw=bubble.offsetWidth,bh=bubble.offsetHeight,b=box(focus),top=toScreen(b.cx,b.t),foot=toScreen(b.cx,b.b);let x=top.x-bw/2,y=top.y-bh-10;x=Math.max(8,Math.min(fw-bw-8,x));const below=y<8;if(below)y=foot.y+10;bubble.style.transform='translate3d('+x+'px,'+y+'px,0)';bubble.style.setProperty('--tail',(top.x-x)+'px');bubble.classList.toggle('is-below',below)}
  function close(){bubble?.remove();bubble=null;focus=null;editing=false}
- function feed(){
-  const uid=focus?.i.uid;if(!uid)return;
-  const i=db.capture.instances.find(x=>x.uid===uid);if(!i)return;
-  const E=FrontierBaseEngine;
-  modal('投餵 · '+nameOf(i),'<p>好感度 '+FrontierBaseEngine.affinityOf(i)+'</p><div class="feed-recipes">'+E.feedTypes.map(d=>{
-   const count=E.feedStock(db,d.id),disabled=!count;
-   return '<div class="feed-recipe">'+E.feedIcon(d.id)+'<div><b>'+d.name+'</b><small>好感＋'+d.affinity+' · 持有 '+count+'</small></div><button type="button" data-feed-unit="'+esc(uid)+'" data-feed-kind="'+d.id+'" '+(disabled?'disabled':'')+'>投餵</button></div>';
-  }).join('')+'</div>','<button onclick="closeModal()">關閉</button>');
+
+ function feedToolbar(){return '<div class="yard-feed-tools"><button class="yard-feed-toggle" type="button" data-yard-feed-toggle aria-label="投餵" aria-expanded="false">'+feedToolIcon+'</button><div class="yard-feed-options" role="group" aria-label="選擇飼料" hidden></div><p class="yard-feed-help" role="status" hidden></p></div>'}
+ function updateFeedToolbar(){
+  if(!yard?.isConnected)return;
+  const tools=yard.querySelector('.yard-feed-tools'),row=tools?.querySelector('.yard-feed-options');if(!row)return;
+  const E=FrontierBaseEngine;if(feedUi.selected&&!E.feedStock(db,feedUi.selected))feedUi.selected=null;
+  tools.classList.toggle('is-open',feedUi.open);tools.classList.toggle('is-busy',feedUi.busy);
+  tools.querySelector('[data-yard-feed-toggle]').setAttribute('aria-expanded',String(feedUi.open));
+  row.hidden=!feedUi.open;
+  row.innerHTML=E.feedTypes.map(d=>{const n=E.feedStock(db,d.id);return '<button type="button" data-yard-feed-pick="'+d.id+'" class="'+(feedUi.selected===d.id?'is-selected':'')+'" aria-pressed="'+(feedUi.selected===d.id)+'" aria-label="'+d.name+'，'+n+'份，好感增加'+d.affinity+'" '+(!n?'disabled':'')+'>'+E.feedIcon(d.id)+'<b>'+n+'</b></button>'}).join('');
+  const hint=tools.querySelector('.yard-feed-help');hint.hidden=!feedUi.open;hint.textContent=feedUi.busy?'正在保存投餵':feedUi.selected?'點個體直接投餵 · 點空地放置':'選擇飼料，再點個體或空地';
+ }
+ async function offerFeed(m,point){
+  const type=feedUi.selected;if(!type||feedUi.busy||!FrontierBaseEngine.feedStock(db,type))return;
+  feedUi.busy=true;updateFeedToolbar();
+  try{
+   const ok=await FrontierBase151.execute(m?'feedGive':'feedPlace',m?{uid:m.i.uid,feed:type}:{id:crypto.randomUUID(),feed:type,x:clamp(point.x/world.w,0,1),y:clamp(point.y/world.h,0,1)});
+   if(ok){if(m){m.hop=9;flashAffinity(m,type)}syncFood();if(focus&&bubble){focus.i=db.capture.instances.find(i=>i.uid===focus.i.uid)||focus.i;fill();aim()}}
+  }finally{feedUi.busy=false;updateFeedToolbar()}
+ }
+ const foodPoint=f=>{let p=foodPoints.get(f.id);if(!p||p.w!==world.w||p.h!==world.h){p={x:f.x*world.w,y:f.y*world.h,w:world.w,h:world.h};foodPoints.set(f.id,p)}return p};
+ function syncFood(){
+  const foods=db.capture?.yardFood||emptyFoods;
+  if(foods===foodSource)return;
+  foodSource=foods;const ids=new Set(foods.map(f=>f.id));
+  for(const[id,node]of foodNodes)if(!ids.has(id)){node.remove();foodNodes.delete(id);foodPoints.delete(id)}
+  const layer=yard?.querySelector('.yard-food-layer');if(!layer)return;
+  for(const food of foods)if(!foodNodes.has(food.id)){const node=document.createElement('div');node.className='yard-ground-feed';node.dataset.yardFood=food.id;node.setAttribute('role','img');node.setAttribute('aria-label',(FrontierBaseEngine.feedTypes.find(d=>d.id===food.type)?.name||'飼料')+'，附近個體會靠近進食');node.innerHTML='<img src="assets/feed-'+food.type+'.png" alt="" draggable="false">';layer.append(node);foodNodes.set(food.id,node)}
+ }
+ function nearestFood(m){
+  if(!shown(m))return null;const radius=clamp(world.zw*.65,140,260);let best=null,distance=Infinity;
+  for(const food of db.capture?.yardFood||emptyFoods){if(claims.has(food.id))continue;const p=foodPoint(food),d=Math.hypot(m.x-p.x,m.y-p.y);if(d<=radius&&d<distance){best=food;distance=d}}
+  return best;
+ }
+ function positionFood(){for(const food of db.capture?.yardFood||emptyFoods){const p=foodPoint(food),screen=toScreen(p.x,p.y),node=foodNodes.get(food.id);if(node){node.style.transform='translate3d('+screen.x+'px,'+screen.y+'px,0) translate(-50%,-70%) scale('+clamp(cam.z,.65,1.5)+')';node.hidden=screen.x<-40||screen.x>stage.clientWidth+40||screen.y<-40||screen.y>stage.clientHeight+40}}}
+ function flashAffinity(m,type){
+  const p=toScreen(m.x,m.y-24),node=document.createElement('span');node.className='yard-affinity-gain';node.innerHTML=affinityIcon+'+'+(FrontierBaseEngine.feedTypes.find(d=>d.id===type)?.affinity||0);node.style.left=clamp(p.x,24,stage.clientWidth-50)+'px';node.style.top=clamp(p.y,24,stage.clientHeight-60)+'px';yard.querySelector('.yard-layer').append(node);setTimeout(()=>node.remove(),1100);
+ }
+ function claimFood(){
+  if(feedUi.busy||claims.size||FrontierRuntime.busy||performance.now()<foodRetry)return;
+  for(const food of db.capture?.yardFood||emptyFoods){
+   if(claims.has(food.id))continue;const p=foodPoint(food);
+   const winner=arrivals.get(food.id)?.m;if(!winner)continue;claims.add(food.id);
+   FrontierBase151.execute('feedEat',{food:food.id,uid:winner.i.uid}).then(ok=>{if(ok&&yard?.isConnected){winner.hop=9;winner.zone=zoneOf(winner.x);winner.mode='idle';winner.wait=2;flashAffinity(winner,food.type);syncFood();if(focus===winner&&bubble){focus.i=db.capture.instances.find(i=>i.uid===winner.i.uid)||focus.i;fill();aim()}}else foodRetry=performance.now()+4000}).finally(()=>claims.delete(food.id));
+   break;
+  }
  }
  function rename(value){
   const i=focus?.i;if(!i)return;const name=String(value||'').replace(/[\u0000-\u001f<>]/g,'').trim().slice(0,NAME_MAX);
@@ -253,13 +297,13 @@ window.FrontierContainmentYard=(()=>{
  }
  /* ---------- 指標：短按查看、長按拖曳、空白處拖曳平移、雙指縮放、滾輪縮放 ---------- */
  function down(e){
-  if(!yard?.isConnected||!e.target.closest?.('.yard')||e.target.closest('.yard-bubble,.yard-head,.yard-filter-panel'))return;
+  if(!yard?.isConnected||!e.target.closest?.('.yard')||e.target.closest('.yard-bubble,.yard-head,.yard-filter-panel,.yard-feed-tools'))return;
   e.preventDefault();pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
   if(pointers.size===2){if(gesture?.timer)clearTimeout(gesture.timer);if(gesture?.type==='drag')gesture.m.hop=6;const [a,b]=[...pointers.values()];gesture={type:'pinch',d:Math.hypot(a.x-b.x,a.y-b.y),z:cam.z};return}
   if(pointers.size>2)return;
   const w=toWorld(e.clientX,e.clientY),m=hit(w.x,w.y);
   cam.vx=0;cam.vy=0;gesture={type:'press',id:e.pointerId,x:e.clientX,y:e.clientY,m,cam:{...cam},moved:false};
-  if(m)gesture.timer=setTimeout(()=>{if(gesture?.m!==m||gesture.moved)return;gesture.type='drag';gesture.off={x:m.x-w.x,y:m.y-w.y};if(bubble)close();navigator.vibrate?.(15)},HOLD_MS);
+  if(m&&!feedUi.selected)gesture.timer=setTimeout(()=>{if(gesture?.m!==m||gesture.moved)return;gesture.type='drag';gesture.off={x:m.x-w.x,y:m.y-w.y};if(bubble)close();navigator.vibrate?.(15)},HOLD_MS);
  }
  function move(e){
   if(!pointers.has(e.pointerId))return;pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(!gesture)return;e.preventDefault();
@@ -276,6 +320,7 @@ window.FrontierContainmentYard=(()=>{
   if(g.type==='pan'){const fresh=performance.now()-(g.lt||0)<80;cam.vx=fresh?clamp(g.vx||0,-2500,2500):0;cam.vy=fresh?clamp(g.vy||0,-2500,2500):0;return}
   if(g.type==='drag'){const m=g.m;m.zone=zoneOf(m.x);m.hop=8;m.mode='idle';m.wait=rnd(1,3);m.tx=m.x;m.ty=m.y;return}
   if(g.type!=='press'||e.type==='pointercancel')return;
+  if(feedUi.selected){offerFeed(g.m,toWorld(e.clientX,e.clientY));return}
   if(!g.m){if(bubble)close();return}
   if(focus===g.m){close();return}
   g.m.hop=6;show(g.m);
@@ -289,17 +334,14 @@ window.FrontierContainmentYard=(()=>{
   if(e.target.closest?.('[data-home20-yard]')){FrontierRuntime.view(()=>go('yard'));return}
   if(e.target.closest?.('[data-yard-back]')){go('home');return}
   if(e.target.closest?.('[data-yard-pen]')&&focus){editing=true;fill();aim()}
-  const feedButton=e.target.closest?.('[data-feed-unit]');
-  if(feedButton){FrontierBase151.execute('feedGive',{uid:feedButton.dataset.feedUnit,feed:feedButton.dataset.feedKind}).then(ok=>{
-   if(!ok||page!=='yard')return;
-   const live=db.capture.instances.find(x=>x.uid===feedButton.dataset.feedUnit);
-   if(focus&&live){focus.i=live;fill();aim();feed();}
-  });return}
-  if(e.target.closest?.('[data-yard-feed]')){feed();return}
+  if(e.target.closest?.('[data-yard-feed-toggle]')){feedUi.open=!feedUi.open;if(!feedUi.open)feedUi.selected=null;close();updateFeedToolbar();return}
+  const pick=e.target.closest?.('[data-yard-feed-pick]');
+  if(pick){feedUi.selected=feedUi.selected===pick.dataset.yardFeedPick?null:pick.dataset.yardFeedPick;close();updateFeedToolbar();return}
   if(e.target.closest?.('[data-yard-heart]')&&focus){const live=(db.capture?.instances||[]).find(x=>x.uid===focus.i.uid);if(live){if(live.favorite)delete live.favorite;else live.favorite=true;focus.i=live;save();fill();aim();updateCount();toast(live.favorite?'已加入喜愛名單':'已移出喜愛名單')}}
   const fb=e.target.closest?.('[data-yard-filter-open]');if(fb){const p=yard.querySelector('.yard-filter-panel');p.hidden=!p.hidden;fb.setAttribute('aria-expanded',String(!p.hidden));return}
   if(yard?.isConnected&&!e.target.closest?.('.yard-filter-panel,[data-yard-filter-open]')){const p=yard.querySelector('.yard-filter-panel');if(p&&!p.hidden){p.hidden=true;yard.querySelector('[data-yard-filter-open]')?.setAttribute('aria-expanded','false')}}
  });
+ document.addEventListener('frontier:committed',()=>{if(yard?.isConnected){syncFood();updateFeedToolbar()}});
  document.addEventListener('change',e=>{const k=e.target.dataset?.yardFilter;if(!k||!(k in filt))return;filt[k]=e.target.checked;if(focus&&!shown(focus))close();updateCount()});
  document.addEventListener('submit',e=>{if(!e.target.closest?.('.yard-rename'))return;e.preventDefault();rename(e.target.querySelector('input').value)});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&bubble){if(editing){editing=false;fill();aim()}else close()}});
@@ -308,5 +350,5 @@ window.FrontierContainmentYard=(()=>{
   if(page==='yard'){if(yard?.isConnected){nav();return}nav();$('#app').innerHTML=view();mount();return}
   if(yard){stop();yard=null}prior();
  };
- return{perf,view,mount,purge,mobs:()=>mobs,cam:()=>({...cam,minZoom,world}),zoomAt,species:()=>species,rename:(uid,name)=>{const m=mobs.find(x=>x.i.uid===uid);if(m){focus=m;return rename(name)}}};
+ return{perf,view,mount,purge,modelFor:resolveId,mobs:()=>mobs,cam:()=>({...cam,minZoom,world}),zoomAt,species:()=>species,rename:(uid,name)=>{const m=mobs.find(x=>x.i.uid===uid);if(m){focus=m;return rename(name)}}};
 })();
