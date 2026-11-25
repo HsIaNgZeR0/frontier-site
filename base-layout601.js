@@ -28,6 +28,7 @@ window.FrontierBaseLayout601=(()=>{
   commission:{c:'#cfcfcf',en:'TRAINING ROOM',t:'training'},
   cFactory:{c:'#c27cf2',en:'C-FACTORY',t:'factory'},
   cTrade:{c:'#3fd1a0',en:'C-TRADING POST',t:'trade'},
+  feed:{c:'#9fc482',en:'FEED EXCHANGE',t:'power'},
   cSupply:{c:'#ef5f7f',en:'C-POWER PLANT',t:'power'},
   logistics:{c:'#b9a3ff',en:'LOGISTICS',t:'template'}
  };
@@ -49,13 +50,13 @@ window.FrontierBaseLayout601=(()=>{
  const prior=validSave;validSave=function(s){return prior(s)&&valid(s)};
  const bars=n=>'<span class="b601-lv" aria-label="等級 '+n+'">'+Array.from({length:n},()=>'<i></i>').join('')+'</span>';
  /* 本家總覽房塊：左側色條（生產類）、名稱＋白色直槓、狀態列、右下人數、底部分段條、六角形浮水印。 */
- const prodKinds={factory:'生產中',cFactory:'生產中',trade:'獲取中',cTrade:'獲取中',supply:'補給中',cSupply:'補給中'};
+ const prodKinds={factory:'生產中',cFactory:'生產中',trade:'獲取中',cTrade:'獲取中',supply:'補給中',cSupply:'補給中',feed:'準備許可'};
  const hex='<svg class="b601-hex" viewBox="0 0 40 46" aria-hidden="true"><path d="M20 2l17 10v22L20 44 3 34V12z" fill="none" stroke="currentColor" stroke-width="3"/></svg>';
  const person='<svg viewBox="0 0 8 14" aria-hidden="true"><circle cx="4" cy="2.3" r="2.1"/><path d="M1 5.5h6v5H5.5V14h-3v-3.5H1z"/></svg>';
  function roomHTML(s,r,box){const E=FrontierBaseEngine,L=look(r.kind),seats=r.kind==='hub'||E.types[r.kind]?.kind==='none'?0:E.seats(r)||0,ready=Object.values(r.pending||{}).some(n=>n>0)||r.income>0,name=E.types[r.kind]?.name||r.kind,prod=prodKinds[r.kind];
   const style='--rc:'+L.c+';left:'+box.x*U+'px;top:'+box.y*U+'px;width:'+box.w*U+'px;height:'+box.h*U+'px';
   if(r.kind==='hub')return '<button type="button" class="b601-room b601-hub" data-room601="'+esc(r.id)+'" aria-label="'+esc(name)+' 等級 '+r.level+'" style="'+style+'"><span class="b601-frame"><span class="b601-tree"></span><span class="b601-hubtitle"><b class="b601-name">'+esc(name)+'</b><small>LEVEL OF CONTROL_INTERFACE</small><span class="b601-ver"><i class="b601-verhatch"></i><small>VER</small><strong>'+r.level+'.0</strong></span></span></span>'+(ready?'<em class="b601-ready"></em>':'')+'</button>';
-  const status=ready?'可收取':prod?(prod+' ▸▸▸'):(r.staff.length?'工作中':'空閒中');
+  const status=r.kind==='feed'?'許可 '+E.feedOptions(r).length+'/'+E.feedCapacity(r.level):ready?'可收取':prod?(prod+' ▸▸▸'):(r.staff.length?'工作中':'空閒中');
   return '<button type="button" class="b601-room'+(prod?' b601-prod':'')+'" data-room601="'+esc(r.id)+'" aria-label="'+esc(name)+' 等級 '+r.level+'" style="'+style+'"><span class="b601-frame"><span class="b601-mark">'+hex+'<span class="b601-ico">'+ico[L.t]+'</span></span><span class="b601-bar"></span><span class="b601-head"><b class="b601-name">'+esc(name)+'</b>'+bars(r.level)+'</span><small class="b601-status'+(ready?' is-ready':'')+'">'+status+'</small>'+(seats?'<span class="b601-count">'+person+'<b>'+r.staff.length+'</b><small>/'+seats+'</small></span>':'')+'<span class="b601-seg">'+'<i></i>'.repeat(5)+'</span></span></button>'}
  /* 名稱過長時縮小字級而非截斷為「…」。 */
  function fit(root){const els=[...root.querySelectorAll('.b601-room:not(.b601-hub) .b601-name,.b601-status')],m=els.map(b=>[b.scrollWidth,b.clientWidth,parseFloat(getComputedStyle(b).fontSize)]);els.forEach((b,i)=>{const[sw,cw,f]=m[i];if(sw>cw+.5&&cw>0)b.style.fontSize=Math.max(5,Math.floor(f*cw/sw*2)/2)+'px'})}
@@ -66,6 +67,7 @@ window.FrontierBaseLayout601=(()=>{
  const hm=ms=>{const m=Math.max(0,Math.ceil(ms/60000));return m>=60?Math.floor(m/60)+'時'+(m%60?m%60+'分':''):m+'分'};
  function info(s,r){const E=FrontierBaseEngine,c={definitions:FrontierInventory.definitions,recipes:FrontierInventory.recipes,units:FrontierCapture.units},p=E.recipe(r),pend=Object.values(r.pending||{}).reduce((n,x)=>n+x,0),staff=E.types[r.kind]?.kind==='none'?'':'派駐 '+r.staff.length+'/'+E.seats(r);
   if(['trade','cTrade'].includes(r.kind))return{line:'訂單 '+r.orders.length+'/32'+(staff?' · '+staff:''),value:r.income?r.income.toLocaleString():'0',unit:'待領',ready:r.income>0,pct:p?Math.min(1,r.work/p.time):null};
+  if(r.kind==='feed'){const count=E.feedOptions(r).length,cap=E.feedCapacity(r.level);return{line:(count>=cap?'許可已滿':'下張約 '+hm(Math.max(0,p.time-r.work)/E.rate(s,r,c)))+(staff?' · '+staff:''),value:count+'/'+cap,unit:'許可',ready:false,pct:count>=cap?null:Math.min(1,r.work/p.time)}}
   if(r.kind==='commission'){const q=s.base151.special_commissions;return{line:q.active.length>=4?'欄位已滿，請先領取':'下張約 '+(p?hm(Math.max(0,p.time-r.work)/(E.rate(s,r,c)||1)):'—')+(staff?' · '+staff:''),value:q.active.length+'/4',unit:'委託',ready:false,pct:p?Math.min(1,r.work/p.time):null}}
   if(p){const rate=E.rate(s,r,c)||1;return{line:'下次 '+hm(Math.max(0,p.time-r.work)/rate)+(staff?' · '+staff:''),value:String(pend),unit:'待領',ready:pend>0,pct:Math.min(1,r.work/p.time)}}
   if(r.kind==='personnel')return{line:'增加公開招募欄位',value:E.publicSlots(s)+'/4',unit:'招募欄',ready:false,pct:null};
@@ -80,7 +82,7 @@ window.FrontierBaseLayout601=(()=>{
  const pctTxt=v=>'+'+Math.round(v*1000)/10+'%';
  function staffHTML(s,r){if(FrontierBaseEngine.types[r.kind]?.kind==='none')return '';const st=staffInfo(s,r);if(!st.chips.length)return '<span class="b601-staffline is-empty">未派駐（0/'+FrontierBaseEngine.seats(r)+'）· 派駐可提高效率</span>';return '<span class="b601-staffline">'+st.chips.map(x=>'<span class="b601-chip'+(x.note?' is-off':'')+(x.kind==='enemy'?' is-enemy':'')+'" title="'+esc(x.name)+'">'+face(x)+'<em>'+(x.note||pctTxt(x.pct))+'</em></span>').join('')+'<span class="b601-total">'+r.staff.length+'/'+FrontierBaseEngine.seats(r)+' · 總加成 '+pctTxt(st.total)+(st.capped?'（上限）':'')+'</span></span>'}
  /* 同類房間合併成一列（數量、合計待領、最快完成），點開才列出各間。 */
- const order=['factory','trade','supply','cFactory','cTrade','cSupply','commission','dispatch','personnel','workshop','logistics'],open=new Set();
+ const order=['factory','trade','supply','cFactory','cTrade','cSupply','feed','commission','dispatch','personnel','workshop','logistics'],open=new Set();
  function rowHTML(s,r,sub){const E=FrontierBaseEngine,L=look(r.kind),i=info(s,r);return '<button type="button" class="b601-row'+(sub?' b601-sub':'')+(i.ready?' is-ready':'')+'" data-row601="'+esc(r.id)+'" style="--rc:'+L.c+'">'+(sub?'':'<span class="b601-row-ico">'+ico[L.t]+'</span>')+'<span class="b601-row-main"><span class="b601-row-title"><b>'+(sub?'第'+sub+'間':esc(E.types[r.kind]?.name||r.kind))+'</b>'+bars(r.level)+'</span><small>'+esc(FrontierBaseEngine.types[r.kind]?.kind==='none'?i.line:i.line.replace(/ · 派駐 \d+\/\d+/,'').replace(/^派駐 \d+\/\d+$/,''))+'</small>'+staffHTML(s,r)+(i.pct!=null?'<span class="b601-row-prog"><i style="width:'+Math.round(i.pct*100)+'%"></i></span>':'')+'</span>'+(i.value?'<span class="b601-row-val"><small>'+i.unit+'</small><b>'+esc(i.value)+'</b></span>':'')+'</button>'}
  function groupHTML(s,kind,rooms){const E=FrontierBaseEngine,L=look(kind),infos=rooms.map(r=>info(s,r)),ready=infos.some(i=>i.ready),staff=E.types[kind]?.kind==='none'?'':'派駐 '+rooms.reduce((n,r)=>n+r.staff.length,0)+'/'+rooms.reduce((n,r)=>n+E.seats(r),0),nums=infos.map(i=>Number(String(i.value).replace(/,/g,''))).filter(Number.isFinite),total=nums.reduce((a,b)=>a+b,0),pcts=infos.map(i=>i.pct).filter(x=>x!=null),best=pcts.length?Math.max(...pcts):null,is=open.has(kind);
   const avg=staff?rooms.reduce((n,r)=>n+staffInfo(s,r).total,0)/rooms.length:0,line=rooms.length+' 間 · Lv '+rooms.map(r=>r.level).join('／')+(staff?' · '+staff+' · 平均加成 '+pctTxt(avg):'');
