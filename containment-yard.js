@@ -5,9 +5,10 @@ window.FrontierContainmentYard=(()=>{
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const BASE='assets/enemy-spine/',UNIT=.12,ELITE=1.15,HOLD_MS=360,NAME_MAX=12,PHASES=2,MAX_ZOOM=3;
  /* 收容區畫面（標題列下方），與上方按鈕分開不重疊 */let stage=null,srcArr=null,mobs=[],raf=0,last=0,yard=null,gl=null,fx=null,shadow=null,bubble=null,focus=null,editing=false,cam={x:0,y:0,z:1},world={w:400,h:700},minZoom=.5;
- const feedUi={open:false,selected:null,busy:false},foodNodes=new Map(),foodPoints=new Map(),arrivals=new Map(),claims=new Set(),emptyFoods=[];let foodSource=null,foodRetry=0;
+ const feedUi={open:false,selected:null,busy:false},foodNodes=new Map(),foodPoints=new Map(),arrivals=new Map(),claims=new Set(),emptyFoods=[];let foodSource=null,foodRetry=0,mountEpoch=0;
  const affinityIcon='<svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="6" cy="7" rx="2" ry="3"/><ellipse cx="12" cy="5" rx="2" ry="3"/><ellipse cx="18" cy="7" rx="2" ry="3"/><path d="M5 17c0-3 4-7 7-7s7 4 7 7c0 5-4 2-7 2s-7 3-7-2z"/></svg>';
  const feedToolIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 12h18l-2 7H5zM2 12h20M8 8l1-3m4 3 1-4m3 4 1-2"/></svg>';
+ const thrown=new Map();let throwGesture=null,feedClickUntil=0;
  const fallbackImages=new Map();
  const species=new Map(),pointers=new Map(),perf={ms:0,n:0};
  /* 篩選：一區 普通／菁英，二區 普通／閃光／色違，三區 已命名／喜愛（勾了才限制，符合任一即可） */
@@ -97,15 +98,15 @@ window.FrontierContainmentYard=(()=>{
   return pts;
  }
  const zoneOf=x=>clamp(Math.floor(x/world.zw),0,ZONES-1); function mount(){
-  stop();yard=document.querySelector('.yard');if(!yard)return;
+  stop();const epoch=mountEpoch;yard=document.querySelector('.yard');if(!yard)return;
   const navTop=document.querySelector('#nav')?.getBoundingClientRect().top;if(navTop>0&&navTop<innerHeight)yard.style.bottom=(innerHeight-navTop)+'px';
   const removed=purge();if(removed){yard.querySelector('.yard-count').textContent='收容個體 '+instances().length;toast('已移除 '+removed+' 隻沒有模型的收容個體。')}
   stage=yard.querySelector('.yard-stage');fx=yard.querySelector('.yard-fx');shadow=yard.querySelector('.yard-shadows');
   const list=instances();layoutWorld(list.length);const pts=spread(list.length);cam={x:0,y:world.h/2,z:1,vx:0,vy:0};clampCam();
   mobs=list.map((i,k)=>{const u=FrontierCapture.units[i.species];return{i,v:variantOf(i),sp:null,phase:k%PHASES,zone:pts[k].zone,x:pts[k].x,y:pts[k].y,tx:pts[k].x,ty:pts[k].y,dir:Math.random()<.5?-1:1,mode:'idle',wait:rnd(.2,4),speed:rnd(9,16)*(u.rarity>=3?.9:1),s:UNIT*(u.rarity>=3?ELITE:1)*(i.mutation?1.05:1),hop:0,lift:0,motion:'idle',seed:Math.random()*10}});
-  updateCount();updateFeedToolbar();syncFood();loadRuntime().then(ok=>{if(!ok||!yard?.isConnected)return;if(!setupGL()){toast('此裝置不支援 WebGL，無法顯示模型。');return}for(const m of mobs)m.sp=speciesOf(m.i.species);last=0;raf=requestAnimationFrame(tick)});
+  updateCount();updateFeedToolbar();syncFood();loadRuntime().then(ok=>{if(!ok||epoch!==mountEpoch||!yard?.isConnected)return;if(!setupGL()){toast('此裝置不支援 WebGL，無法顯示模型。');return}for(const m of mobs)m.sp=speciesOf(m.i.species);last=0;raf=requestAnimationFrame(tick)});
  }
- function stop(){if(raf)cancelAnimationFrame(raf);raf=0;mobs=[];foodNodes.clear();foodPoints.clear();arrivals.clear();foodSource=null;feedUi.open=false;feedUi.selected=null;focus=null;bubble=null;editing=false;gesture=null;pointers.clear();try{ctx?.gl.getExtension('WEBGL_lose_context')?.loseContext()}catch{}ctx=null;renderer=null;assets=null;species.clear()}
+ function stop(){mountEpoch++;if(raf)cancelAnimationFrame(raf);raf=0;mobs=[];cancelFeedThrow();for(const flight of thrown.values()){flight.node.remove();flight.shadow.remove()}thrown.clear();foodNodes.clear();foodPoints.clear();arrivals.clear();foodSource=null;feedUi.open=false;feedUi.selected=null;focus=null;bubble=null;editing=false;gesture=null;pointers.clear();try{ctx?.gl.getExtension('WEBGL_lose_context')?.loseContext()}catch{}ctx=null;renderer=null;assets=null;species.clear()}
  function clampCam(){
   const vw=stage.clientWidth/cam.z,vh=stage.clientHeight/cam.z;
   cam.x=vw>=world.w?world.w/2:clamp(cam.x,vw/2,world.w-vw/2);cam.y=vh>=world.h?world.h/2:clamp(cam.y,vh/2,world.h-vh/2);
@@ -125,9 +126,9 @@ window.FrontierContainmentYard=(()=>{
   if(db.capture?.instances!==srcArr){srcArr=db.capture?.instances;const map=new Map((srcArr||[]).map(i=>[i.uid,i]));for(const m of mobs){const i=map.get(m.i.uid);if(i){m.i=i;m.v=variantOf(i)}}updateCount()}
   syncFood();arrivals.clear();
   for(const m of mobs)step(m,dt);
-  claimFood();positionFood();
+  claimFood();
   if(!gesture&&(Math.abs(cam.vx)>5||Math.abs(cam.vy)>5)){cam.x-=cam.vx*dt/cam.z;cam.y-=cam.vy*dt/cam.z;const k=Math.exp(-dt*4);cam.vx*=k;cam.vy*=k;const bx=cam.x,by=cam.y;clampCam();if(cam.x!==bx)cam.vx=0;if(cam.y!==by)cam.vy=0}
-  const t0=performance.now();draw(dt);perf.ms=perf.ms*.9+(performance.now()-t0)*.1;perf.n++;if(bubble&&focus)aim();
+  animateThrows(t);positionFood();const t0=performance.now();draw(dt);perf.ms=perf.ms*.9+(performance.now()-t0)*.1;perf.n++;if(bubble&&focus)aim();
   raf=requestAnimationFrame(tick);
  }
  function step(m,dt){
@@ -135,8 +136,8 @@ window.FrontierContainmentYard=(()=>{
   const held=gesture?.type==='drag'&&gesture.m===m;m.lift+=((held?10:0)-m.lift)*Math.min(1,dt*14);
   if(held){m.foodArrival=null;m.motion='idle';return}
   const food=nearestFood(m);
-  if(food){const p=foodPoint(food),dx=p.x-m.x,dy=p.y-m.y,d=Math.hypot(dx,dy),travel=Math.min(d,m.speed*3.8*dt);m.food=food.id;if(d>5){m.x+=dx/d*travel;m.y+=dy/d*travel;if(Math.abs(dx)>.5)m.dir=dx<0?-1:1;m.motion='move'}else m.motion='idle';const remaining=Math.max(0,d-travel);if(remaining<=6){if(m.foodArrival?.id!==food.id)m.foodArrival={id:food.id,at:clock-dt+Math.max(0,d-6)/(m.speed*3.8)};const prior=arrivals.get(food.id);if(!prior||m.foodArrival.at<prior.at)arrivals.set(food.id,{m,at:m.foodArrival.at})}else m.foodArrival=null;return}
-  m.food=null;m.foodArrival=null;
+  if(food){const p=foodPoint(food),dx=p.x-m.x,dy=p.y-m.y,d=Math.hypot(dx,dy),travel=Math.min(d,m.speed*3.8*dt);m.food=food.id;if(d>5){m.x+=dx/d*travel;m.y+=dy/d*travel;if(Math.abs(dx)>.5)m.dir=dx<0?-1:1;m.motion='move'}else m.motion='idle';const remaining=Math.max(0,d-travel);if(remaining<=6){if(m.foodArrival?.id!==food.id)m.foodArrival={id:food.id,at:clock-dt+Math.max(0,d-6)/(m.speed*3.8)};const prior=arrivals.get(food.id);if(!prior||m.foodArrival.at<prior.at||m.foodArrival.at===prior.at&&m.i.uid<prior.m.i.uid)arrivals.set(food.id,{m,at:m.foodArrival.at})}else m.foodArrival=null;return}
+  if(m.food){m.mode='idle';m.wait=.45;m.tx=m.x;m.ty=m.y}m.food=null;m.foodArrival=null;
   if(focus===m){m.motion='idle';return}
   if(m.mode==='idle'){m.motion='idle';m.wait-=dt;if(m.wait<=0){const far=Math.random()<.25,r=far?rnd(90,200):rnd(25,90),a=rnd(0,Math.PI*2);m.tx=clamp(m.x+Math.cos(a)*r,m.zone*world.zw+24,(m.zone+1)*world.zw-24);m.ty=clamp(m.y+Math.sin(a)*r*.6,50,world.h-10);m.mode='walk'}}
   else{const dx=m.tx-m.x,dy=m.ty-m.y,d=Math.hypot(dx,dy);if(d<1.5){m.mode='idle';m.wait=rnd(1.5,7)}else{const s=Math.min(d,m.speed*dt);m.x+=dx/d*s;m.y+=dy/d*s;if(Math.abs(dx)>.5)m.dir=dx<0?-1:1;m.motion='move'}}
@@ -144,23 +145,28 @@ window.FrontierContainmentYard=(()=>{
  function sizeCanvas(c,dpr){const w=Math.round(c.clientWidth*dpr),h=Math.round(c.clientHeight*dpr);if(c.width!==w||c.height!==h){c.width=w;c.height=h}return[w,h]}
  function tone(v,sp){shader.setUniformf('u_hue',v==='color'?V().hue(sp.id)*Math.PI/180:0);shader.setUniformf('u_sat',v==='color'?1.18:v==='shiny'?1.12:1);shader.setUniformf('u_bri',v==='shiny'?1.08:1)}
  /* 遠景模式：把每個物種（含變異色）的待機／移動各烘焙 F 格小圖，之後用 2D drawImage 畫，上千隻也流暢 */
- const F=8,BAKE=1;
+ const F=16,COLS=8,BAKE=1;
  function bake(sp,v){
-  const glc=yard.querySelector('.yard-gl'),W=glc.width,H=glc.height,b=sp.bounds,pad=.2;
-  let s=UNIT*BAKE*ELITE*Math.min(1.5,devicePixelRatio||1);
-  let cw=Math.ceil(b.w*s*(1+pad*2))+2,ch=Math.ceil(b.h*s*(1+pad*2))+2;const fit=Math.min(1,W/(F*cw),H/(2*ch));
-  if(fit<1){s*=fit;cw=Math.ceil(b.w*s*(1+pad*2))+2;ch=Math.ceil(b.h*s*(1+pad*2))+2}
-  const g=ctx.gl,cam2=renderer.camera;g.viewport(0,0,W,H);g.clearColor(0,0,0,0);g.clear(g.COLOR_BUFFER_BIT);
-  cam2.position.x=W/2;cam2.position.y=H/2;cam2.viewportWidth=W;cam2.viewportHeight=H;
-  renderer.begin();tone(v,sp);
-  const sk=sp.bakeSk??=new spine.Skeleton(sp.data),ox=cw/2-(b.x+b.w/2)*s,padPx=b.h*s*pad,foot=padPx-b.y*s,durs=[];
-  ['idle','move'].forEach((row,r)=>{
-   const anim=sp.data.findAnimation(row==='idle'?idleName(sp.data):moveName(sp.data)),D=Math.max(.2,anim?.duration||1);durs.push(D);
-   for(let k=0;k<F;k++){sk.setToSetupPose();anim?.apply(sk,0,k*D/F,true,null,1,spine.MixBlend.setup,spine.MixDirection.mixIn);sk.scaleX=s;sk.scaleY=s;sk.x=k*cw+ox;sk.y=H-(r+1)*ch+foot;sk.updateWorldTransform();renderer.drawSkeleton(sk,true)}
-  });
+  const glc=yard.querySelector('.yard-gl'),W=glc.width,H=glc.height,b=sp.bounds,key=v||'';
+  let job=sp.sheets?.[key];
+  if(!job){
+   let scale=UNIT*BAKE*ELITE*Math.min(1.5,devicePixelRatio||1),cw=Math.ceil(b.w*scale*1.4)+2,ch=Math.ceil(b.h*scale*1.4)+2;
+   const fit=Math.min(1,W/(COLS*cw),H/(4*ch));if(fit<1){scale*=fit;cw=Math.ceil(b.w*scale*1.4)+2;ch=Math.ceil(b.h*scale*1.4)+2}
+   const sheet=document.createElement('canvas');sheet.width=COLS*cw;sheet.height=4*ch;
+   const animations=[sp.data.findAnimation(idleName(sp.data)),sp.data.findAnimation(moveName(sp.data))],foot=b.h*scale*.2-b.y*scale;
+   job={sheet,cw,ch,ox:cw/2-(b.x+b.w/2)*scale,fy:ch-foot,foot,s:scale,durs:animations.map(a=>Math.max(.2,a?.duration||1)),animations,frames:F,cols:COLS,rows:2,validFrames:0};
+   (sp.sheets??={})[key]=job;
+  }
+  if(job.validFrames>=F)return;
+  const frame=job.validFrames,g=ctx.gl,camera=renderer.camera;
+  g.viewport(0,0,W,H);g.clearColor(0,0,0,0);g.clear(g.COLOR_BUFFER_BIT);
+  camera.position.x=W/2;camera.position.y=H/2;camera.viewportWidth=W;camera.viewportHeight=H;
+  renderer.begin();tone(v,sp);const sk=sp.bakeSk??=new spine.Skeleton(sp.data);
+  for(let row=0;row<2;row++){sk.setToSetupPose();job.animations[row]?.apply(sk,0,frame*job.durs[row]/F,true,null,1,spine.MixBlend.setup,spine.MixDirection.mixIn);sk.scaleX=job.s;sk.scaleY=job.s;sk.x=job.ox;sk.y=H-(row+1)*job.ch+job.foot;sk.updateWorldTransform();renderer.drawSkeleton(sk,true)}
   renderer.end();
-  const sheet=document.createElement('canvas');sheet.width=F*cw;sheet.height=2*ch;sheet.getContext('2d').drawImage(glc,0,0,F*cw,2*ch,0,0,F*cw,2*ch);
-  (sp.sheets??={})[v||'']={sheet,cw,ch,ox,fy:ch-foot,s,durs};
+  const target=job.sheet.getContext('2d');
+  for(let row=0;row<2;row++)target.drawImage(glc,0,row*job.ch,job.cw,job.ch,frame%COLS*job.cw,(row*2+Math.floor(frame/COLS))*job.ch,job.cw,job.ch);
+  job.validFrames++;
  }
  function draw(dt){
   const dpr=Math.min(2,devicePixelRatio||1),W=stage.clientWidth,H=stage.clientHeight;if(!W||!H)return;
@@ -168,12 +174,15 @@ window.FrontierContainmentYard=(()=>{
   const vis=mobs.filter(m=>shown(m)&&m.x>vl&&m.x<vr&&m.y>vt&&m.y<vb).sort((a,b)=>a.y-b.y);
   const far=vis.length>60||cam.z<.75;
   const c=yard.querySelector('.yard-gl'),[w,h]=sizeCanvas(c,dpr),g=ctx.gl;
-  if(far){let budget=5;for(const m of vis){if(m.sp?.state!=='ready'||m.sp.sheets?.[m.v||''])continue;if(budget--<=0)break;bake(m.sp,m.v)}}
+  if(far){
+   const pending=new Map();let fresh=false;
+   for(const m of vis){if(m.sp?.state!=='ready')continue;const key=m.v||'';if(!m.sp.sheets?.[key]){bake(m.sp,m.v);fresh=true}if(m.sp.sheets[key].validFrames<F)pending.set(m.sp.id+':'+key,m)}
+   if(!fresh){const jobs=[...pending.values()].sort((a,b)=>a.sp.sheets[a.v||''].validFrames-b.sp.sheets[b.v||''].validFrames);for(const m of jobs.slice(0,2))bake(m.sp,m.v)}
+  }
   else{
-   /* 近景：同組共用骨架每幀只推進一次 */
-   for(const sp of species.values())if(sp.state==='ready')for(const set of [sp.idle,sp.move])for(const r of set)r.used=false;
-   for(const m of vis)if(m.sp?.state==='ready')m.sp[m.motion][m.phase].used=true;
-   for(const sp of species.values())if(sp.state==='ready')for(const set of [sp.idle,sp.move])for(const r of set){r.st.update(dt);if(r.used)r.st.apply(r.s)}
+   // Only animate rigs actually visible; off-screen species need no pose work.
+   const activeRigs=new Set();for(const m of vis)if(m.sp?.state==='ready')activeRigs.add(m.sp[m.motion][m.phase]);
+   for(const r of activeRigs){r.st.update(dt);r.st.apply(r.s)}
   }
   // 陰影、光環（遠景時連模型一起畫在這層）
   const [sw,sh]=sizeCanvas(shadow,dpr),s2=shadow.getContext('2d'),k=dpr*cam.z,ox=dpr*(W/2-cam.x*cam.z),oy=dpr*(H/2-cam.y*cam.z);
@@ -182,8 +191,8 @@ window.FrontierContainmentYard=(()=>{
    if(m.v){const hh=m.v==='color'?V().hue(m.i.species)+20:46,a=m.v==='shiny'?.32+.12*Math.sin(clock*3+m.seed):.28,gr=s2.createRadialGradient(m.x,m.y,0,m.x,m.y,rw*1.8);gr.addColorStop(0,'hsla('+hh+',95%,68%,'+a+')');gr.addColorStop(1,'hsla('+hh+',95%,68%,0)');s2.fillStyle=gr;s2.beginPath();s2.ellipse(m.x,m.y,rw*1.8,rw*.6,0,0,Math.PI*2);s2.fill()}}
   g.viewport(0,0,w,h);g.clearColor(0,0,0,0);g.clear(g.COLOR_BUFFER_BIT);
   if(far){
-   for(const m of vis){const sh2=m.sp?.sheets?.[m.v||''];if(!sh2)continue;const r=m.motion==='move'?1:0,D=sh2.durs[r],f=Math.floor(clock/D*F+m.seed*F)%F,a=k*m.s/sh2.s,flip=m.dir>0?-1:1;
-    s2.setTransform(a*flip,0,0,a,ox+k*m.x,oy+k*(m.y-m.hop-m.lift));s2.drawImage(sh2.sheet,f*sh2.cw,r*sh2.ch,sh2.cw,sh2.ch,-sh2.ox,-sh2.fy,sh2.cw,sh2.ch)}
+   for(const m of vis){const sh2=m.sp?.sheets?.[m.v||''];if(!sh2)continue;const r=m.motion==='move'?1:0,D=sh2.durs[r],f=Math.floor(clock/D*sh2.validFrames+m.seed*sh2.validFrames)%sh2.validFrames,a=k*m.s/sh2.s,flip=m.dir>0?-1:1;
+    s2.setTransform(a*flip,0,0,a,ox+k*m.x,oy+k*(m.y-m.hop-m.lift));s2.drawImage(sh2.sheet,f%sh2.cols*sh2.cw,(r*sh2.rows+Math.floor(f/sh2.cols))*sh2.ch,sh2.cw,sh2.ch,-sh2.ox,-sh2.fy,sh2.cw,sh2.ch)}
   }else{
    const camera=renderer.camera;camera.position.x=cam.x;camera.position.y=-cam.y;camera.viewportWidth=W/cam.z;camera.viewportHeight=H/cam.z;
    renderer.begin();let cur='';tone('',null);
@@ -251,8 +260,8 @@ window.FrontierContainmentYard=(()=>{
   tools.classList.toggle('is-open',feedUi.open);tools.classList.toggle('is-busy',feedUi.busy);
   tools.querySelector('[data-yard-feed-toggle]').setAttribute('aria-expanded',String(feedUi.open));
   row.hidden=!feedUi.open;
-  row.innerHTML=E.feedTypes.map(d=>{const n=E.feedStock(db,d.id);return '<button type="button" data-yard-feed-pick="'+d.id+'" class="'+(feedUi.selected===d.id?'is-selected':'')+'" aria-pressed="'+(feedUi.selected===d.id)+'" aria-label="'+d.name+'，'+n+'份，好感增加'+d.affinity+'" '+(!n?'disabled':'')+'>'+E.feedIcon(d.id)+'<b>'+n+'</b></button>'}).join('');
-  const hint=tools.querySelector('.yard-feed-help');hint.hidden=!feedUi.open;hint.textContent=feedUi.busy?'正在保存投餵':feedUi.selected?'點個體直接投餵 · 點空地放置':'選擇飼料，再點個體或空地';
+  if(!throwGesture)row.innerHTML=E.feedTypes.map(d=>{const n=E.feedStock(db,d.id);return '<button type="button" data-yard-feed-pick="'+d.id+'" class="'+(feedUi.selected===d.id?'is-selected':'')+'" aria-pressed="'+(feedUi.selected===d.id)+'" aria-label="'+d.name+'，'+n+'份，好感增加'+d.affinity+'" '+(!n?'disabled':'')+'>'+E.feedIcon(d.id)+'<b>'+n+'</b></button>'}).join('');
+  const hint=tools.querySelector('.yard-feed-help');hint.hidden=!feedUi.open;hint.textContent=feedUi.busy?'正在保存投餵':feedUi.selected?'點個體／空地 · 長按飼料拋出':'點選投餵 · 長按上滑拋出';
  }
  async function offerFeed(m,point){
   const type=feedUi.selected;if(!type||feedUi.busy||!FrontierBaseEngine.feedStock(db,type))return;
@@ -269,26 +278,95 @@ window.FrontierContainmentYard=(()=>{
   foodSource=foods;const ids=new Set(foods.map(f=>f.id));
   for(const[id,node]of foodNodes)if(!ids.has(id)){node.remove();foodNodes.delete(id);foodPoints.delete(id)}
   const layer=yard?.querySelector('.yard-food-layer');if(!layer)return;
-  for(const food of foods)if(!foodNodes.has(food.id)){const node=document.createElement('div');node.className='yard-ground-feed';node.dataset.yardFood=food.id;node.setAttribute('role','img');node.setAttribute('aria-label',(FrontierBaseEngine.feedTypes.find(d=>d.id===food.type)?.name||'飼料')+'，附近個體會靠近進食');node.innerHTML='<img src="assets/feed-'+food.type+'.png" alt="" draggable="false">';layer.append(node);foodNodes.set(food.id,node)}
+  for(const food of foods)if(!foodNodes.has(food.id)){const node=document.createElement('div');node.className='yard-ground-feed';node.hidden=true;node.dataset.yardFood=food.id;node.setAttribute('role','img');node.setAttribute('aria-label',(FrontierBaseEngine.feedTypes.find(d=>d.id===food.type)?.name||'飼料')+'，附近個體會靠近進食');node.innerHTML='<img src="assets/feed-'+food.type+'.png" alt="" draggable="false">';layer.append(node);foodNodes.set(food.id,node)}
  }
  function nearestFood(m){
   if(!shown(m))return null;const radius=clamp(world.zw*.65,140,260);let best=null,distance=Infinity;
-  for(const food of db.capture?.yardFood||emptyFoods){if(claims.has(food.id))continue;const p=foodPoint(food),d=Math.hypot(m.x-p.x,m.y-p.y);if(d<=radius&&d<distance){best=food;distance=d}}
+  for(const food of db.capture?.yardFood||emptyFoods){if(thrown.has(food.id))continue;const p=foodPoint(food),d=Math.hypot(m.x-p.x,m.y-p.y);if(d<=radius&&d<distance){best=food;distance=d}}
   return best;
  }
- function positionFood(){for(const food of db.capture?.yardFood||emptyFoods){const p=foodPoint(food),screen=toScreen(p.x,p.y),node=foodNodes.get(food.id);if(node){node.style.transform='translate3d('+screen.x+'px,'+screen.y+'px,0) translate(-50%,-70%) scale('+clamp(cam.z,.65,1.5)+')';node.hidden=screen.x<-40||screen.x>stage.clientWidth+40||screen.y<-40||screen.y>stage.clientHeight+40}}}
+ function positionFood(){for(const food of db.capture?.yardFood||emptyFoods){const p=foodPoint(food),screen=toScreen(p.x,p.y),node=foodNodes.get(food.id);if(node){node.style.transform='translate3d('+screen.x+'px,'+screen.y+'px,0) translate(-50%,-70%) scale('+clamp(cam.z,.65,1.5)+')';node.hidden=thrown.has(food.id)||screen.x<-40||screen.x>stage.clientWidth+40||screen.y<-40||screen.y>stage.clientHeight+40}}}
  function flashAffinity(m,type){
   const p=toScreen(m.x,m.y-24),node=document.createElement('span');node.className='yard-affinity-gain';node.innerHTML=affinityIcon+'+'+(FrontierBaseEngine.feedTypes.find(d=>d.id===type)?.affinity||0);node.style.left=clamp(p.x,24,stage.clientWidth-50)+'px';node.style.top=clamp(p.y,24,stage.clientHeight-60)+'px';yard.querySelector('.yard-layer').append(node);setTimeout(()=>node.remove(),1100);
  }
  function claimFood(){
   if(feedUi.busy||claims.size||FrontierRuntime.busy||performance.now()<foodRetry)return;
   for(const food of db.capture?.yardFood||emptyFoods){
-   if(claims.has(food.id))continue;const p=foodPoint(food);
-   const winner=arrivals.get(food.id)?.m;if(!winner)continue;claims.add(food.id);
-   FrontierBase151.execute('feedEat',{food:food.id,uid:winner.i.uid}).then(ok=>{if(ok&&yard?.isConnected){winner.hop=9;winner.zone=zoneOf(winner.x);winner.mode='idle';winner.wait=2;flashAffinity(winner,food.type);syncFood();if(focus===winner&&bubble){focus.i=db.capture.instances.find(i=>i.uid===winner.i.uid)||focus.i;fill();aim()}}else foodRetry=performance.now()+4000}).finally(()=>claims.delete(food.id));
+   if(claims.has(food.id))continue;
+   const winner=arrivals.get(food.id)?.m;if(!winner)continue;claims.add(food.id);const origin=yard;
+   FrontierBase151.execute('feedEat',{food:food.id,uid:winner.i.uid}).then(ok=>{if(ok&&yard===origin&&yard?.isConnected){winner.hop=9;winner.zone=zoneOf(winner.x);winner.mode='idle';winner.wait=2;flashAffinity(winner,food.type);syncFood();if(focus===winner&&bubble){focus.i=db.capture.instances.find(i=>i.uid===winner.i.uid)||focus.i;fill();aim()}}else if(!ok)foodRetry=performance.now()+4000}).finally(()=>claims.delete(food.id));
    break;
   }
  }
+
+ const THROW_DT=1/120;
+ function throwPath(x,y,vx,vy,z,up,gravity){
+  const points=[{t:0,x,y,z}];let vz=up,bounces=0,t=0;
+  for(let step=0;step<180;step++){
+   t+=THROW_DT;x+=vx*THROW_DT;y+=vy*THROW_DT;z+=vz*THROW_DT;vz-=gravity*THROW_DT;
+   const drag=Math.exp(-1.8*THROW_DT);vx*=drag;vy*=drag;
+   if(x<18||x>world.w-18){x=clamp(x,18,world.w-18);vx*=-.4}
+   if(y<45||y>world.h-12){y=clamp(y,45,world.h-12);vy*=-.4}
+   if(z<=0){z=0;if(!bounces&&Math.abs(vz)>50/cam.z){bounces++;vz=-vz*.16;vx*=.35;vy*=.35}else{points.push({t,x,y,z});break}}
+   points.push({t,x,y,z});
+  }
+  const end=points[points.length-1];end.z=0;return{points,duration:end.t,x:end.x,y:end.y};
+ }
+ function cancelFeedThrow(){
+  const g=throwGesture;if(!g)return;clearTimeout(g.timer);cancelAnimationFrame(g.frame);g.ghost?.remove();g.el.classList.remove('is-throwing');try{g.el.releasePointerCapture(g.pointer)}catch{}throwGesture=null;
+ }
+ function holdFeed(e){
+  feedClickUntil=0;const el=e.target.closest?.('[data-yard-feed-pick]');if(!el||el.disabled||e.button>0||feedUi.busy||!yard?.isConnected||throwGesture)return;
+  const g=throwGesture={el,pointer:e.pointerId,type:el.dataset.yardFeedPick,x:e.clientX,y:e.clientY,lastX:e.clientX,lastY:e.clientY,samples:[],armed:false};
+  g.timer=setTimeout(()=>{
+   if(throwGesture!==g||!el.isConnected)return;
+   g.armed=true;g.armedAt=performance.now();g.samples=[{x:g.x,y:g.y,t:g.armedAt}];feedUi.selected=g.type;
+   for(const b of yard.querySelectorAll('[data-yard-feed-pick]')){b.classList.toggle('is-selected',b===el);b.setAttribute('aria-pressed',String(b===el))}
+   el.classList.add('is-throwing');g.ghost=document.createElement('div');g.ghost.className='yard-throw-held';g.ghost.innerHTML='<img src="assets/feed-'+g.type+'.png" alt="">';document.body.append(g.ghost);g.ghost.style.transform='translate3d('+g.x+'px,'+g.y+'px,0) translate(-50%,-130%)';
+   yard.querySelector('.yard-feed-help').textContent='向上滑動，放開拋出';try{el.setPointerCapture(e.pointerId)}catch{}navigator.vibrate?.(12);
+  },300);
+ }
+ function moveFeedThrow(e){
+  const g=throwGesture;if(!g||g.pointer!==e.pointerId)return;
+  if(!g.el.isConnected){cancelFeedThrow();return}
+  if(!g.armed){if(Math.hypot(e.clientX-g.x,e.clientY-g.y)>12)cancelFeedThrow();return}
+  e.preventDefault();e.stopImmediatePropagation();g.lastX=e.clientX;g.lastY=e.clientY;
+  const now=performance.now();g.samples.push({x:e.clientX,y:e.clientY,t:now});while(g.samples.length>2&&g.samples[1].t<now-100)g.samples.shift();
+  if(!g.frame)g.frame=requestAnimationFrame(()=>{g.frame=0;if(throwGesture===g)g.ghost.style.transform='translate3d('+g.lastX+'px,'+g.lastY+'px,0) translate(-50%,-130%)'});
+ }
+ async function launchFeed(g,x,y){
+  if(feedUi.busy||!FrontierBaseEngine.feedStock(db,g.type)||!yard?.isConnected)return;
+  const now=performance.now(),sample=g.samples[0]||{x:g.x,y:g.y,t:g.armedAt},elapsed=Math.max(.025,(now-sample.t)/1000);
+  let vx=(x-sample.x)/elapsed,vy=(y-sample.y)/elapsed,speed=Math.hypot(vx,vy);
+  if(speed<120){const dx=x-g.x,dy=y-g.y,d=Math.max(1,Math.hypot(dx,dy));vx=dx/d*120;vy=dy/d*120;speed=120}
+  if(speed>1200){vx*=1200/speed;vy*=1200/speed;speed=1200}
+  const start=toWorld(x,y),path=throwPath(clamp(start.x,18,world.w-18),clamp(start.y,45,world.h-12),vx/cam.z*.45,vy/cam.z*.35,18/cam.z,(160+Math.min(100,speed*.1))/cam.z,650/cam.z),id=crypto.randomUUID();
+  const layer=yard.querySelector('.yard-food-layer'),node=document.createElement('div'),shadow=document.createElement('i');
+  node.className='yard-thrown-feed';node.hidden=true;shadow.hidden=true;node.dataset.yardFlight=id;node.innerHTML='<img src="assets/feed-'+g.type+'.png" alt="">';shadow.className='yard-throw-shadow';shadow.dataset.yardFlightShadow=id;layer.append(shadow,node);
+  const flight={...path,id,type:g.type,node,shadow,started:performance.now(),committed:false,spin:Math.sign(vx||1)*480};thrown.set(id,flight);feedUi.busy=true;updateFeedToolbar();
+  try{
+   const ok=await FrontierBase151.execute('feedPlace',{id,feed:g.type,x:path.x/world.w,y:path.y/world.h});
+   if(ok){flight.committed=true;syncFood()}else{thrown.delete(id);node.remove();shadow.remove()}
+  }finally{feedUi.busy=false;updateFeedToolbar()}
+ }
+ function releaseFeedThrow(e){
+  const g=throwGesture;if(!g||g.pointer!==e.pointerId)return;const armed=g.armed;
+  if(armed){e.preventDefault();e.stopImmediatePropagation();feedClickUntil=performance.now()+650}
+  cancelFeedThrow();
+  if(armed&&e.type==='pointerup'&&e.clientY-g.y<-18)launchFeed(g,e.clientX,e.clientY);else if(armed)updateFeedToolbar();
+ }
+ function animateThrows(t){
+  for(const [id,f]of thrown){
+   const elapsed=Math.max(0,(t-f.started)/1000),index=Math.min(f.points.length-1,Math.floor(elapsed/THROW_DT)),a=f.points[index],b=f.points[Math.min(index+1,f.points.length-1)],mix=b.t===a.t?0:clamp((elapsed-a.t)/(b.t-a.t),0,1),x=a.x+(b.x-a.x)*mix,y=a.y+(b.y-a.y)*mix,z=a.z+(b.z-a.z)*mix,p=toScreen(x,y);
+   f.node.hidden=false;f.shadow.hidden=false;f.node.style.transform='translate3d('+p.x+'px,'+(p.y-z*cam.z)+'px,0) translate(-50%,-70%) rotate('+(Math.sign(f.spin)*360*(1-Math.pow(1-clamp(elapsed/f.duration,0,1),2)))+'deg) scale('+(1+(clamp(cam.z,.65,1.5)-1)*clamp(elapsed/f.duration,0,1))+')';
+   f.shadow.style.transform='translate3d('+p.x+'px,'+p.y+'px,0) translate(-50%,-50%) scale('+(.6+.4/(1+z*cam.z/50))+')';
+   if(elapsed>=f.duration&&f.committed){f.node.remove();f.shadow.remove();thrown.delete(id)}
+  }
+ }
+ document.addEventListener('pointerdown',holdFeed,true);
+ document.addEventListener('pointermove',moveFeedThrow,{capture:true,passive:false});
+ document.addEventListener('pointerup',releaseFeedThrow,true);document.addEventListener('pointercancel',releaseFeedThrow,true);
+ window.addEventListener('blur',()=>{cancelFeedThrow();updateFeedToolbar()});
  function rename(value){
   const i=focus?.i;if(!i)return;const name=String(value||'').replace(/[\u0000-\u001f<>]/g,'').trim().slice(0,NAME_MAX);
   const live=(db.capture?.instances||[]).find(x=>x.uid===i.uid);if(!live)return;
@@ -331,6 +409,7 @@ window.FrontierContainmentYard=(()=>{
  document.addEventListener('wheel',e=>{if(!yard?.isConnected||!e.target.closest?.('.yard'))return;e.preventDefault();zoomAt(cam.z*Math.exp(-e.deltaY*.0015),e.clientX,e.clientY)},{passive:false});
  document.addEventListener('contextmenu',e=>{if(e.target.closest?.('.yard'))e.preventDefault()});
  document.addEventListener('click',e=>{
+  if(performance.now()<feedClickUntil&&e.target.closest?.('.yard-feed-tools')){e.preventDefault();e.stopImmediatePropagation();return}
   if(e.target.closest?.('[data-home20-yard]')){FrontierRuntime.view(()=>go('yard'));return}
   if(e.target.closest?.('[data-yard-back]')){go('home');return}
   if(e.target.closest?.('[data-yard-pen]')&&focus){editing=true;fill();aim()}

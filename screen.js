@@ -161,7 +161,7 @@ function routeMain(content){
   if(event.type==='pointerup'&&Math.abs(drag.offset)>42&&drag.destination){
    mainSlide=Math.sign(-drag.offset);
    mainSlideOffset=drag.translation||0;
-   try{go(drag.destination)}finally{mainSlide=mainSlideOffset=0}
+   try{window.FrontierNavigation134?.setDragOffset(mainSlideOffset);go(drag.destination)}finally{mainSlide=mainSlideOffset=0}
   }else if(drag.surface&&drag.translation&&!FrontierMotion.reduced()){
    drag.surface.animate([{translate:drag.translation+'px 0'},{translate:'0 0'}],{duration:135,easing:'ease-out'});
   }
@@ -198,13 +198,13 @@ function routeMain(content){
   stopHomeTransition();
   if(storageSliding&&window.FrontierVisualUI?.settleStorage(next))return;
   const app=document.querySelector('#app'),reduced=FrontierMotion.reduced();
-  const fromHome=next!==previous&&!reduced&&!storageSliding&&(mainSlide||next==='home'||previous==='home');
+  const fromHome=next!==previous&&!reduced&&!FrontierMotion.routerActive&&!storageSliding&&(mainSlide||next==='home'||previous==='home');
   const outgoing=fromHome?app?.firstElementChild:null;
   const rect=outgoing?app.getBoundingClientRect():null;
   const scrollTop=outgoing?.querySelector(".screen-workspace-body")?.scrollTop||0;
   const result=oldGo(next);
   if(fromHome&&page!==previous){transitionHome(app,outgoing,rect,next==='home',scrollTop,mainSlide,mainSlideOffset);return result}
-  if(page!==previous&&!storageSliding&&!FrontierMotion.reduced()){
+  if(page!==previous&&!storageSliding&&!FrontierMotion.routerActive&&!FrontierMotion.reduced()){
    const app=document.querySelector('#app');
    const body=app?.querySelector('.screen-workspace-body')||app?.firstElementChild;
    body?.animate?.([{opacity:.78,translate:'0 6px'},{opacity:1,translate:'0 0'}],{duration:180,easing:'cubic-bezier(.2,.7,.25,1)'});

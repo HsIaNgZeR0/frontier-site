@@ -20,9 +20,9 @@ window.FrontierBase600=(()=>{
   if(r.kind==='commission')body+=button('特別委託',"FrontierBase600.commissions()")+'<p>定時生成任務，無人也會累積；全帳號每48小時最多生成1項、同時保留4項。完成指定高難度通關後，可隨時領取豐厚獎勵。</p>';
   if(['supply','cSupply'].includes(r.kind))body+='<p>'+ (r.kind==='supply'?'主要產出戰術補給（最高'+({3:'綠',4:'藍',5:'銀'}[E.supplyMaxTier(r.level)])+'階），也可能產出收容裝置或裝備。':'免費定時產出一般素材。')+'無人仍生產；派駐增加效率。基準一輪 '+duration(E.recipe(r).time)+'。</p>'+Object.entries(r.pending).filter(([,n])=>n>0).map(([item,n])=>'<div class="base-supply-output" data-item-id="'+esc(item)+'">'+icon(item)+'<span>'+esc(FrontierInventory.definitions[item]?.name||item)+' ×'+n+'</span></div>').join('')+button('領取已完成產物','FrontierBase151.collectView()');
   if(r.kind==='feed'){
-   body+='<p class="tiny">按時間產生單次生產許可。每張指定兩種不同分支的素材，使用後消耗。未使用的許可會保留，額滿暫停。派駐幹員可加速。</p><div class="feed-recipes">'+E.feedOptions(r).map(offer=>{
+   body+='<p class="tiny">按時間產生單次生產許可，稀有度獨立抽取，不影響準備時間。每張生產3份。每張指定兩種不同分支的素材，使用後消耗。未使用的許可會保留，額滿暫停。派駐幹員可加速。</p><div class="feed-recipes">'+E.feedOptions(r).map(offer=>{
     const d=E.feedTypes.find(f=>f.id===offer.type),material=FrontierInventory.definitions[offer.material],other=FrontierInventory.definitions[offer.secondary],owned=s.progress.materials[offer.material]||0,otherOwned=s.progress.materials[offer.secondary]||0;
-    return '<div class="feed-recipe">'+E.feedIcon(d.id)+'<div><b>'+d.name+' · 好感＋'+d.affinity+'</b><small>'+esc(material.name)+' '+owned+'/'+d.cost+'</small><small>'+esc(other.name)+' '+otherOwned+'/'+d.secondCost+'</small></div>'+'<button type="button" data-feed-room="'+esc(id)+'" data-feed-offer="'+esc(offer.id)+'" '+(owned<d.cost||otherOwned<d.secondCost?'disabled':'')+'>生產</button>'+'</div>';
+    return '<div class="feed-recipe">'+E.feedIcon(d.id)+'<div><b>'+d.name+' ×'+E.feedBatch+' · 每份好感＋'+d.affinity+'</b><small>'+esc(material.name)+' '+owned+'/'+(d.cost*E.feedBatch)+'</small><small>'+esc(other.name)+' '+otherOwned+'/'+(d.secondCost*E.feedBatch)+'</small></div>'+'<button type="button" data-feed-room="'+esc(id)+'" data-feed-offer="'+esc(offer.id)+'" '+(owned<d.cost*E.feedBatch||otherOwned<d.secondCost*E.feedBatch?'disabled':'')+'>生產</button>'+'</div>';
    }).join('')+'</div>';
    if(!E.feedOptions(r).length)body+='<p>第一張生產許可正在準備。</p>';
   }

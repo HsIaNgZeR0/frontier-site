@@ -1,0 +1,88 @@
+'use strict';
+// Present existing event actions; never change their handlers, rewards or saved choices.
+window.FrontierEventChoices135=(()=>{
+ const enabled=()=>page==='run'&&R()?.event&&!R().battle&&!R().reward&&!R().result;
+ const supported=e=>e?.type==='frontierEvent'||['camp','traveler','stash','tower','search'].includes(e?.type)||e?.surveyGate16;
+ function text(node){if(!node)return '';const copy=node.cloneNode(true);copy.querySelectorAll('.currency-icon,[role="img"][aria-label]').forEach(n=>n.replaceWith(document.createTextNode(n.getAttribute('aria-label')||n.title||'')));return copy.textContent.trim()}
+ function art(node){return [...node.querySelectorAll('img,svg')].find(n=>!n.closest('.currency-icon,.event135-choice-effect,small,:scope>span'))||null}
+ function description(button,e){
+  const code=button.getAttribute('onclick')||'',r=R();
+  if(code==='FrontierEquipmentUI139.manage()')return '安裝或卸下詞條；不消耗本處休整機會。';
+  if(code==='FrontierEndings.action(true)'){
+   const path=e.endingPath||(e.id==='ending_exchange_entry'?'exchange':'fate'),state=r.endingRoute?.branches?.[path]||r.endingRoute,route=FrontierEndings.definitions[r.expedition.regionId]?.[path];
+   if(e.id!=='ending_followup')return '取得「'+(route?.key||'結局證物')+'」，開啟後續結局線索。';
+   const step=route?.steps[state?.stage||0];
+   return ({fight:'進入強化緊急作戰；勝利推進結局，失敗依遠征規則結算。',pay:'消耗 12 源石碇，推進這條結局線索。',intel:'消耗 5 情報，推進這條結局線索。',report:'交付已取得的證物，推進這條結局線索。'})[step]||'完成當前調查，推進這條結局線索。';
+  }
+  if(code==='FrontierEndings.action(false)')return '放下這條結局線索；仍可探索其他路線。';
+  if(code==='FrontierEndings.scoutInstead()')return '勘探點數 +1；不取得這次的二結局證物。';
+  if(code==='FrontierEndings.original()')return e.originalMerchant?'進入原行商；不取得這次的結局證物。':e.originalCamp?'返回營地選項，放下這條線索。':'返回原本的區域事件。';
+  if(code==='FrontierEncounters.openPicker()')return '交出一件戰術奇物或詞條，隨機換成同類未持有品項。';
+  if(code==='FrontierEncounters.showResult()')return '查看交換結果與物品圖示，再繼續前進。';
+  if(/FrontierAdventure\.(?:select\(false|chooseRegional\('leave'|resolveRegional\('skip')/.test(code))return '不領取此選項的收益，繼續探索。';
+  if(code==='FrontierAdventure.select(true)')return FrontierAdventure.events[e.id]?.choice||'';
+  if(/FrontierSurvey16.enter/.test(code))return '消耗 2 勘探點數，探索短支線後返回這個路口。';
+  if(/FrontierSurvey16.leaveGate/.test(code))return '回到主路線繼續探索。';
+  return '';
+ }
+ function fit(panel){
+  if(!panel.isConnected)return;panel.dataset.density='normal';
+  const host=panel.closest('.screen-workspace-body'),heading=host?.querySelector('.compact-run-summary');
+  if(!host)return;const available=host.clientHeight-(heading?.offsetHeight||0)-18;
+  for(const density of ['normal','compact','tight']){panel.dataset.density=density;if(panel.scrollHeight<=available)break}
+  // Never hide text or disable scrolling on exceptionally short browser windows.
+  panel.dataset.fits=String(panel.scrollHeight<=available+1);
+ }
+ function decorate(){
+  if(!enabled()||!supported(R().event))return;
+  const host=document.querySelector('#app .compact-action-body');if(!host)return;
+  const panel=[...host.children].find(n=>n.matches('.panel,.event-panel,.reward139-stage')&&!n.matches('.compact-run-summary'));if(!panel)return;
+  if(panel.dataset.choices135){if(![...panel.querySelectorAll('button')].some(b=>!b.matches('.event135-choice,.event135-tool')))return;panel.querySelector('.event135-emblem')?.remove();const previous=panel.querySelector('.event135-narrative');if(previous)previous.replaceWith(...previous.childNodes);delete panel.dataset.choices135;}
+  const e=R().event,buttons=[...panel.querySelectorAll('button')].filter(b=>!b.closest('dialog'));
+  if(!buttons.length)return;panel.dataset.choices135='true';panel.classList.add('event135-panel');host.classList.add('event135-workspace');
+  const narrative=document.createElement('div');narrative.className='event135-narrative';const options=document.createElement('div');options.className='event135-options';
+  const tools=document.createElement('div');tools.className='event135-tools';
+  for(const button of buttons){
+   if(button.getAttribute('onclick')==='FrontierEquipmentUI139.manage()'){button.textContent='配置詞條';button.classList.add('event135-tool');tools.append(button);continue}
+   const article=button.closest('article'),label=button.querySelector('b,strong'),effect=button.querySelector('small,:scope>span');
+   const plain=button.cloneNode(true);plain.querySelectorAll('small,:scope>span:not(.currency-icon),img,svg,i').forEach(n=>n.remove());
+   let title=text(label)||text(plain)||text(button),detail=text(effect)||description(button,e);
+   if(title==='交換收藏品或詞條')title='交換奇物或詞條';
+   const parts=title.split(/\s*·\s*/);if(parts.length>1&&!detail){title=parts.shift();detail=parts.join(' · ')}
+   const icon=art(button);
+   if(article&&e.id==='gift_choice'){const item=e.gifts?.[buttons.indexOf(button)],d=FrontierInventory.definitions[item?.itemId];title=article.querySelector('h3')?.textContent||title;if(d){button.dataset.itemId=d.id;const grade=({2:'白階',3:'綠階',4:'藍階',5:'銀階',6:'金階',7:'紅階'})[d.rarity]||'',category=({material:'素材',equipment:'裝備',medicine:'戰術補給',record:'作戰紀錄',collection:'收藏品'})[d.category]||'物品';detail=grade+category+' ×'+(item.qty||1)+' · '+(d.gridSize?.w||1)+'×'+(d.gridSize?.h||1)+' 格；裝入背包並撤離後保留。'}const image=article.querySelector('img,svg');if(image)button.prepend(image)}
+
+   const image=art(button)||icon;
+   const titleNode=document.createElement('b');titleNode.className='event135-choice-title';titleNode.textContent=title;
+   const detailNode=document.createElement('small');detailNode.className='event135-choice-effect';detailNode.textContent=detail;
+   button.replaceChildren(...(image?[image]:[]),titleNode,...(detail?[detailNode]:[]));button.classList.add('event135-choice');options.append(button);
+  }
+  for(const node of [...panel.children])if(!node.matches('.row,.cards,.reward139-options,.event135-options,.event135-tools')&&!node.querySelector('button')&&!node.matches('button'))narrative.append(node);
+  if(tools.children.length)narrative.append(tools);
+  const region=R().expedition?.regionId,factions={chernobog:'ursus',kazdel:'babel'},emblem=document.createElement('img');emblem.className='event135-emblem';emblem.alt='';emblem.setAttribute('aria-hidden','true');emblem.src='assets/regions/'+(factions[region]||region)+'.png';narrative.prepend(emblem);
+  panel.replaceChildren(narrative,options);fit(panel);
+ }
+ const draw=render;render=function(...args){const result=draw.apply(this,args);decorate();return result};
+ const observer=new MutationObserver(()=>decorate());observer.observe(document.getElementById('app'),{childList:true,subtree:true});
+ let frame=0;addEventListener('resize',()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(()=>document.querySelectorAll('.event135-panel').forEach(fit))});
+ const style=document.createElement('style');style.textContent=`
+ .event135-workspace{overflow-y:auto!important;overscroll-behavior:contain;gap:6px!important}
+ .event135-workspace>.event135-panel{display:flex!important;flex-direction:column;gap:14px;flex:none;max-height:none!important;overflow:visible!important;padding:14px!important;border:0;background:linear-gradient(135deg,#182a33,#101b23)}
+ .event135-workspace>.compact-run-summary span{display:none}.event135-tools{display:flex;justify-content:flex-end;gap:5px}.event135-tools>.event135-tool{min-height:44px!important;padding:7px 10px!important;font-size:12px!important;background:#1d3039;border:1px solid #4d6873}.event135-narrative:has(.event135-tools)>h1,.event135-narrative:has(.event135-tools)>h2{padding-right:78px}.event135-tools{position:absolute;right:0;top:0}
+ .event135-narrative{flex:none;border-bottom:1px solid #56707a;padding-bottom:12px}.event135-narrative h1,.event135-narrative h2{font-size:21px!important;line-height:1.25;margin:5px 0 10px!important}.event135-narrative p{font-size:14px!important;line-height:1.55!important;margin:6px 0!important;color:#d0dee2}.event135-narrative p.tiny{font-size:11px!important;color:#a3bbc3}.event135-narrative>small,.event135-narrative>.eyebrow{font-size:10px;letter-spacing:1px;color:#94bac7}.event135-narrative .event-scene,.event135-narrative .passage16-emblem{display:none}
+ .event135-options{display:flex!important;flex-direction:column;gap:8px!important;width:100%;margin:0!important}
+ .event135-options>.event135-choice{display:grid!important;grid-template-columns:minmax(0,1fr);align-content:center;gap:5px;position:relative;min-height:66px!important;width:100%;margin:0!important;padding:11px 15px!important;border:1px solid #50666e;border-left:3px solid #97afbb;background:linear-gradient(100deg,#20343f,#15232d);border-radius:0;text-align:left;white-space:normal!important;overflow-wrap:anywhere;box-shadow:none;touch-action:manipulation}
+ .event135-options>.event135-choice.primary{border-left-color:#d2df85;background:linear-gradient(100deg,#344337,#1b2d2b);color:#f2f6df}.event135-options>.event135-choice:disabled{opacity:.48}.event135-options>.event135-choice:active{background:#395260}
+ .event135-choice-title{font-size:17px!important;font-weight:600!important;line-height:1.25!important;color:#eef5f7}.event135-choice-effect{font-size:12px!important;line-height:1.4!important;color:#b4cbd5;white-space:normal!important}.event135-choice>img,.event135-choice>svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:38px!important;height:38px!important;object-fit:contain}.event135-choice:has(>img),.event135-choice:has(>svg){padding-left:62px!important}
+ .event135-workspace>.event135-panel{background:linear-gradient(150deg,#18242c88,#0c151b44)}
+ .event135-narrative{position:relative;isolation:isolate}.event135-emblem{position:absolute;right:0;top:0;width:92px;height:92px;object-fit:contain;opacity:.08;z-index:-1;pointer-events:none}
+ .event135-narrative:after{content:'';position:absolute;bottom:-1px;left:0;width:42px;height:2px;background:#b9cbd3}
+ .event135-options>.event135-choice{padding-right:31px!important;border:0;border-left:2px solid #a9bac3;background:linear-gradient(100deg,#26333bd9 0%,#1b2933ef 72%,#101b24e8 100%);clip-path:polygon(0 0,calc(100% - 9px) 0,100% 9px,100% 100%,0 100%);box-shadow:inset 0 -1px #60737d77}
+ .event135-options>.event135-choice:after{content:'';position:absolute;right:14px;top:50%;width:6px;height:6px;border-top:1px solid #b5c7d0;border-right:1px solid #b5c7d0;transform:translateY(-50%) rotate(45deg)}
+ .event135-options>.event135-choice.primary{background:linear-gradient(100deg,#394137dd,#25322ded 72%,#14201ee8 100%);border-left-color:#d5df91}
+ .event135-choice-effect{font-weight:400!important;letter-spacing:.1px}.event135-choice-title{letter-spacing:.4px}
+ .event135-panel[data-density=compact]{gap:10px!important;padding:10px!important}.event135-panel[data-density=compact] .event135-narrative p{font-size:13px!important;line-height:1.4!important}.event135-panel[data-density=compact] .event135-options{gap:6px!important}.event135-panel[data-density=compact] .event135-choice{min-height:58px!important;padding-top:8px!important;padding-bottom:8px!important}.event135-panel[data-density=compact] .event135-choice-title{font-size:16px!important}
+ @media(max-height:650px){.event135-workspace>.compact-run-summary{display:none}}
+ .event135-panel[data-density=tight]{gap:7px!important;padding:8px!important}.event135-panel[data-density=tight] .event135-narrative{padding-bottom:7px}.event135-panel[data-density=tight] .event135-narrative h1,.event135-panel[data-density=tight] .event135-narrative h2{font-size:18px!important;margin:3px 0 6px!important}.event135-panel[data-density=tight] .event135-narrative p{font-size:12px!important;line-height:1.3!important;margin:4px 0!important}.event135-panel[data-density=tight] .event135-options{gap:5px!important}.event135-panel[data-density=tight] .event135-choice{min-height:48px!important;padding:6px 12px!important;gap:3px!important}.event135-panel[data-density=tight] .event135-choice-title{font-size:15px!important}.event135-panel[data-density=tight] .event135-choice-effect{font-size:11px!important;line-height:1.3!important}.event135-panel[data-density=tight] .event135-choice:has(>img),.event135-panel[data-density=tight] .event135-choice:has(>svg){padding-left:58px!important}
+ `;document.head.append(style);return{decorate,fit};
+})();

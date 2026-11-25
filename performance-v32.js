@@ -15,13 +15,13 @@ window.FrontierRender32=(()=>{
  const reducedQuery='(prefers-reduced-motion: reduce)';
  const reduced=matchMedia(reducedQuery);
  const pageFrames=[
-  {opacity:.52,transform:'translateY(14px)',offset:0},
-  {opacity:.92,transform:'translateY(3px)',offset:.68},
+  {opacity:.52,transform:'translateX(18px)',offset:0},
+  {opacity:.92,transform:'translateX(3px)',offset:.68},
   {opacity:1,transform:'none',offset:1}
  ];
  const panelFrames=[
-  {opacity:.46,transform:'translateY(12px) scale(.985)',offset:0},
-  {opacity:.94,transform:'translateY(2px) scale(.998)',offset:.7},
+  {opacity:.46,transform:'translateY(8px)',offset:0},
+  {opacity:.94,transform:'translateY(2px)',offset:.7},
   {opacity:1,transform:'none',offset:1}
  ];
  function transition(){
@@ -32,6 +32,7 @@ window.FrontierRender32=(()=>{
   const fromBattle=scene?.startsWith('run:battle:');
   const changed=scene!==null&&scene!==next;scene=next;
   if(!changed||!window.FrontierBootReady)return;
+  if(window.FrontierMotion?.routerActive){motion?.cancel();motion=null;rewardSignal?.remove();rewardSignal=null;return;}
   motion?.cancel();motion=null;
   rewardSignal?.remove();rewardSignal=null;
   if(fromBattle&&run?.reward&&!run.result){
@@ -63,7 +64,7 @@ window.FrontierRender32=(()=>{
  function enter(host,kind='panel'){
   if(!host||document.hidden||typeof host.animate!=='function')return null;
   motions.get(host)?.cancel();motions.delete(host);
-  if(matchMedia(reducedQuery).matches)return null;
+  if(window.FrontierMotion?.reduced()||matchMedia(reducedQuery).matches)return null;
   const frames=kind==='reward'?[{opacity:.78},{opacity:1}]:kind==='fixed'?[{opacity:.72},{opacity:1}]:kind==='page'?pageFrames:panelFrames;
   const animation=host.animate(frames,{duration:180,easing:'cubic-bezier(.2,.65,.35,1)'});
   animation.id='frontier-enter78';motions.set(host,animation);return animation;

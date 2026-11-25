@@ -10,6 +10,7 @@ window.FrontierDispatch=(()=>{
   {id:'extreme',name:'險境',code:'PERIL',hours:12,min:3,max:4,threshold:220,lmd:5200},
   {id:'torment',name:'磨難',code:'ORDEAL',hours:24,min:3,max:5,threshold:380,lmd:9600}
  ];
+ for(const d of difficulties){d.hours*=2;d.lmd*=2}for(const d of Object.values(templates)){d.hours*=2;d.lmd*=2}
  const kinds={material:'作戰素材',capture:'收容裝置',equipment:'戰術裝備',supply:'戰術補給',container:'封存補給箱',carbon:'碳與基建建材',mastery:'技能專精教材',record:'作戰記錄',lmd:'龍門幣'};
  const regions=[
   {id:'lungmen',name:'龍門',mission:'近衛局物流協查',kind:'material',families:['rock','device'],roles:['PIONEER','DEFENDER'],img:'search174/room-18.webp'},
@@ -29,7 +30,7 @@ window.FrontierDispatch=(()=>{
  const LMD_ONLY=5;
  let selected=[],focus=null,diffSel=null,matOpen=true,jobsOpen=true;
  const region=id=>regions.find(r=>r.id===id),difficulty=id=>difficulties.find(d=>d.id===id);
- function ensure(){FrontierBase.ensure();if(!db.dispatch){db.dispatch={version:1,next:1,jobs:[],history:[]};if(db.base151?.rulesVersion!==600)db.basev2.dispatch++}return db.dispatch}
+ function ensure(){FrontierBase.ensure();if(!db.dispatch){db.dispatch={version:1,next:1,jobs:[],history:[]};if(db.base151?.rulesVersion!==600)db.basev2.dispatch++}const at=Date.now();for(const job of db.dispatch.jobs){if(job.pacing133===2)continue;const ready=job.ends<=at;job.pacing133=2;if(!ready)job.ends=job.started+(job.ends-job.started)*2;if(Number.isFinite(job.plan?.hours))job.plan.hours*=2;job.result.lmd*=2;for(const r of job.result.rewards)r.qty*=2;}return db.dispatch}
  function eligible(){return Object.values(db.personnel.units).filter(u=>!FrontierCapture.units[u.id]?.retired&&u.status==='ready'&&!ensure().jobs.some(job=>job.uids.includes(u.uid)))}
  function capacity(){if(db.base151?.rulesVersion===600)return Math.max(1,FrontierBaseEngine.dispatchSlots(db));return Math.min(3,1+Math.floor((db.basev2.facilities.commission.level-1)/2))}
  // 外派分隊初始 5 隊；基建／研究提供的隊位超過 5 時採用較高者
@@ -55,14 +56,14 @@ window.FrontierDispatch=(()=>{
   if(r.kind==='carbon')for(const[id,q]of[[['base_carbon',4]],[['base_carbon_stick',3],['base_reinforce_1',2]],[['base_carbon_pack',2],['base_reinforce_2',2]],[['base_carbon_pack',3],['base_reinforce_3',2],['base_gold',3]]][i])add(id,q);
   if(r.kind==='mastery')for(const[id,q]of[[['mastery_manual_1',1]],[['mastery_manual_1',2]],[['mastery_manual_2',1]],[['mastery_manual_3',1],['mastery_manual_2',1]]][i])add(id,q);
   if(r.kind==='record')for(const[id,q]of[[['record_basic',4]],[['record_primary',4]],[['record_mid',4]],[['record_high',3],['record_mid',2]]][i])add(id,q);
-  return out}
+  return out.map(x=>({...x,qty:x.qty*2}))}
  function grant(id,qty){const d=FrontierInventory.definitions[id];if(!d||!qty)return;if(['record','material','medicine'].includes(d.category))return FrontierProgress.deposit(id,qty);if(d.category==='captureDevice'){db.capture.devices[id.slice(7)]=(db.capture.devices[id.slice(7)]||0)+qty;return}if(d.category==='container'&&/^container_c[1-5]$/.test(id)&&window.FrontierContainers?.create){for(let n=0;n<qty;n++)db.inventory.items.push(FrontierContainers.create(Number(id.slice(11)),'industrial',{source:'base151',at:Date.now()},id));return}for(let left=qty;left>0;){const n=Math.min(left,d.stack||1);db.inventory.items.push({uid:'item:'+db.inventory.next++,itemId:id,qty:n,origin:{source:'base151',at:Date.now()},durability:d.category==='equipment'?100:null,locked:false});left-=n}}
  function choose(uid,limit=3){if(selected.includes(uid))selected=selected.filter(x=>x!==uid);else if(selected.length<limit&&eligible().some(u=>u.uid===uid))selected=[...selected,uid]}
  function clearSelection(){selected=[]}
  function start(type){const d=ensure(),m=parse(type),uids=[...selected],p=m&&plan(type,uids),available=eligible();if(!p||d.jobs.length>=slots()||db.base151?.rulesVersion!==600&&db.basev2.dispatch<1||uids.some(uid=>!available.some(u=>u.uid===uid))){toast('請選擇符合人數的幹員並確認有空閒的外派分隊。舊版基建仍需外勤整備。');return}
   const{region:r,difficulty:df}=m,i=difficulties.indexOf(df),id='dispatch:'+d.next++,success=random()<p.success,mult=p.double?2:1,range=lmdRange(r,df);let lmd=range[0]+Math.round(random()*(range[1]-range[0])/10)*10,rewards=[];
   if(success){lmd*=mult;if(r.kind!=='lmd')rewards=drops(r,i).map(x=>({id:x.id,qty:x.qty*mult}))}else lmd=Math.floor(range[0]*.2);
-  d.jobs.push({id,type,v:180,uids,people:uids.map(uid=>({...FrontierBase.entity(uid)})),started:Date.now(),ends:Date.now()+Math.round(p.hours*HOUR),plan:{power:p.power,threshold:p.threshold,success:p.success,double:p.double,hours:p.hours},result:{success,lmd,rewards}});
+  d.jobs.push({id,type,v:180,pacing133:2,uids,people:uids.map(uid=>({...FrontierBase.entity(uid)})),started:Date.now(),ends:Date.now()+Math.round(p.hours*HOUR),plan:{power:p.power,threshold:p.threshold,success:p.success,double:p.double,hours:p.hours},result:{success,lmd,rewards}});
   if(db.base151?.rulesVersion!==600)db.basev2.dispatch--;selected=[];save();render()}
  function title(type){const m=parse(type);return m?m.region.mission+'（'+m.difficulty.name+'）':templates[type]?.name||'外勤委託'}
  function report(job){const result=job.result,rewards=[...(result.lmd?[{id:'lmd',qty:result.lmd}]:[]),...result.rewards];
