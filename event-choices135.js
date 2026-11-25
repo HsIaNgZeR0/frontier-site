@@ -16,7 +16,7 @@ window.FrontierEventChoices135=(()=>{
   }
   if(code==='FrontierEndings.action(false)')return '放下這條結局線索；仍可探索其他路線。';
   if(code==='FrontierEndings.scoutInstead()')return '勘探點數 +1；不取得這次的二結局證物。';
-  if(code==='FrontierEndings.original()')return e.originalMerchant?'進入原行商；不取得這次的結局證物。':e.originalCamp?'返回營地選項，放下這條線索。':'返回原本的區域事件。';
+  if(code==='FrontierEndings.original()'){const destination=e.originalMerchant?'前往原行商':e.originalCamp?'返回營地選項':'返回原本的區域事件';return destination+'；'+(['ending_followup','ending_exchange_entry'].includes(e.id)?'放下這條結局線索。':'不取得這次的結局證物。')}
   if(code==='FrontierEncounters.openPicker()')return '交出一件戰術奇物或詞條，隨機換成同類未持有品項。';
   if(code==='FrontierEncounters.showResult()')return '查看交換結果與物品圖示，再繼續前進。';
   if(/FrontierAdventure\.(?:select\(false|chooseRegional\('leave'|resolveRegional\('skip')/.test(code))return '不領取此選項的收益，繼續探索。';
