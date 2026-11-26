@@ -1,0 +1,180 @@
+{
+  "sources": [
+    {
+      "path": "assets/events136/scene-1-16.webp",
+      "url": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/avgs/pic_rogue_1_16.png",
+      "rights": "Arknights original artwork; Hypergryph and respective owners retain rights."
+    },
+    {
+      "path": "assets/events136/scene-1-17.webp",
+      "url": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/avgs/pic_rogue_1_17.png",
+      "rights": "Arknights original artwork; Hypergryph and respective owners retain rights."
+    },
+    {
+      "path": "assets/events136/scene-1-18.webp",
+      "url": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/avgs/pic_rogue_1_18.png",
+      "rights": "Arknights original artwork; Hypergryph and respective owners retain rights."
+    },
+    {
+      "path": "assets/events136/scene-1-19.webp",
+      "url": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/avgs/pic_rogue_1_19.png",
+      "rights": "Arknights original artwork; Hypergryph and respective owners retain rights."
+    },
+    {
+      "path": "assets/events136/scene-2-19.webp",
+      "url": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/avgs/pic_rogue_2_19.png",
+      "rights": "Arknights original artwork; Hypergryph and respective owners retain rights."
+    },
+    {
+      "path": "assets/events136/scene-3-1.webp",
+      "url": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/avgs/pic_rogue_3_1.png",
+      "rights": "Arknights original artwork; Hypergryph and respective owners retain rights."
+    },
+    {
+      "path": "assets/events136/scene-3-2.webp",
+      "url": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/avgs/pic_rogue_3_2.png",
+      "rights": "Arknights original artwork; Hypergryph and respective owners retain rights."
+    },
+    {
+      "path": "assets/events136/scene-3-3.webp",
+      "url": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/avgs/pic_rogue_3_3.png",
+      "rights": "Arknights original artwork; Hypergryph and respective owners retain rights."
+    },
+    {
+      "path": "assets/events136/scene-4-24.webp",
+      "url": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/avgs/pic_rogue_4_24.png",
+      "rights": "Arknights original artwork; Hypergryph and respective owners retain rights."
+    },
+    {
+      "path": "assets/events136/scene-4-38.webp",
+      "url": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/avgs/pic_rogue_4_38.png",
+      "rights": "Arknights original artwork; Hypergryph and respective owners retain rights."
+    },
+    {
+      "path": "assets/events136/scene-1-12.webp",
+      "url": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/avgs/pic_rogue_1_12.png",
+      "rights": "Arknights original artwork; Hypergryph and respective owners retain rights."
+    },
+    {
+      "path": "assets/events136/scene-5-37.webp",
+      "url": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/avgs/pic_rogue_5_37.png",
+      "rights": "Arknights original artwork; Hypergryph and respective owners retain rights."
+    },
+    {
+      "path": "assets/events136/scene-5-38.webp",
+      "url": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/avgs/pic_rogue_5_38.png",
+      "rights": "Arknights original artwork; Hypergryph and respective owners retain rights."
+    },
+    {
+      "path": "assets/events136/scene-5-39.webp",
+      "url": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/avgs/pic_rogue_5_39.png",
+      "rights": "Arknights original artwork; Hypergryph and respective owners retain rights."
+    },
+    {
+      "path": "assets/events139/node-recreation.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets/cn/assets/torappu/arts/ui/roguelike/topics/rogue_3/node/node_enter.png",
+      "label": "Original RECREATION dice node icon, unmodified"
+    }
+  ],
+  "events": [
+    {
+      "topic": "rogue_1",
+      "scene": "scene_ent1_enter",
+      "background": "pic_rogue_1_16",
+      "original": "微型舞台",
+      "page": "https://prts.wiki/w/%E5%82%80%E5%BD%B1%E4%B8%8E%E7%8C%A9%E7%BA%A2%E5%AD%A4%E9%92%BB/事件一览"
+    },
+    {
+      "topic": "rogue_1",
+      "scene": "scene_ent2_enter",
+      "background": "pic_rogue_1_17",
+      "original": "珍品处理者",
+      "page": "https://prts.wiki/w/%E5%82%80%E5%BD%B1%E4%B8%8E%E7%8C%A9%E7%BA%A2%E5%AD%A4%E9%92%BB/事件一览"
+    },
+    {
+      "topic": "rogue_1",
+      "scene": "scene_ent3_enter",
+      "background": "pic_rogue_1_18",
+      "original": "暴殄天物",
+      "page": "https://prts.wiki/w/%E5%82%80%E5%BD%B1%E4%B8%8E%E7%8C%A9%E7%BA%A2%E5%AD%A4%E9%92%BB/事件一览"
+    },
+    {
+      "topic": "rogue_1",
+      "scene": "scene_ent4_enter",
+      "background": "pic_rogue_1_19",
+      "original": "鼠胆神偷",
+      "page": "https://prts.wiki/w/%E5%82%80%E5%BD%B1%E4%B8%8E%E7%8C%A9%E7%BA%A2%E5%AD%A4%E9%92%BB/事件一览"
+    },
+    {
+      "topic": "rogue_2",
+      "scene": "scene_ro2_ent1_enter",
+      "background": "pic_rogue_2_19",
+      "original": "现买现印",
+      "page": "https://prts.wiki/w/%E6%B0%B4%E6%9C%88%E4%B8%8E%E6%B7%B1%E8%93%9D%E4%B9%8B%E6%A0%91/事件一览"
+    },
+    {
+      "topic": "rogue_3",
+      "scene": "scene_ro3_ent1_enter",
+      "background": "pic_rogue_3_1",
+      "original": "北地巫师竞技",
+      "page": "https://prts.wiki/w/%E6%8E%A2%E7%B4%A2%E8%80%85%E7%9A%84%E9%93%B6%E5%87%87%E6%AD%A2%E5%A2%83/事件一览"
+    },
+    {
+      "topic": "rogue_3",
+      "scene": "scene_ro3_ent2_enter",
+      "background": "pic_rogue_3_2",
+      "original": "最好的朋友",
+      "page": "https://prts.wiki/w/%E6%8E%A2%E7%B4%A2%E8%80%85%E7%9A%84%E9%93%B6%E5%87%87%E6%AD%A2%E5%A2%83/事件一览"
+    },
+    {
+      "topic": "rogue_3",
+      "scene": "scene_ro3_ent3_enter",
+      "background": "pic_rogue_3_3",
+      "original": "深渊入口",
+      "page": "https://prts.wiki/w/%E6%8E%A2%E7%B4%A2%E8%80%85%E7%9A%84%E9%93%B6%E5%87%87%E6%AD%A2%E5%A2%83/事件一览"
+    },
+    {
+      "topic": "rogue_4",
+      "scene": "scene_ro4_ent1_enter",
+      "background": "pic_rogue_4_24",
+      "original": "解读变迁",
+      "page": "https://prts.wiki/w/%E8%90%A8%E5%8D%A1%E5%85%B9%E7%9A%84%E6%97%A0%E7%BB%88%E5%A5%87%E8%AF%AD/事件一览"
+    },
+    {
+      "topic": "rogue_4",
+      "scene": "scene_ro4_ent2_enter",
+      "background": "pic_rogue_4_38",
+      "original": "聚思成塔",
+      "page": "https://prts.wiki/w/%E8%90%A8%E5%8D%A1%E5%85%B9%E7%9A%84%E6%97%A0%E7%BB%88%E5%A5%87%E8%AF%AD/事件一览"
+    },
+    {
+      "topic": "rogue_4",
+      "scene": "scene_ro4_ent3_enter",
+      "background": "pic_rogue_1_12",
+      "original": "价高者得",
+      "page": "https://prts.wiki/w/%E8%90%A8%E5%8D%A1%E5%85%B9%E7%9A%84%E6%97%A0%E7%BB%88%E5%A5%87%E8%AF%AD/事件一览"
+    },
+    {
+      "topic": "rogue_5",
+      "scene": "scene_ro5_ent1_enter",
+      "background": "pic_rogue_5_37",
+      "original": "三缺一",
+      "page": "https://prts.wiki/w/%E5%B2%81%E7%9A%84%E7%95%8C%E5%9B%AD%E5%BF%97%E5%BC%82/事件一览"
+    },
+    {
+      "topic": "rogue_5",
+      "scene": "scene_ro5_ent2_enter",
+      "background": "pic_rogue_5_38",
+      "original": "种因得果",
+      "page": "https://prts.wiki/w/%E5%B2%81%E7%9A%84%E7%95%8C%E5%9B%AD%E5%BF%97%E5%BC%82/事件一览"
+    },
+    {
+      "topic": "rogue_5",
+      "scene": "scene_ro5_ent3_enter",
+      "background": "pic_rogue_5_39",
+      "original": "掷地有声",
+      "page": "https://prts.wiki/w/%E5%B2%81%E7%9A%84%E7%95%8C%E5%9B%AD%E5%BF%97%E5%BC%82/事件一览"
+    }
+  ],
+  "adaptation": "Original setting and trade-offs adapted to existing field coins, survey points, HP and run curios. No hope/dice/thought currency is simulated."
+}

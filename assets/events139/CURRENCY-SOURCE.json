@@ -1,0 +1,11 @@
+{
+  "path": "assets/currencies/ingot.png",
+  "sourcePage": "https://prts.wiki/w/文件:图标_源石锭.png",
+  "source": "https://media.prts.wiki/4/40/图标_源石锭.png",
+  "transport": "https://wsrv.nl/?url=https%3A%2F%2Fmedia.prts.wiki%2F4%2F40%2F%25E5%259B%25BE%25E6%25A0%2587_%25E6%25BA%2590%25E7%259F%25B3%25E9%2594%25AD.png&output=png",
+  "dimensions": [
+    40,
+    35
+  ],
+  "rights": "Original Arknights in-run UI icon. Rights retained by Hypergryph and respective owners. Download transport only; no drawn replacement."
+}

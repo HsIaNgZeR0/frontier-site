@@ -28,6 +28,8 @@ window.FrontierEventChoices135=(()=>{
 
  function sceneFor(e,r){
   const id=e.id||'',region=r.expedition?.regionId;
+  if(e.scam139)return window.FrontierScam139?.entries[e.id]?.scene||'desert';
+  if(e.recreation139)return window.FrontierRecreationData139?.[e.id]?.scene||'1-16';
   if(e.familiar136)return window.FrontierFamiliar136?.entries[e.id]?.scene||'3-8';
   if(e.type==='camp')return '2-46';
   if(id==='gift_choice')return '3-23';
@@ -70,7 +72,7 @@ window.FrontierEventChoices135=(()=>{
  }
  function decorate(){
   if(!enabled()||!supported(R().event))return;
-  if(R().event.familiar136?.phase==='offer')document.querySelectorAll('#app .curio-offer-entry').forEach(n=>n.remove());
+  if(R().event.familiar136?.phase==='offer'||R().event.recreation139?.phase==='offer'||R().event.scam139?.phase==='offer')document.querySelectorAll('#app .curio-offer-entry').forEach(n=>n.remove());
   const host=document.querySelector('#app .compact-action-body');if(!host)return;
   const panel=[...host.children].find(n=>n.matches('.panel,.event-panel,.reward139-stage')&&!n.matches('.compact-run-summary'));if(!panel)return;
   if(panel.dataset.choices135){if(![...panel.querySelectorAll('button')].some(b=>!b.matches('.event135-choice,.event135-tool')))return;panel.querySelector('.event135-emblem')?.remove();const previous=panel.querySelector('.event135-narrative');if(previous)previous.replaceWith(...previous.childNodes);delete panel.dataset.choices135;}
@@ -98,6 +100,8 @@ window.FrontierEventChoices135=(()=>{
   const region=R().expedition?.regionId,factions={chernobog:'ursus',kazdel:'babel'},emblem=document.createElement('img');emblem.className='event135-emblem';emblem.alt='';emblem.setAttribute('aria-hidden','true');emblem.src='assets/regions/'+(factions[region]||region)+'.png';narrative.prepend(emblem);
   panel.style.setProperty('--event136-scene','url("assets/events136/scene-'+sceneFor(e,R())+'.webp")');panel.replaceChildren(narrative,options);fit(panel);
  }
+ let fitFrame139=0;const refit139=()=>{cancelAnimationFrame(fitFrame139);fitFrame139=requestAnimationFrame(()=>{fitFrame139=0;const panel=document.querySelector('#app .event135-panel');if(panel){fit(panel);window.dispatchEvent(new Event('frontier:event-fit'))}})};
+ addEventListener('resize',refit139);window.visualViewport?.addEventListener('resize',refit139);document.fonts?.addEventListener('loadingdone',refit139);
  const draw=render;render=function(...args){const result=draw.apply(this,args);decorate();return result};
  const observer=new MutationObserver(()=>decorate());observer.observe(document.getElementById('app'),{childList:true,subtree:true});
  let frame=0;addEventListener('resize',()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(()=>document.querySelectorAll('.event135-panel').forEach(fit))});

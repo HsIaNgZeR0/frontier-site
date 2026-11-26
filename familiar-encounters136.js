@@ -21,7 +21,7 @@ window.FrontierFamiliar136=(()=>{
   if(f.phase==='search')return[row('deep','深入翻找',burdenText(3)+'；從三件未持有的戰術奇物中選一件。','relic'),row('probe','以設備確認','需要勘探點數 6；不增加坍縮，選擇一件戰術奇物。','relic',survey<6),row('leave','退出內室','不取得物品，不增加坍縮。','leave')];
   if(f.kind==='dark')return[row('look','撿拾屋角硬幣',burdenText(1)+'；源石碇 +5。','gold'),row('explore','走入內室','繼續調查屋內物件；此步尚不增加坍縮。','unknown'),row('leave','推門離開','放棄這次探索。','leave')];
   if(f.kind==='useless')return[row('coins','接受旅費',burdenText(1)+'；源石碇 +3。','gold'),row('knowledge','詢問路線',burdenText(2)+'；勘探點數 +1。','vision',!r.survey16||survey>=6),row('relief','接受祈禱',burdenText(-2)+'。','chaos_purify')];
-  return (d.options||[]).map(o=>({...o,disabled:r.fieldPoints<(o.cost||0)||o.action==='survey'&&(!r.survey16||survey>=6)}));
+  return (d.options||[]).map(o=>({...o,effect:o.action==='pressure'?(r.environment.region==='victoria'?'戰線前進 '+Math.abs(o.amount)+'，最高為 1。':r.environment.region==='siracusa'?'敵意降低 '+Math.abs(o.amount)+'，最低為 0。':r.environment.region==='sargon'?'飲水補給增加 '+Math.abs(o.amount)+'，最高為 6。':FrontierEnvironment.definitions[r.environment.region].name+'降低 '+Math.abs(o.amount)+'，最低為 0。'):o.effect,disabled:r.fieldPoints<(o.cost||0)||o.action==='survey'&&(!r.survey16||survey>=6)}));
  }
  function activate(){const r=R(),e=r?.event,d=entries[e?.id];if(!d||e.type!=='frontierEvent'||e.claimed||e.familiar136||r.expedition?.regionId!==(d.region||'sami')||r.environment?.region!==(d.region||'sami'))return false;e.familiar136={version:1,kind:d.kind,phase:'choose',key:'familiar136:'+r.number+':'+r.expedition.current+':'+e.id};return true}
  const enter=FrontierExpedition.enterNode;FrontierExpedition.enterNode=function(id){const before=R()?.event,result=enter(id);if(R()?.event!==before&&activate()){save();render()}return result};
@@ -32,12 +32,12 @@ window.FrontierFamiliar136=(()=>{
  function choose(id){const c=current();if(!c||!options(c).some(o=>o.id===id&&!o.disabled))return false;const{r,e,f,d}=c;
   if(id==='finish'){record(f.result||'本次事件已完成。');completeNode();return true}
   f.choice=id;
-  if(id==='explore'){f.phase='search';save();render();return true}
+  if(f.kind==='dark'&&id==='explore'){f.phase='search';save();render();return true}
   if(id==='leave'){resolve(f.kind==='dark'?'你們帶著原有物資退出木屋，沒有增加坍縮。':'你們沒有接受這次的幫助，帶著原有物資繼續趕路。');return true}
-  if(id==='deep'||id==='probe'){offer(id==='deep'?3:0);return true}
-  if(id==='look'||id==='coins'){const amount=id==='look'?5:3,change=applyBurden(1);r.fieldPoints+=amount;resolve('收下硬幣後，小隊離開了。源石碇 +'+amount+'；'+change+'。');return true}
-  if(id==='knowledge'){if(!FrontierSurvey16.gain(1,'無用之物：路線指引',f.key+':knowledge'))return false;const change=applyBurden(2);resolve('薩滿指出一條可以辨識的路。勘探點數 +1；'+change+'。');return true}
-  if(id==='relief'){const change=applyBurden(-2);resolve('祈禱逐漸平息了隊員的不安。'+change+'。');return true}
+  if(f.kind==='dark'&&(id==='deep'||id==='probe')){offer(id==='deep'?3:0);return true}
+  if(f.kind==='dark'&&id==='look'||f.kind==='useless'&&id==='coins'){const amount=id==='look'?5:3,change=applyBurden(1);r.fieldPoints+=amount;resolve('收下硬幣後，小隊離開了。源石碇 +'+amount+'；'+change+'。');return true}
+  if(f.kind==='useless'&&id==='knowledge'){if(!FrontierSurvey16.gain(1,'無用之物：路線指引',f.key+':knowledge'))return false;const change=applyBurden(2);resolve('薩滿指出一條可以辨識的路。勘探點數 +1；'+change+'。');return true}
+  if(f.kind==='useless'&&id==='relief'){const change=applyBurden(-2);resolve('祈禱逐漸平息了隊員的不安。'+change+'。');return true}
   const choice=d.options?.find(o=>o.id===id);
   if(choice?.action==='coins'){r.fieldPoints+=choice.amount;resolve('你取出了可以交換的物件。源石碇 +'+choice.amount+'。');return true}
   if(choice?.action==='gift'){offer(0,choice.count,choice.cost);return true}

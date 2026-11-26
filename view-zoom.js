@@ -1,7 +1,7 @@
 'use strict';
 /* Presentation only: never writes inventories, production clocks or player saves. */
 window.FrontierViewZoom=(()=>{
- const settings=new Map(),pointers=new Map();let pinch=null,internalCancel=false,suppressUntil=0;
+ const settings=new Map(),pointers=new Map();let pinch=null,internalCancel=false,suppressUntil=0,wheel139=null,wheelTimer139=0;
  const clamp=(v,low,high)=>Math.max(low,Math.min(high,v));
  function scope(el){const bag=el?.closest?.('.bag-ux');if(bag)return{key:'bag:'+R()?.number+':'+R()?.started,root:bag,pane:bag.querySelector('.bag-ux-pan'),kind:'bag'};const base=el?.closest?.('.base-zoom-surface');if(base)return{key:'base',root:base,pane:base,kind:'base'};return null}
  function controls(kind){if(kind!=='bag')return document.createDocumentFragment();const bar=document.createElement('div');bar.className='bag-zoom-controls30';bar.innerHTML='<button type="button" aria-label="縮小背包25%" onclick="FrontierViewZoom.change(\'bag\',\'out\')">−</button><output data-zoom-readout aria-live="polite">100%</output><button type="button" aria-label="放大背包25%" onclick="FrontierViewZoom.change(\'bag\',\'in\')">＋</button>';return bar}
@@ -18,6 +18,7 @@ window.FrontierViewZoom=(()=>{
   const pane=s.pane,rect=pane.getBoundingClientRect(),left=pane.scrollLeft,top=pane.scrollTop;
   const stage=canvas.parentElement;
   stage.style.overflow='visible';
+  stage.style.contain='layout'; // The outer viewport clips; do not clip the enlarged canvas to its previous extent.
   canvas.style.willChange='transform';
   gesture.base={canvas,stage,rect,left,top,x:(left+point.x-rect.left)/zoom,y:(top+point.y-rect.top)/zoom,min:Math.min(1,Math.max(.25,pane.clientHeight/650)),z:zoom};
  }
@@ -30,7 +31,10 @@ window.FrontierViewZoom=(()=>{
  }
  function settleBase(gesture){
   const b=gesture?.base;if(!b)return;
-  b.canvas.style.removeProperty('will-change');
+  // Keep this single, bounded board layer warm until the page is detached.
+  // Releasing it at every finger-up forces another raster/promotion on the next pinch.
+  if(!b.canvas.isConnected)b.canvas.style.removeProperty('will-change');
+  b.stage.style.removeProperty('contain');
   b.stage.style.overflow='hidden';
   if(!gesture.s.pane.isConnected)return;
   settings.set(gesture.s.key,b.z);layout(gesture.s,b.z);
@@ -39,9 +43,13 @@ window.FrontierViewZoom=(()=>{
  const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y),center=(a,b)=>({x:(a.x+b.x)/2,y:(a.y+b.y)/2});
  window.addEventListener('pointerdown',e=>{if(internalCancel||e.pointerType!=='touch')return;const s=scope(e.target);if(!s)return;pointers.set(e.pointerId,{x:e.clientX,y:e.clientY,s,target:e.target});const same=[...pointers.entries()].filter(([,p])=>p.s.key===s.key);if(same.length!==2)return;const[a,b]=same;pinch={s:a[1].s,ids:[a[0],b[0]],distance:Math.max(1,distance(a[1],b[1])),zoom:settings.get(s.key)||1};if(s.kind==='base')basePinch(pinch,center(a[1],b[1]));internalCancel=true;for(const[id,p]of same){if(p.target.hasPointerCapture?.(id))p.target.releasePointerCapture(id);document.dispatchEvent(new PointerEvent('pointercancel',{pointerId:id,bubbles:true}))}internalCancel=false;e.preventDefault();e.stopImmediatePropagation();suppressUntil=performance.now()+700;},{capture:true,passive:false});
  let frame=0;window.addEventListener('pointermove',e=>{const p=pointers.get(e.pointerId);if(p){p.x=e.clientX;p.y=e.clientY}if(!pinch||!pinch.ids.includes(e.pointerId))return;e.preventDefault();e.stopImmediatePropagation();if(frame)return;frame=requestAnimationFrame(()=>{frame=0;if(!pinch)return;const a=pointers.get(pinch.ids[0]),b=pointers.get(pinch.ids[1]);if(!a||!b)return;const zoom=pinch.zoom*distance(a,b)/pinch.distance,point=center(a,b);if(pinch.base)previewBase(pinch,zoom,point);else set(pinch.s,zoom,point)})},{capture:true,passive:false});
- function end(e){if(internalCancel)return;const was=pinch&&pinch.ids.includes(e.pointerId);pointers.delete(e.pointerId);if(was){suppressUntil=performance.now()+700;if(pinch.ids.every(id=>!pointers.has(id))){settleBase(pinch);pinch=null;}e.preventDefault();e.stopImmediatePropagation()}}
+ function end(e){if(internalCancel)return;const was=pinch&&pinch.ids.includes(e.pointerId);if(was){const a=pointers.get(pinch.ids[0]),b=pointers.get(pinch.ids[1]);if(a&&b){const z=pinch.zoom*distance(a,b)/pinch.distance,point=center(a,b);if(pinch.base)previewBase(pinch,z,point);else set(pinch.s,z,point)}cancelAnimationFrame(frame);frame=0;suppressUntil=performance.now()+700;settleBase(pinch);pinch=null;e.preventDefault();e.stopImmediatePropagation()}pointers.delete(e.pointerId)}
  window.addEventListener('pointerup',end,{capture:true,passive:false});window.addEventListener('pointercancel',end,{capture:true,passive:false});window.addEventListener('blur',()=>{pointers.clear();settleBase(pinch);pinch=null});
  window.addEventListener('click',e=>{if(performance.now()<suppressUntil&&scope(e.target)){e.preventDefault();e.stopImmediatePropagation()}},true);
- window.addEventListener('wheel',e=>{if(!e.ctrlKey)return;const s=scope(e.target);if(!s)return;e.preventDefault();set(s,(settings.get(s.key)||1)*Math.exp(-e.deltaY*.006),{x:e.clientX,y:e.clientY})},{capture:true,passive:false});
+ // Safari may take ownership of a two-finger pan before pointermove can cancel it.
+ // Stop only multi-touch inside our own viewport; retain ordinary one-finger scrolling.
+ const touch139=e=>{if(e.touches.length>1&&scope(e.target)&&e.cancelable)e.preventDefault()};
+ window.addEventListener('touchstart',touch139,{capture:true,passive:false});window.addEventListener('touchmove',touch139,{capture:true,passive:false});
+ window.addEventListener('wheel',e=>{if(!e.ctrlKey)return;const s=scope(e.target);if(!s)return;e.preventDefault();const point={x:e.clientX,y:e.clientY};if(s.kind==='base'&&s.root.querySelector('.base151-board')){if(!wheel139||wheel139.s.root!==s.root){settleBase(wheel139);wheel139={s,zoom:settings.get(s.key)||1};basePinch(wheel139,point)}previewBase(wheel139,(wheel139.base?.z||wheel139.zoom)*Math.exp(-e.deltaY*.006),point);clearTimeout(wheelTimer139);wheelTimer139=setTimeout(()=>{settleBase(wheel139);wheel139=null},100)}else set(s,(settings.get(s.key)||1)*Math.exp(-e.deltaY*.006),point)},{capture:true,passive:false});
  return{refresh(){const s=current('bag');if(s)layout(s,settings.get(s.key)||1)},change,get pinching(){return !!pinch},get:kind=>settings.get(current(kind)?.key)||1};
 })();

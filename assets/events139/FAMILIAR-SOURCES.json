@@ -1,0 +1,205 @@
+{
+  "sources": [
+    {
+      "path": "assets/events136/scene-1-1.webp",
+      "url": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/avgs/pic_rogue_1_1.png"
+    },
+    {
+      "path": "assets/events136/scene-1-9.webp",
+      "url": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/avgs/pic_rogue_1_9.png"
+    },
+    {
+      "path": "assets/events136/scene-1-8.webp",
+      "url": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/avgs/pic_rogue_1_8.png"
+    },
+    {
+      "path": "assets/events136/scene-2-33.webp",
+      "url": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/avgs/pic_rogue_2_33.png"
+    },
+    {
+      "path": "assets/events136/scene-2-34.webp",
+      "url": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/avgs/pic_rogue_2_34.png"
+    },
+    {
+      "path": "assets/events136/scene-2-5.webp",
+      "url": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/avgs/pic_rogue_2_5.png"
+    },
+    {
+      "path": "assets/events136/scene-3-4.webp",
+      "url": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/avgs/pic_rogue_3_4.png"
+    },
+    {
+      "path": "assets/events136/scene-3-5.webp",
+      "url": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/avgs/pic_rogue_3_5.png"
+    },
+    {
+      "path": "assets/events136/scene-3-4.webp",
+      "url": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/avgs/pic_rogue_3_4.png"
+    },
+    {
+      "path": "assets/events136/scene-4-4.webp",
+      "url": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/avgs/pic_rogue_4_4.png"
+    },
+    {
+      "path": "assets/events136/scene-4-6.webp",
+      "url": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/avgs/pic_rogue_4_6.png"
+    },
+    {
+      "path": "assets/events136/scene-4-7.webp",
+      "url": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/avgs/pic_rogue_4_7.png"
+    },
+    {
+      "path": "assets/events136/scene-5-17.webp",
+      "url": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/avgs/pic_rogue_5_17.png"
+    },
+    {
+      "path": "assets/events136/scene-5-35.webp",
+      "url": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/avgs/pic_rogue_5_35.png"
+    },
+    {
+      "path": "assets/events136/scene-5-13.webp",
+      "url": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/avgs/pic_rogue_5_13.png"
+    },
+    {
+      "path": "assets/events136/scene-6-14.webp",
+      "url": "https://torappu.prts.wiki/assets/avg/images/pic_rogue_6_14.png"
+    },
+    {
+      "path": "assets/events136/scene-6-17.webp",
+      "url": "https://torappu.prts.wiki/assets/avg/images/pic_rogue_6_17.png"
+    },
+    {
+      "path": "assets/events136/scene-6-16.webp",
+      "url": "https://torappu.prts.wiki/assets/avg/images/pic_rogue_6_16.png"
+    }
+  ],
+  "events": [
+    {
+      "topic": "rogue_1",
+      "original": "讲故事的人",
+      "scene": "scene_population_enter",
+      "background": "pic_rogue_1_1",
+      "page": "https://prts.wiki/w/%E5%82%80%E5%BD%B1%E4%B8%8E%E7%8C%A9%E7%BA%A2%E5%AD%A4%E9%92%BB/事件一览"
+    },
+    {
+      "topic": "rogue_1",
+      "original": "被困的人",
+      "scene": "scene_5_enter",
+      "background": "pic_rogue_1_9",
+      "page": "https://prts.wiki/w/%E5%82%80%E5%BD%B1%E4%B8%8E%E7%8C%A9%E7%BA%A2%E5%AD%A4%E9%92%BB/事件一览"
+    },
+    {
+      "topic": "rogue_1",
+      "original": "“石中剑”",
+      "scene": "scene_4_enter",
+      "background": "pic_rogue_1_8",
+      "page": "https://prts.wiki/w/%E5%82%80%E5%BD%B1%E4%B8%8E%E7%8C%A9%E7%BA%A2%E5%AD%A4%E9%92%BB/事件一览"
+    },
+    {
+      "topic": "rogue_2",
+      "original": "重返家园",
+      "scene": "scene_ro2_recruit1_enter",
+      "background": "pic_rogue_2_33",
+      "page": "https://prts.wiki/w/%E6%B0%B4%E6%9C%88%E4%B8%8E%E6%B7%B1%E8%93%9D%E4%B9%8B%E6%A0%91/事件一览"
+    },
+    {
+      "topic": "rogue_2",
+      "original": "引火之木",
+      "scene": "scene_ro2_recruit2_enter",
+      "background": "pic_rogue_2_34",
+      "page": "https://prts.wiki/w/%E6%B0%B4%E6%9C%88%E4%B8%8E%E6%B7%B1%E8%93%9D%E4%B9%8B%E6%A0%91/事件一览"
+    },
+    {
+      "topic": "rogue_2",
+      "original": "无知是福",
+      "scene": "scene_ro2_6_enter",
+      "background": "pic_rogue_2_5",
+      "page": "https://prts.wiki/w/%E6%B0%B4%E6%9C%88%E4%B8%8E%E6%B7%B1%E8%93%9D%E4%B9%8B%E6%A0%91/事件一览"
+    },
+    {
+      "topic": "rogue_3",
+      "original": "吉兆",
+      "scene": "scene_ro3_res1_enter",
+      "background": "pic_rogue_3_4",
+      "page": "https://prts.wiki/w/%E6%8E%A2%E7%B4%A2%E8%80%85%E7%9A%84%E9%93%B6%E5%87%87%E6%AD%A2%E5%A2%83/事件一览"
+    },
+    {
+      "topic": "rogue_3",
+      "original": "雨！",
+      "scene": "scene_ro3_res2_enter",
+      "background": "pic_rogue_3_5",
+      "page": "https://prts.wiki/w/%E6%8E%A2%E7%B4%A2%E8%80%85%E7%9A%84%E9%93%B6%E5%87%87%E6%AD%A2%E5%A2%83/事件一览"
+    },
+    {
+      "topic": "rogue_3",
+      "original": "随到随取",
+      "scene": "scene_ro3_res3_enter",
+      "background": "pic_rogue_3_4",
+      "page": "https://prts.wiki/w/%E6%8E%A2%E7%B4%A2%E8%80%85%E7%9A%84%E9%93%B6%E5%87%87%E6%AD%A2%E5%A2%83/事件一览"
+    },
+    {
+      "topic": "rogue_4",
+      "original": "高空坠物",
+      "scene": "scene_ro4_res2_enter",
+      "background": "pic_rogue_4_4",
+      "page": "https://prts.wiki/w/%E8%90%A8%E5%8D%A1%E5%85%B9%E7%9A%84%E6%97%A0%E7%BB%88%E5%A5%87%E8%AF%AD/事件一览"
+    },
+    {
+      "topic": "rogue_4",
+      "original": "在故事结束之后",
+      "scene": "scene_ro4_res4_enter",
+      "background": "pic_rogue_4_6",
+      "page": "https://prts.wiki/w/%E8%90%A8%E5%8D%A1%E5%85%B9%E7%9A%84%E6%97%A0%E7%BB%88%E5%A5%87%E8%AF%AD/事件一览"
+    },
+    {
+      "topic": "rogue_4",
+      "original": "竣工仪式",
+      "scene": "scene_ro4_res5_enter",
+      "background": "pic_rogue_4_7",
+      "page": "https://prts.wiki/w/%E8%90%A8%E5%8D%A1%E5%85%B9%E7%9A%84%E6%97%A0%E7%BB%88%E5%A5%87%E8%AF%AD/事件一览"
+    },
+    {
+      "topic": "rogue_5",
+      "original": "岔路",
+      "scene": "scene_ro5_normal1_enter",
+      "background": "pic_rogue_5_17",
+      "page": "https://prts.wiki/w/%E5%B2%81%E7%9A%84%E7%95%8C%E5%9B%AD%E5%BF%97%E5%BC%82/事件一览"
+    },
+    {
+      "topic": "rogue_5",
+      "original": "生机",
+      "scene": "scene_ro5_spring_enter",
+      "background": "pic_rogue_5_35",
+      "page": "https://prts.wiki/w/%E5%B2%81%E7%9A%84%E7%95%8C%E5%9B%AD%E5%BF%97%E5%BC%82/事件一览"
+    },
+    {
+      "topic": "rogue_5",
+      "original": "火祀",
+      "scene": "scene_ro5_res4_enter",
+      "background": "pic_rogue_5_13",
+      "page": "https://prts.wiki/w/%E5%B2%81%E7%9A%84%E7%95%8C%E5%9B%AD%E5%BF%97%E5%BC%82/事件一览"
+    },
+    {
+      "topic": "rogue_6",
+      "original": "沉寂之屋",
+      "scene": "scene_ro6_normal1_enter",
+      "background": "pic_rogue_6_14",
+      "page": "https://prts.wiki/w/%E6%B2%89%E6%B2%A6%E8%80%85%E7%9A%84%E9%BB%91%E6%B5%81%E6%A0%91%E6%B5%B7/事件一览"
+    },
+    {
+      "topic": "rogue_6",
+      "original": "被歌颂的影子",
+      "scene": "scene_ro6_normal4_enter",
+      "background": "pic_rogue_6_17",
+      "page": "https://prts.wiki/w/%E6%B2%89%E6%B2%A6%E8%80%85%E7%9A%84%E9%BB%91%E6%B5%81%E6%A0%91%E6%B5%B7/事件一览"
+    },
+    {
+      "topic": "rogue_6",
+      "original": "呼吸的红苔",
+      "scene": "scene_ro6_normal3_enter",
+      "background": "pic_rogue_6_16",
+      "page": "https://prts.wiki/w/%E6%B2%89%E6%B2%A6%E8%80%85%E7%9A%84%E9%BB%91%E6%B5%81%E6%A0%91%E6%B5%B7/事件一览"
+    }
+  ],
+  "note": "Eighteen adaptations. Original recruitment/hope/story currencies become existing survey/curio/rest options; results and costs are displayed explicitly. No ending unlocks are implied."
+}

@@ -150,7 +150,7 @@ window.FrontierAdventure=(()=>{
   const scout=choice('survey','循線校對方向','勘探點數 +1',0,!r.survey16||r.survey16.surveyIndex>=6);
   const calm=choice('relief','沿安全做法處理','緩解'+name);
   const heal=choice('heal','分出一段時間照護','存活幹員恢復 8% 最大生命值');
-  const curio=choice('curio','仔細檢查留下的物件','支付 6 源石碇，從三件收藏品中選一件',6,!r.curios);
+  const curio=choice('curio','仔細檢查留下的物件','支付 6 源石碇，從三件戰術奇物中選一件',6,!r.curios);
   const surveyGain=Math.max(0,Math.min(2,6-(r.survey16?.surveyIndex??6)));
   const options=[
    [scout,wealth],
@@ -158,7 +158,7 @@ window.FrontierAdventure=(()=>{
    [calm,choice('trade','轉交紀錄但繼續趕路','源石碇 +'+(credits+3)+'，增加地區負擔')],
    [wealth,choice('paidSurvey','付費取得完整路書','支付 5 源石碇，勘探點數 +'+surveyGain,5,!surveyGain)],
    [heal,choice('supply','帶走應急補給','取得 1 份戰術補給，須留意背包空間')],
-   [choice('gamble','接受對方的提議','60% 得到收藏品選擇，40% 增加地區負擔',0,!r.curios),event.index%2?wealth:scout]
+   [choice('gamble','接受對方的提議','60% 得到戰術奇物選擇，40% 增加地區負擔',0,!r.curios),event.index%2?wealth:scout]
   ][event.profile];
   options[0]={...options[0],name:localApproaches[event.region][event.profile]};
   if(FrontierEnvironment.needsRelief()&&!options.some(x=>x.id==='relief'))options.push(calm);
@@ -208,11 +208,11 @@ window.FrontierAdventure=(()=>{
   if(e.claimed){
    const o=r.curios?.offers?.find(x=>x.key==='encounter:'+r.number+':'+e.id);
    const choices=o?o.ids.map(id=>'<button data-curio="'+id+'" onclick="FrontierAdventure.resolveRegional(\''+id+'\')">'+FrontierCurios.icon(id)+'<b>'+escapeEvent(FrontierCurioData.forRun(R())[id].name)+'</b><small>'+escapeEvent(FrontierCurioData.forRun(R())[id].effect)+'</small></button>').join(''):'';
-   $('#app').innerHTML=runHeader()+'<section class="panel event-panel regional-encounter121"><small>不期而遇</small><h2>'+escapeEvent(d.title)+'</h2><div>'+choices+'<button onclick="FrontierAdventure.resolveRegional(\'skip\')">'+(o?'放棄收藏品':'繼續前進')+'</button></div></section>';
+   $('#app').innerHTML=runHeader()+'<section class="panel event-panel regional-encounter121"><small>不期而遇</small><h2>'+escapeEvent(d.title)+'</h2><div>'+choices+'<button onclick="FrontierAdventure.resolveRegional(\'skip\')">'+(o?'放棄奇物':'繼續前進')+'</button></div></section>';
    return;
   }
   const controls=regionalOptions(d,r).map(option=>'<button '+(option.disabled||r.fieldPoints<option.cost?'disabled ':'')+'onclick="FrontierAdventure.chooseRegional(\''+option.id+'\')"><b>'+option.name+'</b><small>'+escapeEvent(option.text)+'</small></button>').join('');
-  $('#app').innerHTML=runHeader()+'<section class="panel event-panel regional-encounter121"><small>不期而遇</small><h2>'+escapeEvent(d.title)+'</h2><p>'+escapeEvent(d.body)+'。</p><div>'+controls+'<button onclick="FrontierAdventure.chooseRegional(\'leave\')">啟程離開</button></div></section>'+bagHtml();
+  $('#app').innerHTML=runHeader()+'<section class="panel event-panel regional-encounter121"><small>不期而遇</small><h2>'+escapeEvent(d.title)+'</h2><p>'+escapeEvent(d.body)+(/[。！？]$/.test(d.body)?'':'。')+'</p><div>'+controls+'<button onclick="FrontierAdventure.chooseRegional(\'leave\')">啟程離開</button></div></section>'+bagHtml();
  }
  const relics={thermal_core:{id:'thermal_core',name:'穩定熱源核心',text:'本局寒冷累積每兩次減免一次，開啟雪境隱藏結局線索。'},relay_key:{id:'relay_key',name:'中繼站通行訊標',text:'本局完成中繼修復後，可從第四層安全節點特殊撤離。'},barricade:{id:'barricade',name:'便攜路障',text:'下一場全隊開場各3盾，使用後耗盡。'}};
  cards.story_burden={name:'殘響負擔',owner:'common',cost:1,kind:'draw',draw:0,exhaust:true,text:'沒有正面效果。消耗。'};
