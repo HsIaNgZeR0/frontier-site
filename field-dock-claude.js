@@ -197,9 +197,9 @@ window.FrontierFieldDock=(()=>{
  function lockReason(b,a){const t=b.turn||0,m=b.region75;if(m?.caged&&m.caged===a.uid)return '繭籠封鎖：無法行動，擊破繭籠可解除';if((a.disarmed75||0)>=t||(a.attackLockedTurn||0)>=t)return '繳械：本回合無法打攻擊牌（仍可治療與防護）';if((a.stunnedTurn||0)>=t)return '暈眩：本回合無法出牌';return null}
  function battleMarks(){const r=R(),b=r?.battle;if(!b||page!=='run')return;
   for(const row of document.querySelectorAll('.v113-actor-row[data-operator-uid]')){const a=r.team.find(x=>x.uid===row.dataset.operatorUid);row.querySelector('.fd-lock')?.remove();const why=a&&lockReason(b,a);if(!why)continue;const id=row.querySelector('.v113-actor-identity');if(!id)continue;const mark=document.createElement('div');mark.className='fd-lock';mark.dataset.battleStatus=why;mark.setAttribute('aria-label',why);mark.innerHTML=chains;const img=id.querySelector('img.avatar')||id.querySelector('img');id.append(mark);if(img){const ir=img.getBoundingClientRect(),pr=(mark.offsetParent||id).getBoundingClientRect();Object.assign(mark.style,{left:(ir.left-pr.left)+'px',top:(ir.top-pr.top)+'px',width:img.offsetWidth+'px',height:img.offsetHeight+'px',right:'auto',bottom:'auto'})}}
-  const last=[...document.querySelectorAll('.v113-actor-row')].at(-1);document.querySelectorAll('.fd-ally-row').forEach(n=>n.remove());
+  const last=[...document.querySelectorAll('.v113-actor-row')].at(-1);document.querySelectorAll('.fd-allies-row,.fd-ally-row').forEach(n=>n.remove());
   const allies=(b.friendly75||[]).filter(a=>!a.exited&&a.hp>0);if(!last||!allies.length)return;
-  let anchor=last;for(const f of allies){const row=document.createElement('section');row.className='fd-ally-row';const tip='尼盧火（我方機構）：HP '+f.hp+'/'+f.max+'。用治療牌治到滿即可熄滅；第 '+f.expires75+' 回合仍未熄滅會爆炸，全隊受傷並削弱攻擊最高的幹員。場上每盞尼盧火使奎隆受到的物法傷害降低 20%。';row.dataset.battleStatus=tip;row.setAttribute('aria-label',tip);const pct=f.hp<=1?0:Math.round(f.hp/f.max*100),left=Math.max(0,f.expires75-b.turn);row.innerHTML='<img src="assets/battle-fire75.svg" alt=""><span class="fd-ally-bar" aria-label="治療進度 '+pct+'%"><i style="width:'+pct+'%"></i></span><b>尼盧火 · 治療進度 '+(f.hp<=1?0:f.hp)+'/'+f.max+'</b><small>'+(left<=0?'本回合結束爆炸':'剩 '+left+' 回合爆炸')+'<br><em>拖治療牌治滿即熄滅</em></small>';anchor.after(row);anchor=row}}
+  const group=document.createElement('div');group.className='fd-allies-row';last.after(group);for(const f of allies){const row=document.createElement('section');row.className='fd-ally-row';const tip='尼盧火（我方機構）：HP '+f.hp+'/'+f.max+'。用治療牌治到滿即可熄滅；第 '+f.expires75+' 回合仍未熄滅會爆炸，全隊受傷並削弱攻擊最高的幹員。場上每盞尼盧火使奎隆受到的物法傷害降低 20%。';row.dataset.battleStatus=tip;row.setAttribute('aria-label',tip);const pct=f.hp<=1?0:Math.round(f.hp/f.max*100),left=Math.max(0,f.expires75-b.turn);row.innerHTML='<img src="assets/battle-fire75.svg" alt=""><span class="fd-ally-bar" aria-label="治療進度 '+pct+'%"><i style="width:'+pct+'%"></i></span><b>尼盧火 '+(f.hp<=1?0:f.hp)+'/'+f.max+'</b><small>'+(left<=0?'本回合結束爆炸':'剩 '+left+' 回合爆炸')+'<br><em>拖治療牌治滿即熄滅</em></small>';group.append(row)}}
  /* Boss 機制單位：卡片下方說明「這是什麼、該怎麼處理」，首領無敵時標出原因。
     回傳 [標題, 完整說明, 短說明]；敵人多時只顯示短說明，完整內容在長按與 title。 */
  function mechTag(b,e){const m=b.region75||{},boss=b.enemies.find(x=>x.uid===m.bossUid),bn=boss?.name?.split(/[，,・「」“”]/).filter(Boolean)[0]||'首領',left=n=>Math.max(0,(n||0)-b.turn);
@@ -289,11 +289,48 @@ window.FrontierFieldDock=(()=>{
   const joined=Object.keys(now).find(id=>!(id in prev)),promoted=Object.keys(now).find(id=>id in prev&&now[id]>prev[id]);const id=joined||promoted;if(!id)return;
   const u=FrontierCapture.units[id]||{},form=st.roster.find(x=>x.id===id)?.form,art=window.FrontierAppearance80?.src(id,'full',form)||window.FrontierAppearance80?.src(id,'portrait',form)||'assets/'+(u.image||id)+'.png';
   document.querySelector('.fd-recruit-fx')?.remove();const fx=document.createElement('div');fx.className='fd-recruit-fx star-'+(u.rarity||3);fx.setAttribute('role','dialog');fx.setAttribute('aria-label',(promoted?'晉升 ':'招募 ')+(u.name||id));
-  fx.innerHTML='<div class="fd-rfx-flash"></div><div class="fd-rfx-band"></div><img class="fd-rfx-art" src="'+esc(art)+'" alt=""><div class="fd-rfx-info"><small>'+(promoted?'晉升 · 精英階段 '+now[id]:'招募成功 · 精英階段 '+now[id])+'</small><b>'+esc(u.name||id)+'</b><span class="fd-rfx-stars">'+'★'.repeat(u.rarity||3)+'</span><em>'+esc(u.role||'')+'</em></div><button type="button" class="fd-rfx-skip">跳過 ›</button>';
+  fx.innerHTML='<div class="fd-rfx-flash"></div><div class="fd-rfx-band"></div><img class="fd-rfx-art" src="'+esc(art)+'" alt=""><div class="fd-rfx-info"><small>'+(promoted?'晉升':'招募成功')+' <img class="fd-rfx-elite" src="assets/elite/e'+now[id]+'.png" alt="精英'+(['零','一','二'][now[id]]||now[id])+'">'+'</small><b>'+esc(u.name||id)+'</b><span class="fd-rfx-stars" role="img" aria-label="'+(u.rarity||3)+'星">'+'<img src="assets/rarity/original-'+(u.rarity||3)+'.png" alt="" draggable="false">'+'</span><em>'+esc(u.role||'')+'</em></div><button type="button" class="fd-rfx-skip">跳過 ›</button>';
   const done=()=>{fx.classList.add('out');setTimeout(()=>fx.remove(),220)};fx.querySelector('.fd-rfx-skip').onclick=done;fx.addEventListener('click',e=>{if(e.target===fx)done()});document.body.append(fx);setTimeout(()=>{if(fx.isConnected)done()},2400)}
  let packSyncing=false;
  function packRoster(){if(packSyncing||!window.FrontierPack?.needsRosterSync?.())return;if(FrontierRuntime.busy){setTimeout(packRoster,300);return}packSyncing=true;setTimeout(async()=>{try{await FrontierRuntime.perform('pack-roster-sync',()=>{FrontierPack.syncRoster();save();return true})}finally{packSyncing=false}render()},0)}
  const prior=render;render=function(...args){const out=prior(...args);try{decorate();keyHints();merchantLimit();battleMarks();mechTags();packRoster();deckPicker();curioDrops();merchantTicketCard();alertHud();eventAlertNote();campAlertOption();recruitFx();if(R()?.event?.type==='fieldMerchant'){setTimeout(merchantLimit,60);setTimeout(merchantLimit,300)}}catch(error){console.error(error)}return out};
  window.addEventListener('resize',()=>{if(sheet)redraw()});
  return{toggle,close,decorate,keyHints,keycardsFor,capBattles,get sheet(){return sheet}};
+})();
+
+/* 已保存的取得結果提示。只讀交易前後差異；不抽獎、不改物品、不阻擋輸入。 */
+window.FrontierAcquisition140=(()=>{
+ const pending=[];let active=null,timer=null;
+ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ function holdings(s){const r=s?.run,out=new Map();if(!r)return out;
+  const add=(kind,id,qty,extra)=>{if(!qty)return;const key=kind+':'+id,v=out.get(key)||{kind,id,qty:0,...extra};v.qty+=qty;out.set(key,v)};
+  add('currency','ingot',r.fieldPoints||0,{name:'源石碇'});add('survey','survey',r.survey16?.surveyIndex||0,{name:'勘探點數'});
+  for(const [id,n]of Object.entries(r.field?.materials||{}))add('item',id,n);
+  for(const id of r.bag||[])add('item',id,1);
+  for(const i of r.itemCargo||[])add('item',i.itemId,i.qty||1);
+  for(const i of r.secureGrid?.items||[])add('item',i.id,i.qty||1);
+  for(const [id,n]of Object.entries(r.grid?.ground||{}))add('item',id,n,{ground:true});
+  for(const i of r.grid?.groundItems||[])add('item',i.itemId,i.qty||1,{ground:true});
+  for(const id of r.grid?.groundRelics||[])add('item',id,1,{ground:true});
+  for(const path of ['fate','exchange','fourth']){const branch=r.endingRoute?.branches?.[path];if(branch&&branch.phase!=='open'&&branch.phase!=='abandoned'){const region=r.expedition?.regionId,route=path==='fourth'?FrontierRegionDesign75.regions[region]:FrontierEndings.definitions[region]?.[path];if(route)add('story',path,1,{name:route.key,region})}}
+  for(const i of r.curios?.owned||[])add('curio',i.id,1);
+  for(const i of r.equipment139?.modules||[])add('module',i.id,1);
+  for(const t of r.recruitment144?.tickets||[])if(!t.used)add('ticket',t.id,1,{ticket:t});
+  for(const t of r.recruitment144?.fragments||[])add('fragment',t.id,1);
+  return out;
+ }
+ function card(row){const d=FrontierInventory.definitions[row.id],c=row.kind==='curio'&&FrontierCurioData.forRun(R())[row.id];
+  const art=row.kind==='currency'?'<img src="assets/currencies/ingot-flat139.png" alt="">':row.kind==='survey'?'<img src="assets/ui-sami148/icon.png" alt="">':row.kind==='story'?'<img src="assets/regions/'+esc(({chernobog:'ursus',kazdel:'babel'})[row.region]||row.region)+'.png" alt="">':c?FrontierCurios.icon(row.id):row.kind==='ticket'?FrontierRecruit152.art(row.ticket):row.kind==='fragment'?'<img src="assets/curios/H002.png" alt="">':FrontierIcons.html(row.id);
+  const name=row.name||c?.name||d?.name||row.ticket?.name||(row.kind==='fragment'?'招募殘頁':row.id);
+  const heading=row.kind==='currency'?'取得源石碇':row.kind==='survey'?'取得勘探點數':row.kind==='story'?'取得劇情證物':c?'取得戰術奇物':row.kind==='module'?'取得增幅模組':row.kind==='ticket'?'取得招募券':row.kind==='fragment'?'取得招募殘頁':d?.category==='collection'?'取得收藏品':d?.category==='medicine'?'取得戰術補給':d?.category==='captureDevice'?'取得收容裝置':'取得物資';
+  return '<article class="acq140-card"><div class="acq140-art">'+art+'</div><div><small>'+heading+'</small><b>'+esc(name)+'</b><span>×'+row.qty+'</span></div></article>';
+ }
+ function target(row){if(row.kind==='currency')return document.querySelector('.command148-ingot,.ingot145-wallet');if(row.kind==='survey')return document.querySelector('.command148-survey,.survey16-indicator');const key=row.kind==='curio'?'curio':row.kind==='ticket'||row.kind==='fragment'?'ticket':row.kind==='module'?'module':'bag';return document.querySelector('[data-fd-key="'+key+'"]')||document.querySelector(key==='bag'?'[data-battle-tool="supply"]':key==='curio'?'.curio-entry':'.screen-combat-actions');}
+ function next(){if(active||!pending.length)return;const batch=pending.splice(0,3),run=R()?.number;if(!R()||R().result){pending.length=0;return}const host=document.createElement('aside');host.className='acq140';host.setAttribute('popover','manual');host.setAttribute('role','status');host.setAttribute('aria-live','polite');host.innerHTML=batch.map(card).join('');document.body.append(host);try{host.showPopover?.()}catch{}active=host;
+  const reduced=window.FrontierMotion?.reduced();host.animate?.([{opacity:0,transform:'translate(-50%,-43%) scale(.93)'},{opacity:1,transform:'translate(-50%,-50%) scale(1)'}],{duration:reduced?70:210,easing:'cubic-bezier(.2,.75,.2,1)',fill:'both'});
+  timer=setTimeout(()=>{if(R()?.number!==run||R()?.result){clear();return}const cards=[...host.children];let remain=cards.length;for(const [i,el]of cards.entries()){const box=el.getBoundingClientRect(),to=target(batch[i])?.getBoundingClientRect(),x=(to?to.left+to.width/2:innerWidth*.15)-(box.left+box.width/2),y=(to?to.top+to.height/2:innerHeight-58)-(box.top+box.height/2);const a=el.animate?.(reduced?[{opacity:1},{opacity:0}]:[{transform:'translate(0,0) scale(1)',opacity:1,offset:0},{transform:'translate('+x*.2+'px,'+y*.12+'px) scale(1.04)',opacity:1,offset:.22},{transform:'translate('+x+'px,'+y+'px) scale(.12)',opacity:.15,offset:1}],{duration:reduced?140:620,delay:reduced?0:i*65,easing:'cubic-bezier(.45,0,.65,1)',fill:'forwards'});const done=()=>{if(--remain===0){host.remove();if(active===host)active=null;next()}};if(a)a.finished.then(done,done);else done()}},1200);
+ }
+ function clear(){clearTimeout(timer);active?.remove();active=null;pending.length=0}
+ function committed(before,after,label){if(!before.run||before.run.number!==after.run?.number||before.run.result||after.run.result||/^(?:system-save|profile|grid-|secure-|team20)/.test(label))return;if(before.run.battle&&after.run.battle&&before.run.battle.operatorBattleId===after.run.battle.operatorBattleId)return;const old=holdings(before),now=holdings(after),rows=[];for(const [key,row]of now){const qty=row.qty-(old.get(key)?.qty||0);if(qty>0)rows.push({...row,qty})}if(!rows.length)return;const notice=document.querySelector('#toast[data-level=info]');if(notice&&/^(?:PRTS[｜：]\s*)?(?:額外物資|權限獎勵|已購入|已取得|獲得|取得|收下|找到)/.test(notice.querySelector('.prts-notice-message')?.textContent||'')){notice.classList.remove('show');try{notice.hidePopover?.()}catch{}}for(const row of rows){const existing=pending.find(v=>v.kind===row.kind&&v.id===row.id);if(existing)existing.qty+=row.qty;else pending.push(row)}next()}
+ return{committed,holdings,clear,get pending(){return pending.length},get active(){return active}};
 })();

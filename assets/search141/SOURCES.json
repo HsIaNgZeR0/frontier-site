@@ -1,0 +1,30 @@
+{
+  "reference": "https://www.bilibili.com/video/BV1QG4y1s74Q/?p=101",
+  "observed": "9.6–10.8秒：藍色半透明立方體翻轉、收定、右側結果；11秒後顯示確認。手機直向置中改編；圖片取自原作UI素材，不把影片截圖發布。",
+  "files": [
+    {
+      "file": "assets/search141/dice_bg.png",
+      "source": "https://api.github.com/repos/ArknightsAssets/ArknightsAssets/git/blobs/21a0709a5c94519039f33570060a98f950aa56fe",
+      "sha": "21a0709a5c94519039f33570060a98f950aa56fe",
+      "sha256": "405d8a699af1e277e18738cc2e63567bbc0c1a4804b2ac18f5edd61cd4cd1a46"
+    },
+    {
+      "file": "assets/search141/NumFont.png",
+      "source": "https://api.github.com/repos/ArknightsAssets/ArknightsAssets/git/blobs/9fefaa938026f9566aabf5d90d6f6d86e7917d98",
+      "sha": "9fefaa938026f9566aabf5d90d6f6d86e7917d98",
+      "sha256": "c1cf6add359c160b9f3a56bc06273840e71173b1077e3ed76b779034be4e9692"
+    },
+    {
+      "file": "assets/search141/result_bg_dec_line.png",
+      "source": "https://api.github.com/repos/ArknightsAssets/ArknightsAssets/git/blobs/44070c9f5c4519f6d70eca7ea41e738280cfe8ee",
+      "sha": "44070c9f5c4519f6d70eca7ea41e738280cfe8ee",
+      "sha256": "4cda42df3e9491c4a9d8164306b405b685626e9559c02cd9ac01a39e2cea22b2"
+    },
+    {
+      "file": "assets/search141/btn_check.png",
+      "source": "https://api.github.com/repos/ArknightsAssets/ArknightsAssets/git/blobs/9d0108406ac6cc54e74b9f6d4e4d756ad590e071",
+      "sha": "9d0108406ac6cc54e74b9f6d4e4d756ad590e071",
+      "sha256": "094ae482b41584f943b76530c4185326f1c46cbd0bf3c9565d7eaf729e6a2849"
+    }
+  ]
+}

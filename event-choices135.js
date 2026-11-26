@@ -15,7 +15,7 @@ window.FrontierEventChoices135=(()=>{
    return ({fight:'進入強化緊急作戰；勝利推進結局，失敗依遠征規則結算。',pay:'消耗 12 源石碇，推進這條結局線索。',intel:'消耗 5 情報，推進這條結局線索。',report:'交付已取得的證物，推進這條結局線索。'})[step]||'完成當前調查，推進這條結局線索。';
   }
   if(code==='FrontierEndings.action(false)')return '放下這條結局線索；仍可探索其他路線。';
-  if(code==='FrontierEndings.scoutInstead()')return '勘探點數 +1；不取得這次的二結局證物。';
+  if(code==='FrontierEndings.scoutInstead()')return '勘探點數 +1；不取得這次的證物，放下這條故事線。';
   if(code==='FrontierEndings.original()'){const destination=e.originalMerchant?'前往原行商':e.originalCamp?'返回營地選項':'返回原本的區域事件';return destination+'；'+(['ending_followup','ending_exchange_entry'].includes(e.id)?'放下這條結局線索。':'不取得這次的結局證物。')}
   if(code==='FrontierEncounters.openPicker()')return '交出一件戰術奇物或詞條，隨機換成同類未持有品項。';
   if(code==='FrontierEncounters.showResult()')return '查看交換結果與物品圖示，再繼續前進。';
@@ -41,6 +41,10 @@ window.FrontierEventChoices135=(()=>{
   return 'messenger';
  }
  function optionHint(button,e,detail){
+  // 參照原作 unknown 選項：取得品項隨機但必得，仍為 relic；能否取得不確定才用 unknown。
+  const optionId=(button.getAttribute('onclick')||'').match(/FrontierRecreation139.choose\('([^']+)'/)?.[1];
+  const outcome=optionId&&window.FrontierRecreationData139?.[e.id]?.options?.find(o=>o.id===optionId);
+  if(outcome?.outcomes?.length>1||/(?:可能|或許|有機會|有機率|機率|幾率|概率|\d+[%％].*(?:獲得|取得|戰鬥|作戰))/.test(detail))return 'unknown';
   if(['battle','gold','hp','leave','relic','sacrifice','unknown','vision','chaos_purify','shield','adventure','key'].includes(button.dataset.familiarHint))return button.dataset.familiarHint;
   const code=button.getAttribute('onclick')||'',r=R(),choice=code.match(/(?:chooseRegional|camp)\('([^']+)'/)?.[1];
   if(/action\(false|select\(false|leaveGate|chooseRegional\('leave'|resolveRegional\('skip'|completeNode|Curios.decline/.test(code))return 'leave';

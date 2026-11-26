@@ -158,7 +158,7 @@ window.FrontierAdventure=(()=>{
    [calm,choice('trade','轉交紀錄但繼續趕路','源石碇 +'+(credits+3)+'，增加地區負擔')],
    [wealth,choice('paidSurvey','付費取得完整路書','支付 5 源石碇，勘探點數 +'+surveyGain,5,!surveyGain)],
    [heal,choice('supply','帶走應急補給','取得 1 份戰術補給，須留意背包空間')],
-   [choice('gamble','接受對方的提議','60% 得到戰術奇物選擇，40% 增加地區負擔',0,!r.curios),event.index%2?wealth:scout]
+   [choice('gamble','接受對方的提議','或能發現一件戰術奇物，也可能空手而歸、加重地區負擔',0,!r.curios),event.index%2?wealth:scout]
   ][event.profile];
   options[0]={...options[0],name:localApproaches[event.region][event.profile]};
   if(FrontierEnvironment.needsRelief()&&!options.some(x=>x.id==='relief'))options.push(calm);

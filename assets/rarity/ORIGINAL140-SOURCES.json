@@ -1,0 +1,37 @@
+{
+  "note": "使用原作完整星條，不重畫。原素材權利歸明日方舟權利人；鏡像保留原圖。",
+  "documentation": "https://mooncellwiki.github.io/prts-design/arknights/rarity",
+  "reference": "https://assets.st-note.com/production/uploads/images/73481651/8fffdc29f9e65702723f3b032edcc812.png",
+  "files": [
+    {
+      "path": "original-1.png",
+      "source": "https://raw.githubusercontent.com/MooncellWiki/prts-design/master/preview/assets/rarity/rarity_0.png",
+      "sha256": "99a2dd7a1e6c29f229022aa761711ff1337919b1d35c6782f23e776ee0521bf4"
+    },
+    {
+      "path": "original-2.png",
+      "source": "https://raw.githubusercontent.com/MooncellWiki/prts-design/master/preview/assets/rarity/rarity_1.png",
+      "sha256": "28335a0511cb12caa15bedf947587e3c865b03977f09ba4255eeab4219b4e13f"
+    },
+    {
+      "path": "original-3.png",
+      "source": "https://raw.githubusercontent.com/MooncellWiki/prts-design/master/preview/assets/rarity/rarity_2.png",
+      "sha256": "5ffab3db17f060805d3b9505b5bd74452bf19a97d57a5a10ffd9243d6f82c171"
+    },
+    {
+      "path": "original-4.png",
+      "source": "https://raw.githubusercontent.com/MooncellWiki/prts-design/master/preview/assets/rarity/rarity_3.png",
+      "sha256": "f343f8132183a1a919aaaf943f9e7b24737eb0471f537478dee15293314a98f1"
+    },
+    {
+      "path": "original-5.png",
+      "source": "https://raw.githubusercontent.com/MooncellWiki/prts-design/master/preview/assets/rarity/rarity_4.png",
+      "sha256": "06677576f3163a5b33ac0b468f4912c737a3f7323650b12addfc31ac9e31e664"
+    },
+    {
+      "path": "original-6.png",
+      "source": "https://raw.githubusercontent.com/MooncellWiki/prts-design/master/preview/assets/rarity/rarity_5.png",
+      "sha256": "27ee5b1c39491d94e5a9a39d62089558e50beb709dd3458bdb158470a795a1dd"
+    }
+  ]
+}

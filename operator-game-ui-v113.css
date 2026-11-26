@@ -503,3 +503,7 @@ body.v132-ally-choosing .v113-enemy-intent{visibility:hidden}
 body.v132-tool-dragging{overscroll-behavior:none}
 @keyframes v132-tray-in{from{opacity:0;transform:translateX(9px)}to{opacity:1;transform:translateX(0)}}
 @media(prefers-reduced-motion:reduce){.v132-tool-shelf{animation:none}}
+
+/* 140: keep short-screen encounter additions out of the hand budget. */
+.v113-battle-board>.v113-status-lane:empty{display:none!important}
+@media(max-height:620px){body.in-battle .screen-workspace-body .card-battle.v113-battle-board .team-panel{gap:2px!important;margin:2px 0!important}body.in-battle .screen-workspace-body .card-battle.v113-battle-board .team-panel .v129-actor-row{--v129-row-height:24px;--v129-skill-height:4px}body.in-battle .screen-workspace-body .card-battle.v113-battle-board .v129-actor-row .v113-actor-identity>.avatar{width:18px!important;height:18px!important}body.in-battle .screen-workspace-body .card-battle.v113-battle-board .enemy-line{--enemy-slot-height:92px;height:100px!important;min-height:100px!important}body.in-battle .screen-workspace-body .card-battle.v113-battle-board .v113-hand{min-height:140px!important}}

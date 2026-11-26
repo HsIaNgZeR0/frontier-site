@@ -19,7 +19,7 @@ window.FrontierEquipmentPicker139=(()=>{
   for(const [id,sets] of Object.entries(state.personalPresets144||{}))for(const stages of Object.values(sets||{}))addStages(id,stages);
   for(const team of Object.values(state.teamStage150||{}))for(const [id,stages] of Object.entries(team||{}))addStages(id,stages);
   for(const [id,slots] of Object.entries(state.equipment?.loadouts||{}))add(id,slots);
-  for(const profile of state.teamPresetsV20?.profiles||[])for(const [id,cfg] of Object.entries(profile.configs||{}))add(id,cfg.equipment);
+  // 舊編隊預案不再標示為穿戴，個人方案及實際攜入裝備才會使用。
   return index;
  }
  function owners(uid,index=ownerIndex){return [...(index.get(uid)||[])]}

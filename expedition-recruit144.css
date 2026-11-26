@@ -62,4 +62,4 @@
 
 #modal:has(.recruit147){height:calc(100dvh - 24px)!important;max-height:calc(100dvh - 24px)!important;display:flex!important;flex-direction:column}#modal:has(.recruit147)>.screen-tool-head,#modal:has(.recruit147)>.recruit147-footer{flex:none}#modal:has(.recruit147) .screen-simple-dialog{flex:1 1 0!important;min-height:0!important;max-height:none!important;overflow:hidden!important}#modal .recruit147{display:flex;flex-direction:column;height:100%;min-height:0}#modal .recruit147>.recruit146-subhead{flex:none}#modal .recruit147-candidates{flex:1 1 0;height:auto!important;min-height:0}#modal img.recruit148-hope{width:15px!important;height:17px!important;object-fit:contain!important;margin:0 2px 0 0!important;vertical-align:middle}#modal .recruit146-subhead img.recruit148-hope{width:20px!important;height:23px!important}
 
-.ak-star{display:inline-block;width:1em;height:1em;vertical-align:-.12em;background:url(assets/rarity/star.png) center/contain no-repeat;font-style:normal}
+.ak-star{display:inline-block;width:1em;height:1em;vertical-align:-.12em;background:url(assets/rarity/original-1.png) center/contain no-repeat;font-style:normal}

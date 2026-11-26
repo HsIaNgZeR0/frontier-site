@@ -70,7 +70,8 @@ window.FrontierEncounters=(()=>{
  function showResult(){
   const e=R()?.event;if(!exchangeEvents.includes(e?.id)||!e.exchangeResult)return;
   const {kind,id}=e.exchangeResult;if(!definition(kind,id))return;
-  modal('交換完成','<div class="exchange-prize">'+itemView(kind,id)+'</div>','<button class="primary" onclick="FrontierEncounters.finish()">繼續前進</button>');
+  // 結果已由成功保存後的中央取得提示顯示，繼續留在事件畫面。
+  closeModal();
  }
  function openPicker(){
   const e=R()?.event;
@@ -104,11 +105,11 @@ window.FrontierEncounters=(()=>{
    if(!selected||submit.disabled)return;
    submit.disabled=true;
    const {kind,key}=selected;
-   if(await FrontierRuntime.perform('ending-exchange-submit',()=>exchange(kind,key)))showResult();
+   if(await FrontierRuntime.perform('ending-exchange-submit',()=>exchange(kind,key)))closeModal();
    else submit.disabled=false;
   });
  }
- const oldEvent=eventView;eventView=function(){const e=R()?.event;if(e?.type!=='frontierEvent'||!['gift_choice','gift_exchange'].includes(e.id))return oldEvent();if(e.id==='gift_choice'&&!e.gifts)return;$('#app').innerHTML=runHeader()+'<section class="panel"><h1>'+FrontierAdventure.events[e.id].title+'</h1>'+(e.id==='gift_choice'?'<p>只能領取一份；結果已固定，重整不重抽。</p><div class="cards">'+e.gifts.map((i,index)=>'<article class="panel">'+(window.FrontierIcons?.html(i.itemId)||'')+'<h3>'+catalog[i.itemId].name+'</h3><p>'+catalog[i.itemId].description+'</p><button onclick="FrontierEncounters.choose('+index+')">帶走這一份</button></article>').join('')+'</div>':(e.exchangeResult?'<p>交換已完成。</p><button class="primary" onclick="FrontierEncounters.showResult()">查看獲得的物品</button>':'<p>交換一件收藏品或詞條，獲得同類未持有的品項。</p><button class="primary" onclick="FrontierEncounters.openPicker()">選擇交換品</button>'))+(e.claimed?'':'<button onclick="FrontierAdventure.select(false)">不交換，繼續前進</button>')+'</section>'+bagHtml()};
+ const oldEvent=eventView;eventView=function(){const e=R()?.event;if(e?.type!=='frontierEvent'||!['gift_choice','gift_exchange'].includes(e.id))return oldEvent();if(e.id==='gift_choice'&&!e.gifts)return;$('#app').innerHTML=runHeader()+'<section class="panel"><h1>'+FrontierAdventure.events[e.id].title+'</h1>'+(e.id==='gift_choice'?'<p>只能領取一份；結果已固定，重整不重抽。</p><div class="cards">'+e.gifts.map((i,index)=>'<article class="panel">'+(window.FrontierIcons?.html(i.itemId)||'')+'<h3>'+catalog[i.itemId].name+'</h3><p>'+catalog[i.itemId].description+'</p><button onclick="FrontierEncounters.choose('+index+')">帶走這一份</button></article>').join('')+'</div>':(e.exchangeResult?'<p>交換已完成。</p><button class="primary" onclick="FrontierEncounters.finish()">繼續前進</button>':'<p>交換一件收藏品或詞條，獲得同類未持有的品項。</p><button class="primary" onclick="FrontierEncounters.openPicker()">選擇交換品</button>'))+(e.claimed?'':'<button onclick="FrontierAdventure.select(false)">不交換，繼續前進</button>')+'</section>'+bagHtml()};
  const oldValid=validSave;validSave=function(v){if(!oldValid(v))return false;const e=v.run?.event;if(e?.type!=='frontierEvent')return true;const item=i=>i&&catalog[i.itemId]&&i.qty===1;return(e.id!=='gift_choice'||Array.isArray(e.gifts)&&e.gifts.length===3&&e.gifts.every(item))&&(!exchangeEvents.includes(e.id)||(!e.exchangeResult||e.claimed&&['curio','module'].includes(e.exchangeResult.kind)&&!!definition(e.exchangeResult.kind,e.exchangeResult.id)))};
  return{openGift,pool,reward,add,choose,eligible,exchange,openPicker,showResult,finish,prepareExchange};
 })();

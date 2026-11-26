@@ -51,7 +51,7 @@ window.FrontierContainers=(()=>{
   const key=box.itemId.slice('container_'.length);
   const [standardShell,detail]=containerModels[key]||containerModels['c'+box.sealed.quality]||containerModels.c1;
   const shell=repeated?(roomFixtures.find(([pattern])=>new RegExp(pattern).test(fixture))?.[1]||
-    ['M11 26l9-13h42v35H11z','M16 16l9-7h27l10 14-9 26H16z','M8 29h56l-6 18H13z','M17 20l10-9h24l7 9v29H17z'][index]):standardShell;
+    ['M11 26l9-13h42v35H11z','M16 16l9-7h27l10 14-9 26H16z','M8 29h56l-6 18H13z','M17 20l10-9h24l7 9v29H17z'][index%4]):standardShell;
   const mark=repeated?' transform="translate(11 9) scale(.7)"':'';
   return '<svg aria-hidden="true" focusable="false" class="search174-container-model crate-grade-'+(box.sealed.quality||1)+'" viewBox="0 0 72 56"><ellipse cx="36" cy="50" rx="28" ry="4"/><path class="search174-model-shell" d="'+shell+'"/><path class="search174-model-detail" d="'+detail+'"'+mark+'/></svg>';
  }
@@ -188,6 +188,7 @@ window.FrontierContainers=(()=>{
    }
   }
   run.event={type:'sealedContainer',box:targets[0].box,searchScene:{version:1,open:false,focus:-1,active:null,targets,shinyRoll,ritualSignal174,lock:locks.roomLock(room,node.id+':door')}};
+  window.FrontierSearch141?.upgrade(run.event.searchScene,node);
   save();render();
  }
  const searchScene=()=>R()?.event?.searchScene;
@@ -205,12 +206,13 @@ window.FrontierContainers=(()=>{
   const [next,label]=bands.find(([max])=>alert<max);
   return '<section class="search174-alert"><b>警戒 '+alert+'/100 · '+label+'</b><progress max="100" value="'+alert+'"></progress><small>'+(next<=100?'下一階段 '+next:'最高警戒')+'</small>'+(run.alertLedger||[]).slice(-3).map(e=>'<small>'+esc(e.reason)+' '+(e.after-e.before>=0?'+':'')+(e.after-e.before)+'</small>').join('')+'</section>';
  }
- const roomPositions=[[35,31],[67,36],[34,68],[65,73]];
+ const roomPositions=[[35,31],[67,36],[34,68],[65,73],[32,49],[69,53]];
  const entryPosition=[50,87];
- function focusSearch(index){
+ function focusSearch(index){if(searchScene()?.search141)return FrontierSearch141.select(index);return legacyFocus141(index)}
+ function legacyFocus141(index){
   const scene=searchScene();
   if(!scene||scene.active!==null||!Number.isInteger(index)||index< -1||index>=scene.targets.length||scene.outerOnly174&&index>0||index>=0&&(!scene.open||scene.targets[index].status!=='waiting'))return;
-  if(scene.focus===index||window.FrontierRuntime?.busy)return;
+  if(scene.focus===index||window.FrontierRuntime?.busy&&!scene.search141)return;
   const stage=document.querySelector('.search174-stage');
   const avatar=stage?.querySelector('.search174-avatar');
   if(!avatar){scene.focus=index;render();return}
@@ -241,7 +243,7 @@ window.FrontierContainers=(()=>{
  }
  function accessItems(run){
   const protectedKeys=(run.searchKeys174||[]).map(uid=>db.inventory.items.find(item=>item.uid===uid)).filter(Boolean);
-  return [...(run.itemCargo||[]),...protectedKeys].flatMap(item=>{
+  return [...new Map([...(run.itemCargo||[]),...(run.secureGrid?.items||[]).filter(i=>i.kind==='equipment').map(i=>i.instance).filter(Boolean),...protectedKeys].map(i=>[i.uid,i])).values()].flatMap(item=>{
    const def=accessDefinition(item);
    const id=catalog[item.itemId].effect.id;return def?[{item,id,uses:locks.pointsLeft(item),cost:locks.openCost(id,run),points:locks.usesPoints(id)}]:[];
   });
@@ -323,11 +325,11 @@ window.FrontierContainers=(()=>{
  /* v605 開門：只能用對應房卡、兩種炸藥（或沒有房卡可開的房間用開鎖裝置）；偵查儀可在開門前看鎖。 */
  const lockKindNames={mechanical:'機械鎖',electronic:'電子鎖',military:'軍規鎖',research:'研究封印'};
  function noKeyRoom(scene){return !Object.values(locks.catalog).some(d=>d.key&&locks.keyFits({room:scene.lock.room,core:false},d.key))}
- function doorOpeners(scene){return accessItems(R()).filter(row=>{const d=locks.catalog[row.id];if(d.key)return fitsAccess(scene.lock,row);if(row.id[0]==='T')return noKeyRoom(scene)&&fitsAccess(scene.lock,row);return false})}
+ function doorOpeners(scene){return accessItems(R()).filter(row=>locks.catalog[row.id].key&&fitsAccess(scene.lock,row))}
  function doorNeeds(scene){const ids=Object.keys(locks.catalog).filter(id=>locks.catalog[id].key&&locks.keyFits({room:scene.lock.room,core:false},locks.catalog[id].key));return ids.length?ids:['T1','T2','T3','T4'].filter(id=>locks.toolFits(scene.lock,id))}
  function breachParams(scene,run,row,preferred){return {lock:scene.lock,inventory:[row],ledger:run.breachLedger174||[],sector:run.expedition.layer,actions:1,targets:scene.targets.map((t,order)=>({id:t.box.uid,rarity:catalog[t.box.itemId].rarity,order})),device:row.id,preferred}}
  function targetNeeds(scene,target){
-  const ids=Object.keys(locks.catalog).filter(id=>id[0]==='T'||locks.catalog[id].key);
+  const ids=['T1','T2','T3','T4'];
   if(target.core)return {label:'核心權限鎖',ids:ids.filter(id=>fitsAccess(target.core,{id,uses:1,cost:1}))};
   const rule=objectRule(target);
   if(!rule?.kind)return {label:rule?.name||'無鎖',ids:[],free:true};
@@ -340,6 +342,7 @@ window.FrontierContainers=(()=>{
    return '<p><span>'+['左前','右前','左後','右後'][i]+' · '+esc(name)+'</span><small>'+esc(need.label)+'</small>'+(need.free?'<em>不需開鎖裝置</em>':'<span class="search605-need">'+need.ids.map(id=>'<i class="'+(carried.has(id)?'have':'')+'" title="'+esc(locks.catalog[id].name)+(carried.has(id)?'（已攜帶）':'（未攜帶）')+'"><img src="assets/search174/'+id+'.png" alt="'+esc(locks.catalog[id].name)+'"></i>').join('')+'</span>'+(need.ids.some(id=>carried.has(id))?'<em class="ok">已攜帶可用裝置</em>':'<em class="warn">未攜帶'+(need.force?'，只能強拆（+'+need.force+' 警戒、暗格可能損毀）':'')+'</em>'))+'</p>'}).join('')+'</div>';
  }
  function openSearchDoor(method="careful",uid=null,preferred=null){
+  if(searchScene()?.search141?.rollStep<2)return false;
   const run=R(),scene=searchScene();
   if(!scene||scene.open||scene.active!==null||scene.focus!==-1)return;
   const items=accessItems(run);
@@ -374,6 +377,7 @@ window.FrontierContainers=(()=>{
   closeModal();save();render();
  }
  function showSearchDoor(){
+  if(searchScene()?.search141?.rollStep<2)return false;
   const scene=searchScene();
   if(!scene||scene.open)return;
   modal('開啟區域隔離門',(scene.scouted605?scoutReport(scene):'')+'<div class="search174-door-options search605-door">'+doorActions(scene)+'</div>',
@@ -414,7 +418,7 @@ window.FrontierContainers=(()=>{
    if(row.id[0]==='T')grantAccessBonus(run,row);/* v605：房卡只保全容器，不另給物資 */
   }else row.item.searchUses174=row.uses-1;
   const uid=row.item.uid;
-  if(!(row.points?row.item.searchPoints604:row.item.searchUses174)&&!run.searchKeys174?.includes(uid))run.itemCargo=run.itemCargo.filter(i=>i.uid!==uid);
+  if(!(row.points?row.item.searchPoints604:row.item.searchUses174)&&!run.searchKeys174?.includes(uid)){run.itemCargo=run.itemCargo.filter(i=>i.uid!==uid);if(run.secureGrid)run.secureGrid.items=run.secureGrid.items.filter(i=>i.uid!==uid);}
   FrontierGrid.sync();
  }
  function useText(row){return row.points?'消耗 '+row.cost+' 點（剩 '+row.uses+' 點）':'消耗 1 次（剩 '+row.uses+' 次）'}
@@ -438,6 +442,7 @@ window.FrontierContainers=(()=>{
   save();render();
  }
  function suspendSearchBox(){
+  if(searchScene()?.search141)return FrontierSearch141.back();
   const event=R()?.event,scene=event?.searchScene,target=scene?.targets[scene.active];
   if(!target)return;
   target.box=event.box;
@@ -445,23 +450,20 @@ window.FrontierContainers=(()=>{
   scene.active=null;
   closeModal();save();render();
  }
- function objectRule(target){return target.structure174?locks.containerRule(target.box.itemId):null}
+ function objectRule(target){
+  if(!target.structure174)return null;const rule=locks.containerRule(target.box.itemId),scene=searchScene();
+  if(!rule.kind||target.core||!scene?.targets?.includes(target)||scene.targets.every(t=>(t.box.sealed?.tier||0)>=5))return rule;
+  const locked=scene.targets.filter(t=>t.core||t.structure174&&locks.containerRule(t.box.itemId).kind).sort((a,b)=>Number(!!b.core)-Number(!!a.core)||(b.box.sealed?.tier||0)-(a.box.sealed?.tier||0)||scene.targets.indexOf(a)-scene.targets.indexOf(b));
+  return locked.indexOf(target)>=2?{type:1,name:'已解除箱鎖',alert:0}:rule;
+ }
  function objectMethods(scene,target){
-  const rule=objectRule(target);
-  if(!rule?.kind||target.objectOpened174||target.core)return [];
+  const rule=objectRule(target);if(!rule?.kind||target.objectOpened174||target.core)return [];
   const lock={...scene.lock,...rule,core:false};
-  const authorized={
-   4:['K04','K06','K08','K09'],5:['K05','K08'],6:['K02','K07','K09'],
-   7:['K03','K06'],8:['K08','K09','K10']
-  }[rule.type];
-  return accessItems(R()).filter(row=>{
-   if(locks.catalog[row.id].key&&authorized&&!authorized.includes(row.id))return false;
-   if(rule.type===8&&row.id==='K10')return row.uses>=row.cost&&[19,20].includes(scene.lock.room);
-   return fitsAccess(lock,row);
-  });
+  return accessItems(R()).filter(row=>row.id[0]==='T'&&fitsAccess(lock,row));
  }
  const coldRoomRisk=run=>['chernobog','kjerag','sami'].includes(run.expedition.regionId);
  function prepareObject(method,uid){
+  if(searchScene()?.search141)return method==='tool'?FrontierSearch141.unlock(uid):false;
   const run=R(),scene=searchScene(),target=scene?.targets[scene.focus];
   if(!scene?.open||scene.active!==null||target?.status!=='waiting'||target.core||target.objectOpened174)return;
   const rule=objectRule(target);
@@ -484,7 +486,7 @@ window.FrontierContainers=(()=>{
   applyAlert(run,target.box.uid+':lock',alert,'容器開啟');
   save();render();
  }
- function packSealedSearch(){
+ function packSealedSearch(){if(searchScene()?.search141&&searchScene().active===null)return false;
   const run=R(),event=run?.event,scene=event?.searchScene,target=scene?.targets[scene.focus];
   if(!scene?.open||scene.active!==null||target?.status!=='waiting'||target.core&&!target.core.open||!objectRule(target)?.carrySealed)return;
   const box=target.box;
@@ -505,10 +507,11 @@ window.FrontierContainers=(()=>{
  }
  function sceneSearchActions(scene){
   const target=scene.targets[scene.focus];
+  if(scene.search141)return FrontierSearch141.operations(scene,target);
   if(target.paused)return '<button class="primary" onclick="FrontierContainers.beginSceneSearch(&quot;resume&quot;)">繼續開箱</button>';
   if(target?.core&&!target.core.open){
-   const permitted=accessItems(R()).filter(row=>fitsAccess(target.core,row));
-   return '<span>核心需核驗相符的通行授權或破解器</span>'+permitted.map(row=>'<button onclick="FrontierContainers.unlockSearchCore('+esc(JSON.stringify(row.item.uid))+')"><span aria-hidden="true">'+FrontierIcons.html(row.item.itemId)+'</span>'+esc(locks.catalog[row.id].name)+' · '+useText(row)+'</button>').join('');
+   const permitted=accessItems(R()).filter(row=>row.id[0]==='T'&&fitsAccess(target.core,row));
+   return '<span>核心容器需要相容的開鎖裝置；房卡只用於房門</span>'+permitted.map(row=>'<button onclick="FrontierContainers.unlockSearchCore('+esc(JSON.stringify(row.item.uid))+')"><span aria-hidden="true">'+FrontierIcons.html(row.item.itemId)+'</span>'+esc(locks.catalog[row.id].name)+' · '+useText(row)+'</button>').join('');
   }
   const rule=objectRule(target),definition=catalog[target.box.itemId];
   const inspected=target.inspected174?
@@ -521,7 +524,7 @@ window.FrontierContainers=(()=>{
    const force=rule.force?'<button onclick="FrontierContainers.prepareObject(&quot;force&quot;)">強行破拆 · 警戒 +'+rule.force+
     (target.hiddenReward?' · 損失暗格':'')+(rule.type===6&&coldRoomRisk(R())?' · 加重地區環境':'')+(rule.guard&&!scene.guardFought174?' · 須先迎戰守衛':'')+'</button>':'';
    const sealed=rule.carrySealed?'<button onclick="FrontierContainers.packSealedSearch()">整箱帶走 · '+definition.gridSize.w+'×'+definition.gridSize.h+'</button>':'';
-   return (available+clue+force||'<small>需要相容的授權或破解器。</small>')+sealed;
+   return (available+clue+force||'<small>需要相容的開鎖裝置。</small>')+sealed;
   };
   if(target.requiresGuard174)return inspected+'<button class="primary" onclick="FrontierContainers.faceSearchGuard()">迎戰守衛後搜索</button>';
   if(rule?.kind&&!target.objectOpened174&&!target.core)return inspected+openMethods();
@@ -540,6 +543,7 @@ window.FrontierContainers=(()=>{
   if(target)searchFamily={uid:target.box.uid,family};
  }
  function beginSceneSearch(method="general"){
+  if(searchScene()?.search141)return FrontierSearch141.begin(({general:'normal',quick:'surface'})[method]||method);
   const event=R()?.event,scene=event?.searchScene,target=scene?.targets[scene.focus];
   if(!scene?.open||scene.active!==null||target?.status!=='waiting'||target.core&&!target.core.open)return;
   const run=R(),sealed=target.box.sealed,rule=objectRule(target);
@@ -574,6 +578,7 @@ window.FrontierContainers=(()=>{
   save();render();
  }
  function returnToSearchScene(carried=false){
+  if(searchScene()?.search141)return FrontierSearch141.back(carried);
   const event=R()?.event,scene=event?.searchScene,target=scene?.targets[scene.active];
   if(!target)return;
   target.box=event.box;
@@ -662,6 +667,10 @@ window.FrontierContainers=(()=>{
   return '<div class="search174-choice '+(index%2?'choice-left':'choice-right')+(index>=2?' choice-bottom':'')+(walking?' after-walk':'')+'">'+sceneSearchActions(scene)+'</div>';
  }
  function searchSceneView(scene){
+  if(scene?.search141)return FrontierSearch141.view(scene);
+  return legacyRoom141(scene);
+ }
+ function legacyRoom141(scene){
   const pursuit=searchPursuit(R());
   const evade=pursuit&&scene.targets.every(t=>t.status!=='carried'&&!t.box.sealed.claimed.some(Boolean));
   const [x,y]=roomPositions[scene.focus]||entryPosition;
@@ -671,7 +680,7 @@ window.FrontierContainers=(()=>{
       if(scene.outerOnly174&&index>0)return '';
       const box=target.box,done=target.status!=='waiting',label=scene.lock?.targetNames?.[index]||catalog[box.itemId].name;
       const repeated=scene.targets.some((previous,i)=>i<index&&previous.box.itemId===box.itemId);
-      return '<button data-search-target="'+index+'" aria-pressed="'+(scene.focus===index)+'" '+(done?'disabled':'')+' onclick="FrontierContainers.focusSearch('+index+')">'+roomContainerModel(box,label,index,repeated)+'<b>'+esc(label)+'</b><small>'+({waiting:target.generalDone?'暗格待開':target.quickDone?'已翻找表層':'未搜索',searched:'已搜索',left:'已離開',carried:'已攜走',destroyed:'已毀損'})[target.status]+'</small></button>';
+      return '<button data-search-target="'+index+'" aria-pressed="'+(scene.focus===index)+'" '+(done?'disabled':'')+' onclick="FrontierContainers.focusSearch('+index+')">'+roomContainerModel(box,label,index,repeated)+'<b>'+esc(label)+'</b><small>'+({waiting:scene.search141?(target.search141.paused?'搜索未完成':target.search141.first==='normal'?'可繼續搜索':target.search141.locked&&!target.search141.unlocked?'容器上鎖':'未搜索'):target.generalDone?'暗格待開':target.quickDone?'已翻找表層':'未搜索',searched:'已搜索',left:'已離開',carried:'已攜走',destroyed:'已毀損'})[target.status]+'</small></button>';
     }).join('')+'</div>':'<button class="search174-door" onclick="FrontierContainers.showSearchDoor()"><span aria-hidden="true" class="search174-lock"></span><b>區域隔離門</b></button>')+
     '<span class="search174-avatar" style="--walk-x:'+x+'%;--walk-y:'+y+'%" aria-hidden="true"><i></i><b>博士</b></span>'+
     searchChoice(scene)+'</div>'+
@@ -735,11 +744,11 @@ window.FrontierContainers=(()=>{
  function closeCarried(keep=true){const r=R(),box=r?.event?.box;if(!r?.boxReturn||box?.uid!==r.boxReturn.uid)return false;const empty=box.sealed.claimed.every(Boolean);if(keep&&!empty){if(!FrontierGrid.canTake(box.itemId,'equipment')){toast('需要騰出完整空間收回箱子，或選擇放棄剩餘內容。');return false}r.itemCargo.push(box)}if(empty){const c=ensure();c.opened++;c.history.unshift({id:box.uid,quality:box.sealed.quality,at:Date.now(),contents:box.sealed.contents,source:'field'});c.history=c.history.slice(0,200)}delete r.boxReturn;r.event=null;FrontierGrid.sync();save();render();return true}
  function openBase(uid){const box=db.inventory.items.find(x=>x.uid===uid&&catalog[x.itemId]?.category==='container');if(!box)return;baseBox=uid;ensure().activeBox=uid;page='containers';save();render()}
  const searchCount=box=>box.sealed.surfaceOnly?1:box.sealed.contents.length;
- function reveal(all=false){const box=currentBox();if(!box)return;if(R()?.equipment139&&!R().result&&box.sealed.preview139&&!box.sealed.preview139.confirmed){toast('請先確認裝備容器預覽，再開始搜尋。');return}box.sealed.revealed=all?searchCount(box):Math.min(searchCount(box),box.sealed.revealed+1);save();renderLoot()}
+ function reveal(all=false){if(searchScene()?.search141&&searchScene().active===null)return;const box=currentBox();if(!box)return;if(R()?.equipment139&&!R().result&&box.sealed.preview139&&!box.sealed.preview139.confirmed){toast('請先確認裝備容器預覽，再開始搜尋。');return}box.sealed.revealed=all?searchCount(box):Math.min(searchCount(box),box.sealed.revealed+1);save();renderLoot()}
  function finishBase(box){if(page!=='containers'||!baseBox||!box.sealed.claimed.every(Boolean))return;db.inventory.items=db.inventory.items.filter(x=>x.uid!==box.uid);const c=ensure();c.opened++;c.history.unshift({id:box.uid,quality:box.sealed.quality,at:Date.now(),contents:box.sealed.contents});c.history=c.history.slice(0,200);baseBox=null;c.activeBox=null}
- function take(index,refresh=true){const box=currentBox(),s=box?.sealed;if(!s||index>=s.revealed||s.surfaceOnly&&index>0||index<0||s.claimed[index])return;if(R()?.equipment139&&!R().result&&s.preview139&&!s.preview139.confirmed)throw Error('請先確認開始搜尋');const content=s.contents[index],d=catalog[content.itemId];const carried=carriedBox()?.uid===box.uid;if(page!=='containers'&&!canCollectAccess(content.itemId))return;if(carried)window.FrontierExplorer?.search(box);s.claimed[index]=true;if(baseBox&&page==='containers'){if(['material','record','medicine'].includes(d.category))FrontierProgress.deposit(d.id,content.qty);else FrontierEquipment.deposit(FrontierInventory.create(d.id,content.qty,{source:'box:'+box.uid+':'+index}));finishBase(box)}else{if(['material','record','medicine'].includes(d.category))R().field.materials[d.id]=(R().field.materials[d.id]||0)+content.qty;else R().itemCargo.push(FrontierInventory.create(d.id,content.qty,{source:'box:'+box.uid+':'+index}));if(carried&&s.claimed.every(Boolean))finishCarried(box);FrontierGrid.sync();if(!carried&&R().boxReturn&&s.claimed.every(Boolean))closeCarried(false)}if(!baseBox&&R()&&!R().result)window.FrontierEquipmentFieldUI139?.containerLoot(box);if(refresh){save();renderLoot()}if(carried&&s.claimed.every(Boolean))chooseCarried(true)}
+ function take(index,refresh=true){if(searchScene()?.search141&&searchScene().active===null)return;const box=currentBox(),s=box?.sealed;if(!s||index>=s.revealed||s.surfaceOnly&&index>0||index<0||s.claimed[index])return;if(R()?.equipment139&&!R().result&&s.preview139&&!s.preview139.confirmed)throw Error('請先確認開始搜尋');const content=s.contents[index],d=catalog[content.itemId];const carried=carriedBox()?.uid===box.uid;if(page!=='containers'&&!canCollectAccess(content.itemId))return;if(carried)window.FrontierExplorer?.search(box);s.claimed[index]=true;if(baseBox&&page==='containers'){if(['material','record','medicine'].includes(d.category))FrontierProgress.deposit(d.id,content.qty);else FrontierEquipment.deposit(FrontierInventory.create(d.id,content.qty,{source:'box:'+box.uid+':'+index}));finishBase(box)}else{if(['material','record','medicine'].includes(d.category))R().field.materials[d.id]=(R().field.materials[d.id]||0)+content.qty;else R().itemCargo.push(FrontierInventory.create(d.id,content.qty,{source:'box:'+box.uid+':'+index}));if(carried&&s.claimed.every(Boolean))finishCarried(box);FrontierGrid.sync();if(!carried&&R().boxReturn&&s.claimed.every(Boolean))closeCarried(false)}if(!baseBox&&R()&&!R().result)window.FrontierEquipmentFieldUI139?.containerLoot(box);if(refresh){save();renderLoot()}if(carried&&s.claimed.every(Boolean))chooseCarried(true)}
  function takeAll(){const box=currentBox();if(!box)return;if(!box.sealed.contents.length&&page==='containers'){finishBase(box);save();renderLoot();return}const count=box.sealed.revealed;for(let i=0;i<count&&currentBox()?.uid===box.uid;i++)take(i,false);save();renderLoot()}
- function carry(){if(currentBox()?.sealed.surfaceOnly){toast('請先完成一般搜索再帶走物資箱。');return}if(carriedBox())return returnToBag();if(R()?.boxReturn)return closeCarried(true);const box=currentBox();if(!box||baseBox&&page==='containers')return;if(!FrontierGrid.canTake(box.itemId,'equipment')){const {w,h}=catalog[box.itemId].gridSize;toast('密封箱需要 '+w+'×'+h+' 的完整空間。可先開箱或整理背包。');return}R().itemCargo.push(box);FrontierGrid.sync();if(searchScene()?.active!=null)return returnToSearchScene(true);completeNode()}
+ function carry(){if(searchScene()?.search141&&searchScene().active===null)return false;if(currentBox()?.sealed.surfaceOnly){toast('請先完成一般搜索再帶走物資箱。');return}if(carriedBox())return returnToBag();if(R()?.boxReturn)return closeCarried(true);const box=currentBox();if(!box||baseBox&&page==='containers')return;if(!FrontierGrid.canTake(box.itemId,'equipment')){const {w,h}=catalog[box.itemId].gridSize;toast('密封箱需要 '+w+'×'+h+' 的完整空間。可先開箱或整理背包。');return}R().itemCargo.push(box);FrontierGrid.sync();if(searchScene()?.active!=null)return returnToSearchScene(true);completeNode()}
  function leave(){if(searchScene()?.active!=null){return returnToSearchScene()}if(R()?.boxReturn){modal('放棄未取出的內容？','<p>已裝入背包的物資保留；未拿取的箱內物品留在此地。這不會推進路線。</p>','<button class="danger" onclick="closeModal();FrontierContainers.closeCarried(false)">放棄剩餘內容，返回路線</button><button onclick="closeModal()">繼續整理</button>');return}if(baseBox&&page==='containers'){baseBox=null;ensure().activeBox=null;save();render();return}modal('放棄未裝入的箱內物資？','<p>已裝入的內容保留；箱子與尚未拿取的物資留在此地。</p>','<button class="danger" onclick="closeModal();completeNode()">確認前進</button><button onclick="closeModal()">繼續整理</button>')}
  function boxView(box){const scene=searchScene();if(scene&&R()?.event?.box===box&&scene.active===null)return searchSceneView(scene);if(window.FrontierLootGrid)return FrontierLootGrid.view(box);const s=box.sealed;return `<section class="panel"><div class="eyebrow">SEALED LOOT / FIXED AT ACQUISITION</div><h1>${catalog[box.itemId].name}</h1><p class="tiny muted">${box.uid} · 2×3 · 結果已固定。滑開封條或逐件揭曉；跳過動畫不會改變內容。</p><div class="box-packet rarity-${s.tier}" id="box-packet" role="button" tabindex="0" aria-label="向上滑動揭曉下一件"><b>▣</b><span>${s.revealed}/${s.contents.length} · 向上滑動拆封</span></div><div class="row"><button class="primary" onclick="FrontierContainers.reveal()">揭曉下一件</button><button onclick="FrontierContainers.reveal(true)">快速全部揭曉</button><button onclick="FrontierContainers.takeAll()">收取已揭曉</button></div><div class="loot-reveal-list">${s.contents.map((item,i)=>i>=s.revealed?'<div class="panel loot-unknown">？</div>':`<article class="panel rarity-${catalog[item.itemId].rarity}"><span class="tag">${FrontierInventory.qualityNames[catalog[item.itemId].rarity]}</span><h3>${catalog[item.itemId].name} ×${item.qty}</h3><p class="tiny muted">${catalog[item.itemId].description}</p><button ${s.claimed[i]?'disabled':''} onclick="FrontierContainers.take(${i})">${s.claimed[i]?'已收取':'裝入物資'}</button><button onclick="FrontierInventory.describe('${item.itemId}')">詳情</button></article>`).join('')}</div><div class="row">${baseBox?'<button onclick="FrontierContainers.leave()">收起箱子</button>':'<button onclick="FrontierContainers.carry()">帶走密封箱／剩餘內容</button><button onclick="FrontierContainers.leave()">放棄剩餘物資並前進</button>'}</div></section>`}
  function baseView(){const boxes=FrontierInventory.ensure().items.filter(x=>catalog[x.itemId]?.category==='container'),cores=db.inventory.items.filter(x=>x.itemId==='red_research_core');return `<section class="panel"><h3>封存戰利品</h3><p class="tiny muted">基地可不限數量保存密封箱，內容在取得時已固定。紅階所有來源每週隨機最多3件；總出率將納入全局模擬。</p>${boxes.map(box=>`<div class="trade-row"><span>${catalog[box.itemId].name} · ${box.uid}</span><button onclick="FrontierContainers.openBase('${box.uid}')">拆封</button></div>`).join('')||'<p class="tiny muted">尚無密封箱。</p>'}${cores.map(item=>`<div class="trade-row"><span>戰略研究封存核心</span><button onclick="FrontierContainers.studyCore('${item.uid}')">提交紀念研究</button></div>`).join('')}</section>`}
@@ -783,8 +792,8 @@ window.FrontierContainers=(()=>{
  };
  const oldCollection=collection;collection=function(){oldCollection();$('#app').innerHTML=baseView()+$('#app').innerHTML};
  const oldCheck=checkBattle;checkBattle=function(){const r=R(),b=r?.battle;if(b&&r.searchGuard174&&r.hp>0&&b.enemies.every(e=>e.hp<=0)){const event=r.searchGuard174,scene=event.searchScene;scene.guardFought174=true;for(const target of scene.targets)delete target.requiresGuard174;delete r.searchGuard174;r.battle=null;r.event=event;save();render();return}if(b&&r.breachIntercept174===r.expedition?.current&&r.hp>0&&b.enemies.every(e=>e.hp<=0)){delete r.breachIntercept174;completeNode();return}if(r?.expedition&&b&&r.hp>0&&b.enemies.every(e=>e.hp<=0)&&!b.containerDropped){b.containerDropped=true;if(random()<(b.type==='boss'?.9:b.type==='elite'?.45:.2)){const q=r.expedition.mode==='scout'?1:b.type==='boss'?4+rnd(2):b.type==='elite'?3:1+rnd(3);r.itemCargo.push(drop(q,'armory',{source:'battle:'+r.number+':'+r.depth}))}}return oldCheck()};
- const oldValid=validSave;validSave=function(v){let copy=v;if(v.run?.event?.type==='sealedContainer')copy={...v,run:{...v.run,event:null}};if(!oldValid(copy))return false;const back=v.run?.boxReturn;if(back&&(back.version!==1||typeof back.uid!=='string'||v.run.event?.type!=='sealedContainer'||v.run.event.box?.uid!==back.uid||v.run.battle||v.run.reward||v.run.expedition?.current))return false;const boxes=[...(v.inventory?.items||[]),...(v.run?.itemCargo||[]),...(v.run?.grid?.groundItems||[]),...(v.run?.event?.box?[v.run.event.box]:[]),...(v.run?.secureGrid?.items||[]).filter(x=>x.kind==='equipment').map(x=>x.instance)].filter(x=>catalog[x.itemId]?.category==='container');return boxes.every(box=>{const s=box.sealed;return FrontierInventory.valid(box)&&s?.version===1&&(s.searchedInField===undefined||typeof s.searchedInField==='boolean')&&qualities[s.quality]&&Number.isInteger(s.tier)&&s.tier>=2&&s.tier<=7&&Array.isArray(s.contents)&&s.contents.length>=(s.equipmentRetired139===2?0:catalog[box.itemId].balance?.surveyEquipment?1:2)&&s.contents.length<=(box.itemId===grand?16:6)&&(!catalog[box.itemId].balance?.surveyEquipment||((s.contents.length===1||s.equipmentRetired139===2&&s.contents.length===0)&&s.tier===catalog[box.itemId].rarity&&s.contents.every(i=>catalog[i.itemId]?.category==='equipment'&&catalog[i.itemId].rarity===s.tier)))&&s.contents.every(i=>catalog[i.itemId]&&Number.isInteger(i.qty)&&i.qty>=1&&i.qty<=catalog[i.itemId].stack)&&Number.isInteger(s.revealed)&&s.revealed>=0&&s.revealed<=s.contents.length&&Array.isArray(s.claimed)&&s.claimed.length===s.contents.length&&s.claimed.every(x=>typeof x==='boolean')})};
+ const oldValid=validSave;validSave=function(v){let copy=v;if(v.run?.event?.type==='sealedContainer')copy={...v,run:{...v.run,event:null}};if(!oldValid(copy))return false;const back=v.run?.boxReturn;if(back&&(back.version!==1||typeof back.uid!=='string'||v.run.event?.type!=='sealedContainer'||v.run.event.box?.uid!==back.uid||v.run.battle||v.run.reward||v.run.expedition?.current))return false;const boxes=[...(v.inventory?.items||[]),...(v.run?.itemCargo||[]),...(v.run?.grid?.groundItems||[]),...(v.run?.event?.box?[v.run.event.box]:[]),...(v.run?.secureGrid?.items||[]).filter(x=>x.kind==='equipment').map(x=>x.instance)].filter(x=>catalog[x.itemId]?.category==='container');return boxes.every(box=>{const s=box.sealed;return FrontierInventory.valid(box)&&s?.version===1&&(s.searchedInField===undefined||typeof s.searchedInField==='boolean')&&qualities[s.quality]&&Number.isInteger(s.tier)&&s.tier>=2&&s.tier<=7&&Array.isArray(s.contents)&&s.contents.length>=(s.search141Round?.mode==='surface'?1:s.equipmentRetired139===2?0:catalog[box.itemId].balance?.surveyEquipment?1:2)&&s.contents.length<=(box.itemId===grand?16:6)&&(!catalog[box.itemId].balance?.surveyEquipment||((s.contents.length===1||s.equipmentRetired139===2&&s.contents.length===0)&&s.tier===catalog[box.itemId].rarity&&s.contents.every(i=>catalog[i.itemId]?.category==='equipment'&&catalog[i.itemId].rarity===s.tier)))&&s.contents.every(i=>catalog[i.itemId]&&Number.isInteger(i.qty)&&i.qty>=1&&i.qty<=catalog[i.itemId].stack)&&Number.isInteger(s.revealed)&&s.revealed>=0&&s.revealed<=s.contents.length&&Array.isArray(s.claimed)&&s.claimed.length===s.contents.length&&s.claimed.every(x=>typeof x==='boolean')})};
  let touch=null;document.addEventListener('pointerdown',e=>{if(e.target.closest?.('#box-packet'))touch={id:e.pointerId,y:e.clientY}});document.addEventListener('pointerup',e=>{if(!touch||touch.id!==e.pointerId)return;const delta=touch.y-e.clientY;touch=null;if(delta>45)FrontierRuntime.perform('box-swipe',()=>reveal())});document.addEventListener('pointercancel',()=>touch=null);
  ensure();FrontierInventory.validateCatalog();
- return{qualities,searchSceneView,renderLoot,canCollectAccess,specialContainment,takeRitualSignal,faceSearchGuard,leaveSearchScene,unlockSearchCore,accessPrep,pickAccess,confirmAccess,prepareAccess,finishAccess,searchCount,focusSearch,showSearchDoor,openSearchDoor,chooseBreach,chooseSearchFamily,packSealedSearch,unsealCarried,inspectSearchTarget,prepareObject,beginSceneSearch,suspendSearchBox,returnToSearchScene,highRiskTier,highRiskDrop,ensure,day,week,quality,qualityLabel,reward,create,drop,grand,chooseCarried,carriedBoxes,carriedBox,returnToBag,openNode,openBase,openCarried,closeCarried,currentBox,reveal,take,takeAll,carry,leave,boxView,baseView,studyCore};
+ return{legacyRoom141,legacyFocus141,accessRows141:accessItems,consumeAccess141:consumeAccess,qualities,searchSceneView,renderLoot,canCollectAccess,specialContainment,takeRitualSignal,faceSearchGuard,leaveSearchScene,unlockSearchCore,accessPrep,pickAccess,confirmAccess,prepareAccess,finishAccess,searchCount,focusSearch,showSearchDoor,openSearchDoor,chooseBreach,chooseSearchFamily,packSealedSearch,unsealCarried,inspectSearchTarget,prepareObject,beginSceneSearch,suspendSearchBox,returnToSearchScene,highRiskTier,highRiskDrop,ensure,day,week,quality,qualityLabel,reward,create,drop,grand,chooseCarried,carriedBoxes,carriedBox,returnToBag,openNode,openBase,openCarried,closeCarried,currentBox,reveal,take,takeAll,carry,leave,boxView,baseView,studyCore};
 })();

@@ -4,7 +4,7 @@
 const roomsByKey = [
   [1,2,3,5], [2,3,4,13], [1,2,5,6,11], [7,8,12,18],
   [5,9,10,15,16], [6,7,11,12,17], [3,4,13,14,17,18],
-  [9,10,15,16], [11,12,14,17,18], []
+  [9,10,15,16], [11,12,14,17,18], [19,20]
 ];
 const keyUses = [8,8,6,6,5,5,5,3,3,2];
 const coreKeys = {
@@ -24,14 +24,14 @@ const tools = {
 
 function keyFits(lock, key) {
   if (!Number.isInteger(key) || !keyUses[key-1]) return false;
-  if (lock.core && coreKeys[lock.room]) return coreKeys[lock.room].includes(key);
+  if (lock.core) return false;
   return roomsByKey[key-1].includes(lock.room);
 }
 
 function toolFits(lock, id) {
   const tool = tools[id];
   if (!tool) return false;
-  if (lock.core && coreKeys[lock.room]) return !!coreTools[lock.room]?.includes(id);
+  // 房內核心依容器鎖的類型及等級使用開鎖裝置。
   if (id === 'T4' && (!lock.t4Allowed || lock.level !== 4)) return false;
   return tool.kinds.includes(lock.kind) && lock.level <= tool.level;
 }

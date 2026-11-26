@@ -22,7 +22,7 @@ window.FrontierRuntime = (()=>{
         window.FrontierRender32?.end(batched,true);batched=false;
         if(beforeRaw===JSON.stringify(db))return result??true;
       }
-      window.FrontierGrid?.sync();window.FrontierPotential?.sync();window.FrontierOperations?.ensure();
+      window.FrontierSearch141?.syncActive();window.FrontierGrid?.sync();window.FrontierPotential?.sync();window.FrontierOperations?.ensure();
       window.FrontierAchievementRecords?.update(before,db);
       const surveyFinalized=window.FrontierSurveyEngineV27?.finalize(before,db);if(window.FrontierTalent43?.finalize(before,db)||surveyFinalized)render();
       window.FrontierRender32?.end(batched,true);batched=false;
@@ -38,6 +38,7 @@ window.FrontierRuntime = (()=>{
       else if(!FrontierSaveGuard.write(db))throw Error('儲存失敗，操作未完成。');
       if(submittedTalentInfo!==db.run?.talentInfo44||submittedSurvey!==db.run?.surveySettlement27)view(render);
       document.dispatchEvent?.(new CustomEvent('frontier:committed',{detail:{id:transactionId,seq}}));
+      try{window.FrontierAcquisition140?.committed(before,db,label)}catch(e){console.warn('Acquisition display:',e)}
       if(before.run&&!before.run.result&&db.run?.number===before.run.number&&db.run.result){
         const cloud=window.FrontierCloud?.info();
         const message=cloud?.status==='saved'?'結算已儲存至雲端':cloud?.offline?'結算已儲存至本機，連線後自動同步':'結算已儲存至本機';
