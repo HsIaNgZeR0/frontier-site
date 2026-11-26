@@ -224,7 +224,7 @@ window.FrontierBagUX=(()=>{
  const obj=el=>el.dataset.secureUid?FrontierSecure.ensure()?.items.find(i=>i.uid===el.dataset.secureUid):R()?.grid?.items.find(i=>i.uid===el.dataset.gridUid);
  function create(){
   const host=document.createElement('div');host.className='screen-bag-content bag-ux';
-  host.innerHTML='<div class="bag-ux-controls">'+FrontierGrid.qualityView()+'<button onclick="FrontierGrid.sort()">自動整理</button><button onclick="FrontierGrid.rotateSelected()">旋轉 ↻</button></div><div class="bag-ux-layout"><div class="bag-ux-storage"><div class="bag-ux-pan" aria-label="背包，可上下左右移動"></div></div><div class="bag-ux-trash" role="region" aria-label="拖曳丟棄區"><span>⌫</span><b>丟棄區</b><small>拖至此處放開</small></div></div><div class="bag-ux-fixed"><div class="bag-ux-safe"></div><div class="bag-ux-side" aria-label="額外空間"></div></div><p class="bag-ux-hint">空白處滑動背包 · 長按查看 · 快速點兩下鎖定／解鎖 · 拖近自動轉向</p>';
+  host.innerHTML='<div class="bag-ux-controls">'+FrontierGrid.qualityView()+'<button onclick="FrontierGrid.sort()">自動整理</button><button onclick="FrontierGrid.rotateSelected()">旋轉 ↻</button></div><div class="bag-ux-layout"><div class="bag-ux-storage"><div class="bag-ux-pan" aria-label="背包，可上下左右移動"></div></div><div class="bag-ux-trash" role="region" aria-label="拖曳丟棄區"><span>⌫</span><b>丟棄區</b><small>拖至此處放開</small></div></div><div class="bag-ux-fixed"><div class="bag-ux-safe"></div><div class="bag-ux-side" aria-label="額外空間"></div></div><p class="bag-ux-hint">空白處滑動背包 · 長按查看 · 快速點兩下鎖定／解鎖（仍可拖動） · 拖近自動轉向</p>';
   const temp=document.createElement('div');temp.innerHTML=FrontierGrid.view();const valueCard=temp.querySelector('.bag-known-rv');if(valueCard)host.prepend(valueCard);const pan=host.querySelector('.bag-ux-pan');
   for(const grid of temp.querySelectorAll('.inventory-grid')){const label=document.createElement('div');label.className='bag-ux-label';label.textContent=grid.dataset.gridZone==='main'?'聯合背包 · '+bagSize()+'/'+capacity()+'格':R().grid.sidebags?.find(s=>s.id===grid.dataset.gridZone)?.label||'裝備側袋';(grid.dataset.gridZone==='main'?pan:host.querySelector('.bag-ux-side')).append(label,grid)}if(!host.querySelector('.bag-ux-side').children.length)host.querySelector('.bag-ux-side').remove()
   const safe=host.querySelector('.bag-ux-safe');safe.innerHTML=FrontierSecure.view();for(const node of safe.querySelectorAll('p,section>button'))node.remove();
@@ -240,9 +240,9 @@ window.FrontierBagUX=(()=>{
  function selectBagItem(el){FrontierGrid.choose(el.dataset.gridUid,false);for(const node of el.closest('.bag-ux').querySelectorAll('[data-grid-uid]'))node.classList.toggle('grid-chosen',node===el);}
  function cleanup(){ghost?.remove();ghost=null;drag=null;document.querySelector('.bag-ux-trash')?.classList.remove('active')}
  function near(el,x,y,margin=0){if(!el)return false;const b=el.getBoundingClientRect();return x>=b.left-margin&&x<=b.right+margin&&y>=b.top-margin&&y<=b.bottom+margin}
- function placement(uid,secure,grid,x,y){const r=R(),isSafe=grid.dataset.secureGrid==='true',zone=grid.dataset.gridZone||'main',target=isSafe?FrontierSecure.ensure():r.grid,item=(secure?FrontierSecure.ensure().items:r.grid.items).find(i=>i.uid===uid);if(!item||FrontierGrid.packedLocked(item))return null;
+ function placement(uid,secure,grid,x,y){const r=R(),isSafe=grid.dataset.secureGrid==='true',zone=grid.dataset.gridZone||'main',target=isSafe?FrontierSecure.ensure():r.grid,item=(secure?FrontierSecure.ensure().items:r.grid.items).find(i=>i.uid===uid);if(!item)return null;
   if(isSafe!==secure&&(r.battle||(r.reward&&!window.FrontierTrail?.finalLootClaimed())||r.result)){return null}
-  if(isSafe&&secure)return;
+
   const side=target.sidebags?.find(z=>z.id===zone),mask=side?.mask,w=mask?mask[0].length:target.width,h=mask?mask.length:target.height,b=grid.getBoundingClientRect(),candidate={...item,zone:isSafe?'main':zone};
   const style=getComputedStyle(grid),scale=grid.closest('.bag-canvas31')?FrontierViewZoom.get('bag'):1,cw=parseFloat(style.gridTemplateColumns.split(' ')[0])*scale,ch=parseFloat(style.gridTemplateRows.split(' ')[0])*scale,gx=(parseFloat(style.columnGap)||0)*scale,gy=(parseFloat(style.rowGap)||0)*scale,left=b.left+(parseFloat(style.borderLeftWidth)||0)+(parseFloat(style.paddingLeft)||0),top=b.top+(parseFloat(style.borderTopWidth)||0)+(parseFloat(style.paddingTop)||0);const points=[];for(let yy=0;yy<h;yy++)for(let xx=0;xx<w;xx++)points.push({x:xx,y:yy,d:Math.hypot(left+xx*(cw+gx)+cw/2-x,top+yy*(ch+gy)+ch/2-y)});points.sort((a,c)=>a.d-c.d);const dims=FrontierGrid.dimensions(candidate);
   for(const p of points){
@@ -253,17 +253,16 @@ window.FrontierBagUX=(()=>{
  }
  function targetGrid(secure,x,y){
   const grids=[...document.querySelectorAll('.bag-ux .inventory-grid')],safe=grids.find(g=>g.dataset.secureGrid),main=grids.filter(g=>g.dataset.gridZone);
-  if(secure&&near(safe,x,y))return null;
+  if(secure&&near(safe,x,y))return safe;
   const visibleNear=(g,m=0)=>near(g,x,y,m)&&near(g.closest('.bag-ux-pan'),x,y,m);
   return secure?main.find(g=>visibleNear(g,26)):near(safe,x,y,26)?safe:main.find(g=>visibleNear(g));
  }
  function place(uid,secure,grid,x,y){
   const item=(secure?FrontierSecure.ensure().items:R().grid.items).find(i=>i.uid===uid);
-  if(FrontierGrid.packedLocked(item)){toast('物品已鎖定。快速點兩下解鎖，或直接拖至丟棄區。');return;}
   const isSafe=grid.dataset.secureGrid==='true',zone=grid.dataset.gridZone||'main';
   const at=placement(uid,secure,grid,x,y);
   if(!at){toast('沒有可容納此物品的完整空間，原位置保留。');return}
-  if(isSafe)FrontierSecure.protect(uid,at.x,at.y,at.rotated);else if(secure)FrontierSecure.restore(uid,at.x,at.y,at.rotated,zone);else FrontierGrid.move(uid,at.x,at.y,at.rotated,zone);
+  if(isSafe&&secure)FrontierSecure.move(uid,at.x,at.y,at.rotated);else if(isSafe)FrontierSecure.protect(uid,at.x,at.y,at.rotated);else if(secure)FrontierSecure.restore(uid,at.x,at.y,at.rotated,zone);else FrontierGrid.move(uid,at.x,at.y,at.rotated,zone);
  }
  document.addEventListener('scroll',e=>{if(e.target.matches?.('.bag-ux-pan'))views.set(viewKey(),{x:e.target.scrollLeft,y:e.target.scrollTop})},true);
  document.addEventListener('pointerdown',e=>{const host=e.target.closest?.('.bag-ux');if(!host||e.button>0)return;ignoreClick=false;const el=e.target.closest('[data-grid-uid],[data-secure-uid]'),pan=e.target.closest('.bag-ux-pan');if(!el&&!pan)return;e.stopPropagation();drag={el,pan,pointer:e.pointerId,x:e.clientX,y:e.clientY,lastX:e.clientX,lastY:e.clientY,moving:false,started:performance.now()};if(el)el.setPointerCapture(e.pointerId)},true);
@@ -273,12 +272,12 @@ window.FrontierBagUX=(()=>{
   const at=grid&&item&&placement(item.uid,secure,grid,e.clientX,e.clientY);
   ghost.style.rotate=at&&at.rotated!==item.rotated?'90deg':'none';}}d.lastX=e.clientX;d.lastY=e.clientY},{capture:true,passive:false});
  document.addEventListener('pointerup',e=>{if(!drag||drag.pointer!==e.pointerId)return;const d=drag;e.stopPropagation();if(!d.moving){
-  const uid=d.el?.dataset.gridUid,now=performance.now();
+  const uid=d.el?.dataset.gridUid||d.el?.dataset.secureUid,now=performance.now();
   if(uid&&now-d.started<300&&lastTap?.uid===uid&&now-lastTap.time<=340&&Math.hypot(e.clientX-lastTap.x,e.clientY-lastTap.y)<25){
    lastTap=null;ignoreClick=true;cleanup();FrontierRuntime.perform('bag-lock',()=>FrontierGrid.toggleLock(uid));return;
   }
   lastTap=uid&&now-d.started<300?{uid,time:now,x:e.clientX,y:e.clientY}:null;
-  if(uid&&now-d.started<300)selectBagItem(d.el);
+  if(d.el?.dataset.gridUid&&now-d.started<300)selectBagItem(d.el);
   cleanup();return;
  }lastTap=null;ignoreClick=true;e.preventDefault();const el=d.el,uid=el?.dataset.secureUid||el?.dataset.gridUid,secure=!!el?.dataset.secureUid;cleanup();if(!uid)return;const trash=document.querySelector('.bag-ux-trash');if(near(trash,e.clientX,e.clientY)){FrontierRuntime.perform('bag-trash',()=>{if(secure){toast('保險箱物品請先拖回背包，再丟棄。');return}FrontierGrid.choose(uid);FrontierGrid.drop()});return}const target=targetGrid(secure,e.clientX,e.clientY);if(target)FrontierRuntime.perform('bag-snap-move',()=>place(uid,secure,target,e.clientX,e.clientY));},true);
  document.addEventListener('pointercancel',cleanup,true);window.addEventListener('blur',cleanup);window.addEventListener('click',e=>{if(ignoreClick&&e.target.closest?.('.bag-ux')){e.preventDefault();e.stopImmediatePropagation();ignoreClick=false}},true);

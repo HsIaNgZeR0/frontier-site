@@ -2,7 +2,7 @@
 // One navigation transition, after the complete render chain; no input locks or delayed navigation.
 window.FrontierNavigation134=(()=>{
  const app=()=>document.getElementById('app'),main=['home','yard','roster','base','warehouse'],storage=['warehouse','collection','containers','collections'];
- const running=new Set(),metrics={routes:0,lastRenderMs:0,lastCaptureMs:0};let layer=null,routing=false,dragOffset=0,entry=null;
+ const running=new Set(),metrics={routes:0,lastRenderMs:0,lastCaptureMs:0,heavySnapshotsSkipped:0};let layer=null,routing=false,dragOffset=0,entry=null;
  const reduced=()=>window.FrontierMotion?.reduced()||matchMedia('(prefers-reduced-motion:reduce)').matches;
  const isStorage=p=>storage.includes(p);
  function content(from,to){const root=app();if(isStorage(from)&&isStorage(to))return root?.querySelector('.visual-storage-content');return root?.querySelector('.yard-stage,.screen-workspace-body')||root?.firstElementChild}
@@ -33,17 +33,20 @@ window.FrontierNavigation134=(()=>{
   if(!animate||page===from||!target||!rect.width||!rect.height)return result;
   metrics.routes++;
   const dir=direction(from,next),distance=Math.min(28,Math.max(16,rect.width*.055)),timing={duration:190,easing:'cubic-bezier(.2,.8,.25,1)',fill:'backwards'};
-  if(snapshot&&!snapshot.isConnected){
+  // Reattaching a large inventory tree duplicates image/style work during the transition.
+  const retain=snapshot&&!snapshot.isConnected&&snapshot.querySelectorAll('*').length<=240&&target.querySelectorAll('*').length<=240;
+  if(snapshot&&!retain)metrics.heavySnapshotsSkipped++;
+  if(retain){
    const out=document.createElement('div');out.className='navigation134-outgoing';out.inert=true;out.setAttribute('aria-hidden','true');
    Object.assign(out.style,{left:rect.left+'px',top:rect.top+'px',width:rect.width+'px',height:rect.height+'px',opacity:'0'});
    for(const node of [snapshot,...snapshot.querySelectorAll('[id]')])node.removeAttribute('id');
    Object.assign(snapshot.style,{position:'relative',inset:'auto',width:'100%',height:'100%',maxHeight:'none',margin:'0',boxSizing:'border-box'});
-   out.append(snapshot);document.body.append(out);snapshot.scrollTop=scroll;layer=out;
+   out.append(snapshot);document.body.append(out);if(scroll>0)snapshot.scrollTop=scroll;layer=out;
    const leaving=play(out,[{opacity:1,transform:'translateX('+offset+'px)'},{opacity:.65,transform:'translateX('+(offset-dir*distance*.35)+'px)',offset:.5},{opacity:0,transform:'translateX('+(offset-dir*distance*.65)+'px)'}],{...timing,duration:170});
    const remove=()=>{out.remove();if(layer===out)layer=null};leaving.finished.catch(()=>{}).then(remove);setTimeout(remove,195);
   }
   entry={page:next,from,target,deadline:performance.now()+190,animation:null};
-  if(next==='run'&&R()?.battle)entry.animation=play(target,[{opacity:.4},{opacity:1}],{...timing,duration:140});else entry.animation=play(target,[{opacity:.25,transform:'translateX('+dir*distance+'px)'},{opacity:.9,transform:'translateX('+dir*3+'px)',offset:.65},{opacity:1,transform:'none'}],timing);
+  if(next==='run'&&R()?.battle)entry.animation=play(target,[{opacity:.4},{opacity:1}],{...timing,duration:140});else entry.animation=play(target,[{opacity:retain?.25:.78,transform:'translateX('+dir*distance+'px)'},{opacity:.9,transform:'translateX('+dir*3+'px)',offset:.65},{opacity:1,transform:'none'}],timing);
   return result;
  };
  const draw=render;

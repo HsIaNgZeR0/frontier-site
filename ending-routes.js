@@ -229,7 +229,7 @@ window.FrontierEndings=(()=>{
     (e.exchangeResult?button('繼續前進','FrontierEncounters.finish()','primary'):
     (kind==='exchange'?button('交換收藏品或詞條','FrontierEncounters.openPicker()'):'')+
     button(missing?'資源不足 · '+accept:accept,'FrontierEndings.action(true)','primary',missing)+(kind==='fate'&&framedAsEncounter(kind)&&R().survey16?.surveyIndex<6?button('只向旅人問路 · 勘探點數 +1','FrontierEndings.scoutInstead()'):'')+button(kind==='follow'?'離開 · 放棄這條線索':'離開','FrontierEndings.action(false)')+
-    (e.originalStory||e.originalMerchant||e.originalCamp?button(e.originalMerchant?'前往原行商':e.originalCamp?'在此休整，放下線索':'查看原區域事件','FrontierEndings.original()'):''))+'</div></section>'+bagHtml();
+    (e.originalMerchant||e.originalCamp?button(e.originalMerchant?'前往行商':'在此休整','FrontierEndings.original()'):''))+'</div></section>'+bagHtml();
  };
  const previousValid=validSave;
  validSave=function(v){

@@ -16,7 +16,7 @@ window.FrontierRuntime = (()=>{
       const expected=window.FrontierStorage?.info().revision;
       beforeRaw=JSON.stringify(db);before=JSON.parse(beforeRaw);
       if(id&&db.meta?.receipts?.includes(id))return false;
-      const from=balance();window.FrontierRandom?.setContext(label);active=true;window.FrontierOperatorGameV113?.freezeGrowth();batched=window.FrontierRender32?.begin()||false;const result=await action();active=false;
+      const acquisitionContext=window.FrontierAcquisition140?.context();const from=balance();window.FrontierRandom?.setContext(label);active=true;window.FrontierOperatorGameV113?.freezeGrowth();batched=window.FrontierRender32?.begin()||false;const result=await action();active=false;
       globalThis.FrontierCombatMetricsV18?.reconcile(before.run,db.run,db);if(db.run)globalThis.FrontierCombatMetricsV18?.commit(db,db.run,db.run.battle);window.FrontierStatistics?.finalize?.();
       if(beforeRaw===JSON.stringify(db)){
         window.FrontierRender32?.end(batched,true);batched=false;
@@ -38,7 +38,7 @@ window.FrontierRuntime = (()=>{
       else if(!FrontierSaveGuard.write(db))throw Error('儲存失敗，操作未完成。');
       if(submittedTalentInfo!==db.run?.talentInfo44||submittedSurvey!==db.run?.surveySettlement27)view(render);
       document.dispatchEvent?.(new CustomEvent('frontier:committed',{detail:{id:transactionId,seq}}));
-      try{window.FrontierAcquisition140?.committed(before,db,label)}catch(e){console.warn('Acquisition display:',e)}
+      try{window.FrontierAcquisition140?.committed(before,db,label,acquisitionContext)}catch(e){console.warn('Acquisition display:',e)}
       if(before.run&&!before.run.result&&db.run?.number===before.run.number&&db.run.result){
         const cloud=window.FrontierCloud?.info();
         const message=cloud?.status==='saved'?'結算已儲存至雲端':cloud?.offline?'結算已儲存至本機，連線後自動同步':'結算已儲存至本機';

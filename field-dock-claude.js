@@ -181,9 +181,10 @@ window.FrontierFieldDock=(()=>{
  if(typeof startRun==='function'){const start=startRun;startRun=function(...args){const before=R();const out=start(...args);const r=R();if(r&&r!==before&&r.expedition){try{if(r.expedition.mode==='standard'&&!r.expedition.battleCap149){r.expedition.battleCap149=capBattles(r.expedition);tuneEncounterFrequency(r);}assignRooms(r);save();render()}catch(error){console.error(error)}}return out}}
  /* 詭異行商：所有商品只放在上方商品格，總數最多 10 個；劇情藏品（結局線索）優先保留，佔用一般商品的名額。 */
  function merchantLimit(){if(R()?.event?.type!=='fieldMerchant')return;const grid=document.querySelector('.field-store .store-grid');if(!grid)return;
+  const refresh=document.querySelector('.talent-refresh43'),heading=document.querySelector('.field-store .store-heading');if(refresh&&heading&&heading.nextElementSibling!==refresh)heading.after(refresh);
   for(const extra of document.querySelectorAll('.field-store .store-alternative')){extra.classList.add('store-card');grid.append(extra)}
   const cards=[...grid.children].filter(c=>c.matches('[data-field-product],.store-card'));if(cards.length<=10)return;
-  const keep=cards.filter(c=>c.classList.contains('region75-key')||c.matches('.store-alternative'));const regular=cards.filter(c=>!keep.includes(c));
+  const keep=cards.filter(c=>c.classList.contains('region75-key')||c.matches('.store-alternative,[data-survey16-product]'));const regular=cards.filter(c=>!keep.includes(c));
   regular.slice(Math.max(0,10-keep.length)).forEach(c=>c.remove())}
  /* 長按說明放不下時自動縮小字級，直到完整顯示（最小 9px）。 */
  /* 注意：樣式表用了 !important，所以這裡也要用 important 才蓋得過。 */
@@ -293,7 +294,20 @@ window.FrontierFieldDock=(()=>{
   const done=()=>{fx.classList.add('out');setTimeout(()=>fx.remove(),220)};fx.querySelector('.fd-rfx-skip').onclick=done;fx.addEventListener('click',e=>{if(e.target===fx)done()});document.body.append(fx);setTimeout(()=>{if(fx.isConnected)done()},2400)}
  let packSyncing=false;
  function packRoster(){if(packSyncing||!window.FrontierPack?.needsRosterSync?.())return;if(FrontierRuntime.busy){setTimeout(packRoster,300);return}packSyncing=true;setTimeout(async()=>{try{await FrontierRuntime.perform('pack-roster-sync',()=>{FrontierPack.syncRoster();save();return true})}finally{packSyncing=false}render()},0)}
- const prior=render;render=function(...args){const out=prior(...args);try{decorate();keyHints();merchantLimit();battleMarks();mechTags();packRoster();deckPicker();curioDrops();merchantTicketCard();alertHud();eventAlertNote();campAlertOption();recruitFx();if(R()?.event?.type==='fieldMerchant'){setTimeout(merchantLimit,60);setTimeout(merchantLimit,300)}}catch(error){console.error(error)}return out};
+ let encounterSeen142=null,encounterOverlay142=null;
+ function encounter142(){
+  const r=R(),id=r?.battle?.operatorBattleId,key=id?r.number+':'+id:null;
+  if(!window.FrontierBootReady){encounterSeen142=key;return}
+  if(!key||key===encounterSeen142)return;encounterSeen142=key;
+  encounterOverlay142?.remove();encounterOverlay142=null;
+  if(window.FrontierMotion?.reduced()||document.hidden)return;
+  const el=document.createElement('aside');el.className='encounter142';el.setAttribute('popover','manual');el.setAttribute('aria-hidden','true');
+  el.innerHTML='<img src="assets/ui-sami148/node_battle.png" alt=""><div><small>PRTS / CONTACT</small><b>遭遇接敵</b></div>';
+  document.body.append(el);try{el.showPopover?.()}catch{}encounterOverlay142=el;
+  const animation=el.animate?.([{opacity:0,transform:'translate(-50%,-50%) translateX(-22px)'},{opacity:1,transform:'translate(-50%,-50%)',offset:.22},{opacity:1,transform:'translate(-50%,-50%)',offset:.65},{opacity:0,transform:'translate(-50%,-50%) translateX(16px)'}],{duration:420,easing:'cubic-bezier(.2,.8,.25,1)',fill:'both'});
+  const remove=()=>{el.remove();if(encounterOverlay142===el)encounterOverlay142=null};if(animation)animation.finished.then(remove,remove);setTimeout(remove,460);
+ }
+ const prior=render;render=function(...args){const out=prior(...args);try{decorate();encounter142();keyHints();merchantLimit();battleMarks();mechTags();packRoster();deckPicker();curioDrops();merchantTicketCard();alertHud();eventAlertNote();campAlertOption();recruitFx();if(R()?.event?.type==='fieldMerchant'){setTimeout(merchantLimit,60);setTimeout(merchantLimit,300)}}catch(error){console.error(error)}return out};
  window.addEventListener('resize',()=>{if(sheet)redraw()});
  return{toggle,close,decorate,keyHints,keycardsFor,capBattles,get sheet(){return sheet}};
 })();
@@ -316,11 +330,11 @@ window.FrontierAcquisition140=(()=>{
   for(const i of r.curios?.owned||[])add('curio',i.id,1);
   for(const i of r.equipment139?.modules||[])add('module',i.id,1);
   for(const t of r.recruitment144?.tickets||[])if(!t.used)add('ticket',t.id,1,{ticket:t});
-  for(const t of r.recruitment144?.fragments||[])add('fragment',t.id,1);
+  for(const t of r.recruitment144?.fragments||[])add('fragment',t.id,1,{ticket:t});
   return out;
  }
  function card(row){const d=FrontierInventory.definitions[row.id],c=row.kind==='curio'&&FrontierCurioData.forRun(R())[row.id];
-  const art=row.kind==='currency'?'<img src="assets/currencies/ingot-flat139.png" alt="">':row.kind==='survey'?'<img src="assets/ui-sami148/icon.png" alt="">':row.kind==='story'?'<img src="assets/regions/'+esc(({chernobog:'ursus',kazdel:'babel'})[row.region]||row.region)+'.png" alt="">':c?FrontierCurios.icon(row.id):row.kind==='ticket'?FrontierRecruit152.art(row.ticket):row.kind==='fragment'?'<img src="assets/curios/H002.png" alt="">':FrontierIcons.html(row.id);
+  const art=row.kind==='currency'?'<img src="assets/currencies/ingot-flat139.png" alt="">':row.kind==='survey'?'<img src="assets/ui-sami148/icon.png" alt="">':row.kind==='story'?'<img src="assets/regions/'+esc(({chernobog:'ursus',kazdel:'babel'})[row.region]||row.region)+'.png" alt="">':c?FrontierCurios.icon(row.id):['ticket','fragment'].includes(row.kind)?FrontierRecruit152.art(row.ticket,row.kind==='fragment'):FrontierIcons.html(row.id);
   const name=row.name||c?.name||d?.name||row.ticket?.name||(row.kind==='fragment'?'招募殘頁':row.id);
   const heading=row.kind==='currency'?'取得源石碇':row.kind==='survey'?'取得勘探點數':row.kind==='story'?'取得劇情證物':c?'取得戰術奇物':row.kind==='module'?'取得增幅模組':row.kind==='ticket'?'取得招募券':row.kind==='fragment'?'取得招募殘頁':d?.category==='collection'?'取得收藏品':d?.category==='medicine'?'取得戰術補給':d?.category==='captureDevice'?'取得收容裝置':'取得物資';
   return '<article class="acq140-card"><div class="acq140-art">'+art+'</div><div><small>'+heading+'</small><b>'+esc(name)+'</b><span>×'+row.qty+'</span></div></article>';
@@ -331,6 +345,17 @@ window.FrontierAcquisition140=(()=>{
   timer=setTimeout(()=>{if(R()?.number!==run||R()?.result){clear();return}const cards=[...host.children];let remain=cards.length;for(const [i,el]of cards.entries()){const box=el.getBoundingClientRect(),to=target(batch[i])?.getBoundingClientRect(),x=(to?to.left+to.width/2:innerWidth*.15)-(box.left+box.width/2),y=(to?to.top+to.height/2:innerHeight-58)-(box.top+box.height/2);const a=el.animate?.(reduced?[{opacity:1},{opacity:0}]:[{transform:'translate(0,0) scale(1)',opacity:1,offset:0},{transform:'translate('+x*.2+'px,'+y*.12+'px) scale(1.04)',opacity:1,offset:.22},{transform:'translate('+x+'px,'+y+'px) scale(.12)',opacity:.15,offset:1}],{duration:reduced?140:620,delay:reduced?0:i*65,easing:'cubic-bezier(.45,0,.65,1)',fill:'forwards'});const done=()=>{if(--remain===0){host.remove();if(active===host)active=null;next()}};if(a)a.finished.then(done,done);else done()}},1200);
  }
  function clear(){clearTimeout(timer);active?.remove();active=null;pending.length=0}
- function committed(before,after,label){if(!before.run||before.run.number!==after.run?.number||before.run.result||after.run.result||/^(?:system-save|profile|grid-|secure-|team20)/.test(label))return;if(before.run.battle&&after.run.battle&&before.run.battle.operatorBattleId===after.run.battle.operatorBattleId)return;const old=holdings(before),now=holdings(after),rows=[];for(const [key,row]of now){const qty=row.qty-(old.get(key)?.qty||0);if(qty>0)rows.push({...row,qty})}if(!rows.length)return;const notice=document.querySelector('#toast[data-level=info]');if(notice&&/^(?:PRTS[｜：]\s*)?(?:額外物資|權限獎勵|已購入|已取得|獲得|取得|收下|找到)/.test(notice.querySelector('.prts-notice-message')?.textContent||'')){notice.classList.remove('show');try{notice.hidePopover?.()}catch{}}for(const row of rows){const existing=pending.find(v=>v.kind===row.kind&&v.id===row.id);if(existing)existing.qty+=row.qty;else pending.push(row)}next()}
- return{committed,holdings,clear,get pending(){return pending.length},get active(){return active}};
+ // Announce only hidden event outcomes; purchases, visible choices and loot reviews already identify their rewards.
+ function context(){const e=R()?.event;if(page!=='run'||!e||R()?.battle||R()?.reward||!['frontierEvent','traveler','stash'].includes(e.type)||e.id==='gift_choice')return null;const box=document.querySelector('.event135-options,.event-panel,.regional-encounter121');if(!box)return null;return{text:box.textContent,ids:new Set([...box.querySelectorAll('[data-item-id],[data-curio]')].map(n=>n.dataset.itemId||n.dataset.curio))}}
+ function needsNotice(before,after,row,known){
+  const e=before.run?.event;if(!e||!['frontierEvent','traveler','stash'].includes(e.type)||e.id==='gift_choice'||['currency','survey'].includes(row.kind))return false;
+  if(['gift_exchange','ending_exchange_entry'].includes(e.id)&&after.run?.event?.exchangeResult)return true;
+  if(row.kind==='curio'&&before.run.curios?.offers?.some(o=>o.ids.includes(row.id)))return false;
+  const d=FrontierInventory.definitions[row.id],c=row.kind==='curio'&&FrontierCurioData.forRun(after.run)[row.id],name=row.name||c?.name||d?.name||row.ticket?.name;
+  const event=after.run?.event,text=[event?.familiar136?.result,event?.recreation139?.result].filter(Boolean).join(' ');
+  return !(known?.ids?.has(row.id)||name&&(text.includes(name)||known?.text?.includes(name)||FrontierAdventure.events[e.id]?.choice?.includes(name)));
+ }
+ function committed(before,after,label,known){if(!before.run||before.run.number!==after.run?.number||before.run.result||after.run.result||/^(?:system-save|profile|grid-|secure-|team20)/.test(label))return;// Battle drops and tactical choices already have their own reward presentation.
+ if(before.run.battle||after.run.battle||before.run.reward||after.run.reward)return;const source=before.run.event;if(!source||!['frontierEvent','traveler','stash'].includes(source.type)||source.id==='gift_choice')return;const old=holdings(before),now=holdings(after),rows=[];for(const [key,row]of now){const qty=row.qty-(old.get(key)?.qty||0);if(qty>0&&needsNotice(before,after,row,known))rows.push({...row,qty})}if(!rows.length)return;const notice=document.querySelector('#toast[data-level=info]');if(notice&&/^(?:PRTS[｜：]\s*)?(?:額外物資|權限獎勵|已購入|已取得|獲得|取得|收下|找到)/.test(notice.querySelector('.prts-notice-message')?.textContent||'')){notice.classList.remove('show');try{notice.hidePopover?.()}catch{}}for(const row of rows){const existing=pending.find(v=>v.kind===row.kind&&v.id===row.id);if(existing)existing.qty+=row.qty;else pending.push(row)}next()}
+ return{committed,holdings,needsNotice,context,clear,get pending(){return pending.length},get active(){return active}};
 })();

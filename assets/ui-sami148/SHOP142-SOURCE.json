@@ -1,0 +1,10 @@
+{
+  "path": "assets/ui-sami148/shop-survey142.png",
+  "sourcePage": "https://prts.wiki/w/探索者的银凇止境/诡意行商",
+  "officialItem": "设备维护装置",
+  "iconId": "rogue_3_vision_item",
+  "data": "https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/roguelike_topic_table.json",
+  "source": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_vision_item.png",
+  "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_vision_item.png",
+  "sha256": "a80f41e563d02d95b3b583a439601af1bb93dad603aaafb992940e4b0d1a2a62"
+}
