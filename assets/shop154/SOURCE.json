@@ -1,0 +1,19 @@
+{
+  "name": "rogue_shop_blur_bkg.png",
+  "path": "assets/torappu/arts/ui/roguelike/shopv2/notag/rogue_shop_blur_bkg.png",
+  "sha": "00261a0b756d42c3cd7f561331ea40720176a62a",
+  "size": 112231,
+  "url": "https://api.github.com/repos/ArknightsAssets/ArknightsAssets/contents/assets/torappu/arts/ui/roguelike/shopv2/notag/rogue_shop_blur_bkg.png?ref=cn",
+  "html_url": "https://github.com/ArknightsAssets/ArknightsAssets/blob/cn/assets/torappu/arts/ui/roguelike/shopv2/notag/rogue_shop_blur_bkg.png",
+  "git_url": "https://api.github.com/repos/ArknightsAssets/ArknightsAssets/git/blobs/00261a0b756d42c3cd7f561331ea40720176a62a",
+  "download_url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets/cn/assets/torappu/arts/ui/roguelike/shopv2/notag/rogue_shop_blur_bkg.png",
+  "type": "file",
+  "_links": {
+    "self": "https://api.github.com/repos/ArknightsAssets/ArknightsAssets/contents/assets/torappu/arts/ui/roguelike/shopv2/notag/rogue_shop_blur_bkg.png?ref=cn",
+    "git": "https://api.github.com/repos/ArknightsAssets/ArknightsAssets/git/blobs/00261a0b756d42c3cd7f561331ea40720176a62a",
+    "html": "https://github.com/ArknightsAssets/ArknightsAssets/blob/cn/assets/torappu/arts/ui/roguelike/shopv2/notag/rogue_shop_blur_bkg.png"
+  },
+  "reference": "https://github.com/MaaAssistantArknights/MaaAssistantArknights/issues/2014",
+  "rights": "Original Arknights artwork, rights retained by Hypergryph and respective owners. Asset mirror is not a separate licence.",
+  "adaptation": "Original shop background. Portrait product cards are CSS adaptations of actual in-game merchant layout; no fabricated official card asset."
+}

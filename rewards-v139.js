@@ -20,32 +20,22 @@ window.FrontierRewards139=(()=>{
   if(campSpent(r,kind)){completeNode();return}
   delete e.reward139;save();render();
  }
- const campPool=['heal','module','environment','currency','curio','cleanse','survey'];
- function campChoices(r){
-  const event=r.event;
-  if(!event.campChoices139){
-   const survey=FrontierSurveyIndex16;
-   const seed=r.number+':'+r.expedition?.current;
-   const available=campPool.filter(id=>id!=='survey'||r.survey16?.surveyIndex<6);
-      const choices=available.sort((a,b)=>survey.hash(seed+':'+a)-survey.hash(seed+':'+b)).slice(0,3+(survey.hash(seed)%2));
-   if(FrontierEnvironment.needsRelief()&&!choices.includes('environment'))choices[choices.length-1]='environment';
-   event.campChoices139=choices;
-  }
-  return event.campChoices139;
- }
+ const campPool=['module','environment','currency','curio','cleanse','survey','hide'];
+ function campRelief154(){const s=FrontierEnvironment.current();return s&&(s.region==='sargon'?s.value<FrontierEnvironment.definitions.sargon.max:s.region==='siracusa'?s.hostility>0||s.trust<5:s.region==='victoria'?s.front<2:s.value>0||s.region==='iberia'&&(s.tideStep||0)>0);}
+ function campChoices(r){const event=r.event;if(!event.campChoices139||!event.campChoicesVersion154&&!event.reward139){const survey=FrontierSurveyIndex16,seed=r.number+':'+r.expedition?.current;const available=campPool.filter(id=>id==='survey'?r.survey16?.surveyIndex<6:id==='environment'?campRelief154():id==='cleanse'?r.team.some(a=>FrontierCurios.anomalies(a).length||Object.values(a.status||{}).some(n=>n>0)):id==='hide'?canHide(r):id==='curio'?Object.keys(FrontierCurioData.forRun(r)).some(id=>!r.curios.owned.some(o=>o.id===id)&&FrontierCurioOriginal137.eligible(r,id)):true);if(available.length<3)available.push('supply');event.campChoices139=['heal',...available.sort((a,b)=>survey.hash(seed+':'+a)-survey.hash(seed+':'+b)).slice(0,3)];event.campChoicesVersion154=1;}return event.campChoices139;}
  const canHide=r=>Number(r?.alert)>0&&!r.alertShelters174?.includes(r.expedition?.layer);
  function hideAtCamp(){
   const r=R();
   if(r?.event?.type!=='camp'||r.event.reward139||!canHide(r))return;
   (r.alertShelters174??=[]).push(r.expedition.layer);
-  const before=r.alert;r.alert=Math.max(0,before-8);
+  const before=r.alert;r.alert=Math.max(0,before-15);
   (r.alertLedger??=[]).push({key:r.expedition.current+':hide',before,after:r.alert,reason:'安全角落隱匿'});
   toast('警戒降低 '+(before-r.alert));
   completeNode();
  }
  function camp(action){
   const r=R();if(r?.event?.type!=='camp'||!r.equipment139||r.event.reward139||!campChoices(r).includes(action))return;
-  if(action==='module'||action==='curio'){
+  if(action==='hide'){hideAtCamp();return}if(action==='supply'){r.field.materials.med_aid_t3=(r.field.materials.med_aid_t3||0)+1;FrontierGrid.sync();completeNode();return}if(action==='module'||action==='curio'){
    const key=campKey(r,action);
    if(action==='module')FrontierEquipmentUI139.offer(key);
    else FrontierCurios.offer(key);
@@ -67,7 +57,7 @@ window.FrontierRewards139=(()=>{
   const spent=campSpent(r,kind);
   $('#app').innerHTML=runHeader()+'<section class="panel reward139-stage"><h1>安全的角落</h1><p>'+(spent?'本處休整已完成。':'這項休整沒有可選獎勵。')+'</p><button class="primary" onclick="FrontierRewards139.recoverCamp()">'+(spent?'返回路線':'返回休整選項')+'</button></section>';
   return;
- }const rows=[['heal','恢復幹員生命','存活幹員各恢復23%最大HP。'],['module','選擇局內增幅模組','三選一；可在此處安裝或卸下模組。'],['environment',environmentLabel(),'不改變已完成節點或掉落。'],['currency','獲得局內貨幣','取得 '+(18+Math.min(12,(r.expedition?.layer||0)*2))+' 源石碇，可向詭異行商購物。'],['curio','選擇一項收藏品','從三件尚未持有的戰術收藏品中選擇。'],['survey','勘探點數 +1','辨識前方路線，或通過一條橫向捷徑。'],['cleanse','解除全員異常狀態','清除所有可解除的異常；不重置技能代價或劇情限制。']];$('#app').innerHTML=runHeader()+'<section class="panel event-panel reward139-stage"><small>PRTS / SAFE CORNER</small><h1>安全的角落</h1><p>選擇一項休整後繼續。配置模組本身不消耗此處獎勵。</p><button onclick="FrontierEquipmentUI139.manage()">配置增幅模組</button><div class="reward139-options">'+(canHide(r)?card('隱匿休整','警戒 −8，每層限一次。使用後離開安全角落。','FrontierRewards139.hideAtCamp()'):'')+rows.filter(([id])=>campChoices(r).includes(id)).map(([id,name,text])=>card(name,text,"FrontierRewards139.camp('"+id+"')")).join('')+'</div></section>'};
+ }const rows=[['heal','恢復幹員生命',r.team.some(a=>a.hp>0&&a.hp<a.max)?'存活幹員各恢復23%最大HP。':'全員生命已滿。'],['module','選擇局內增幅模組','三選一；可在此處安裝或卸下模組。'],['environment',environmentLabel(),'不改變已完成節點或掉落。'],['currency','獲得局內貨幣','取得 '+(18+Math.min(12,(r.expedition?.layer||0)*2))+' 源石碇，可向詭異行商購物。'],['curio','選擇一項收藏品','從三件尚未持有的戰術收藏品中選擇。'],['survey','勘探點數 +1','辨識前方路線，或通過一條橫向捷徑。'],['cleanse','解除全員異常狀態','清除所有可解除的異常；不重置技能代價或劇情限制。'],['hide','隱蔽休整','警戒 −15，每層限一次；完成後離開。'],['supply','整理急救補給','取得1份戰地急救包，仍須裝入背包並成功撤離。']];$('#app').innerHTML=runHeader()+'<section class="panel event-panel reward139-stage"><small>PRTS / SAFE CORNER</small><h1>安全的角落</h1><p>選擇一項休整後繼續。配置模組本身不消耗此處獎勵。</p><button onclick="FrontierEquipmentUI139.manage()">配置增幅模組</button><div class="reward139-options">'+rows.filter(([id])=>campChoices(r).includes(id)).map(([id,name,text])=>card(name,text,"FrontierRewards139.camp('"+id+"')").replace('<button ',id==='heal'&&!r.team.some(a=>a.hp>0&&a.hp<a.max)?'<button disabled ':'<button ')).join('')+'</div></section>'};
  function takeModule(key,id){FrontierEquipmentUI139.claim(key,id);if(R().reward?.strategy?.stage==='module')FrontierStrategy.finish();else if(R().event?.reward139==='module'&&(key===campKey(R(),'module')||R().event.surveySupply16&&key.startsWith('camp:'+R().event.room16+':')))completeNode()}
  const claim=FrontierCurios.claim;FrontierCurios.claim=function(...args){const camp=R()?.event?.reward139==='curio';claim(...args);if(camp&&!R().curios.offers.length)completeNode()};const decline=FrontierCurios.decline;FrontierCurios.decline=function(...args){const camp=R()?.event?.reward139==='curio';decline(...args);if(camp&&!R().curios.offers.length)completeNode()};
 

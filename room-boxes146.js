@@ -5,7 +5,6 @@ globalThis.FrontierRoomBoxes146=(()=>{
  const colors={2:'#aeb9c2',3:'#78bf9b',4:'#75adf1',5:'#d0d7e3',6:'#e6bd64'},kinds={armory:'軍械',medical:'醫療',industrial:'物資',biological:'樣本',intelligence:'情報',relic:'珍藏'};
  function asset(box){const q=Math.max(1,Math.min(5,Number(box.sealed?.quality)||2)),key=mapping[box.itemId]||({1:'world01',2:'world01',3:'world02',4:'world03',5:'world04'}[q]);return art[key]}
  function render(box){const d=FrontierInventory.definitions[box.itemId],a=asset(box),rarity=d?.rarity||Number(box.sealed?.quality||2)+1,kind=kinds[box.sealed?.kind]||'物資';return '<span class="room-box146" style="--room-grade146:'+colors[rarity]+'" data-room-box146="'+esc(box.itemId)+'" aria-hidden="true"><img class="search174-container-model room-box146-image" src="'+a.path+'" alt="" draggable="false" decoding="async"><span class="room-box146-type">'+kind+'</span></span>'}
- // Use the same artwork in the room, carried inventory and warehouse.
- for(const[id,key]of Object.entries(mapping)){const a=art[key];FrontierItemIconAssets[id]={...(FrontierItemIconAssets[id]||{}),itemId:id,iconAssetId:'endfield:crate:'+key,iconPath:a.path,iconSourceType:'official_game_asset',iconStatus:'ready',iconCredit:'《明日方舟：終末地》原作素材 · Hypergryph / GRYPHLINE',iconTags:['container'],sourceTitle:a.name,sourceUrl:a.page,assetUrl:a.url,sha256:a.sha256}}
+ // Scene artwork is used only by render(); inventory icons retain the original item registry.
  return Object.freeze({art,mapping,asset,render});
 })();
