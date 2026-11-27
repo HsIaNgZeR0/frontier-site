@@ -65,7 +65,7 @@ window.FrontierEndings=(()=>{
   rows.slice(0,-1).forEach((row,i)=>row.forEach(node=>node.links=[rows[i+1][0].id]));
   e.layers.push({rows});const paths=e.extension?.paths|| (e.extension?[e.extension.path]:[]);e.extension={version:2,path:paths[0]||path,paths:[...paths,path]};
  }
- const protectedNode=n=>n.requiredCombat||n.recruitOperator||n.escortGoal||['boss','signal'].includes(n.type);
+ const protectedNode=n=>n.storyEvent==='ahead153'||n.requiredCombat||n.recruitOperator||n.escortGoal||['boss','signal'].includes(n.type);
  function reserve(exp,layer,preferred,exclude=-1){
   const rows=exp.layers[layer].rows;
   const candidates=rows.map((row,index)=>({row,index})).filter(x=>x.index!==exclude&&!(layer===0&&x.index===rows.length-1)&&!(layer===3&&x.index===Math.floor(rows.length/2))&&x.row.every(n=>!protectedNode(n)));
@@ -84,7 +84,8 @@ window.FrontierEndings=(()=>{
   const marketEligible=(row,i)=>i>exchangeSlots[1]&&i!==slots[1]&&row.every(n=>!protectedNode(n))&&row.some(n=>n.type!=='camp');
   let market=marketRows.findIndex((row,i)=>i>=3&&marketEligible(row,i)&&row.every(n=>!n.storyEvent&&n.type!=='camp'));
   if(market<0)market=marketRows.findIndex(marketEligible);
-  if(market>=0)for(const node of marketRows[market]){
+  if(market>=0&&random()>=.45)market=-1;
+  if(market>=0)for(const node of [pick(marketRows[market])]){
    if(node.type==='camp')node.endingMarketCamp=true;
    node.type='merchant';node.hidden=false;node.endingMarket75=true;
   }
@@ -97,15 +98,16 @@ window.FrontierEndings=(()=>{
  }
  function selection(node){
   const s=info();if(!s||protectedNode(node))return null;
+  const single153=(path,row)=>{const e=R().expedition;if(!e.route153)return true;const pool=e.layers[node.layer].rows[row]?.filter(n=>!protectedNode(n))||[];return node.id===pool[FrontierEquipmentV139.hash(e.regionId+':'+R().number+':'+node.layer+':'+row+':'+path)%Math.max(1,pool.length)]?.id};
   if(s.version===1){
    if(node.row!==s.slots[node.layer])return null;
    if(!s.path&&s.phase==='open')return node.layer===0?{kind:'fate',path:'fate'}:node.layer===1?{kind:'exchange',path:'exchange'}:null;
    return s.phase==='seeking'&&node.layer===2+s.stage?{kind:'follow',path:s.path}:null;
   }
-  const four=s.branches.fourth;if(four?.phase==='seeking'&&four.slots?.[four.stage]?.layer===node.layer&&four.slots[four.stage].row===node.row)return {kind:'follow',path:'fourth'};
+  const four=s.branches.fourth;if(four?.phase==='seeking'&&four.slots?.[four.stage]?.layer===node.layer&&four.slots[four.stage].row===node.row&&single153('fourth',node.row))return {kind:'follow',path:'fourth'};
   for(const [path,branch] of Object.entries(s.branches)){if(path==='fourth')continue;
    const rows=path==='exchange'?s.exchangeSlots:s.slots;
-   if(node.row!==rows[node.layer])continue;
+   if(node.row!==rows[node.layer]||!single153(path,node.row))continue;
    if(branch.phase==='open'&&node.layer===(path==='fate'?0:1))return {kind:path,path};
    if(branch.phase==='seeking'&&node.layer===2+branch.stage)return {kind:'follow',path};
   }
