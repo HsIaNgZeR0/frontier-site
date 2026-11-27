@@ -235,10 +235,10 @@ window.FrontierContainers=(()=>{
   return effect?.type==='searchAccess'?locks.catalog[effect.id]:null;
  }
  function accessItems(run){
-  const protectedKeys=(run.searchKeys174||[]).map(uid=>db.inventory.items.find(item=>item.uid===uid)).filter(Boolean);
+  const protectedKeys=(run.searchKeys174||[]).map(uid=>db.inventory.items.find(item=>item.uid===uid)).filter(item=>accessDefinition(item)?.key);
   return [...new Map([...(run.itemCargo||[]),...(run.secureGrid?.items||[]).filter(i=>i.kind==='equipment').map(i=>i.instance).filter(Boolean),...protectedKeys].map(i=>[i.uid,i])).values()].flatMap(item=>{
    const def=accessDefinition(item);
-   const id=catalog[item.itemId].effect.id;return def?[{item,id,uses:locks.pointsLeft(item),cost:locks.openCost(id,run),points:locks.usesPoints(id)}]:[];
+   const id=catalog[item.itemId]?.effect?.id;return def?[{item,id,uses:locks.pointsLeft(item),cost:locks.openCost(id,run),points:locks.usesPoints(id)}]:[];
   });
  }
  const selectedAccess={keys:[],tools:[]};
