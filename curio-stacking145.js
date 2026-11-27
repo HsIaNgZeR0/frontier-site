@@ -1,0 +1,8 @@
+'use strict';
+// Visible and testable stacking policy; permanent collectibles and legacy runs remain separate.
+globalThis.FrontierCurioStacking145=(()=>{
+ const old=FrontierCurioData,curve='同類百分比先加算：前30%全額、接續20%折半，其餘折四分之一；有效加成最多60%。';
+ function rules(d){const ms=d.mechanics137||[],out=[];if(ms.some(m=>m.kind==='stats'&&['atk','def','max'].some(k=>m.values[k]>0)))out.push(curve);if(ms.some(m=>m.kind==='stats'&&Object.values(m.values).some(n=>n<0)))out.push('同屬性負值相加，最多降低25%；與同屬性正值先抵銷。');if(ms.some(m=>m.kind==='stats'&&m.values.resFlat))out.push('奇物固定法抗加算最多15，最高補至75；不降低原已高於75的法抗。');if(ms.some(m=>m.kind==='stats'&&m.values.defFlat))out.push('奇物固定防禦加算最多100，在百分比後計入。');if(ms.some(m=>['damage','trueAmp143'].includes(m.kind)))out.push(curve+'此倍率在防禦結算前生效。');if(ms.some(m=>m.kind==='healAmp143'))out.push(curve+'固定額外治療在此倍率後加算。');if(ms.some(m=>m.kind==='enemyStats'))out.push('敵方同屬性百分比彼此乘算後取整，最後加算固定減值；與取得順序無關。');if(ms.some(m=>m.kind==='dodge'))out.push('各件獨立判定；總閃避率為1−所有未閃避率的乘積。');if(ms.some(m=>m.kind==='reduce'))out.push('各件依同一次傷害分別取整後相加，最多減至0。');if(ms.some(m=>['chargeStart','chargeTurn','chargeFirst143'].includes(m.kind)))out.push('蓄能逐件相加，最多至招牌技能門檻；不增加專屬資源。');if(ms.some(m=>m.kind==='regen143'))out.push('每件分別取整後回復，最多至生命上限；不連鎖治療奇物。');return [...new Set(out)].join(' ')}
+ const entries=Object.fromEntries(Object.entries(old.entries).map(([id,d])=>{const rule=rules(d);return[id,Object.freeze({...d,...(rule?{stackRule145:rule,effect:d.effect+' '+rule}:{})})]}));
+ globalThis.FrontierCurioData=Object.freeze({...old,entries:Object.freeze(entries),forRun:r=>r?.curios&&!r.curios.rules137?old.legacyEntries:entries});return{rules,curve};
+})();

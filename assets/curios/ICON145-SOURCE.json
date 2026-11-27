@@ -1,0 +1,8 @@
+{
+  "id": "R020",
+  "sourceTitle": "空白名片",
+  "sourcePage": "https://prts.wiki/w/空白名片",
+  "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_1_relic_a45.png",
+  "sha256": "8bbd1a7aafaa8e48952f08929227de93737ab92a9f34e736a89a1e6db4d451a3",
+  "note": "僅替換失序命令圖示以區分R164；保留R020既有ID與效果，不套用原作空白名片的編制效果。"
+}

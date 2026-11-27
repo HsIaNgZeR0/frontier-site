@@ -1,0 +1,1616 @@
+{
+  "note": "官方原作圖示來源及本作改編效果分別保留；效果與原作不必相同。",
+  "icons": [
+    {
+      "id": "R121",
+      "title": "奇渊面具",
+      "path": "assets/curios/R121.png",
+      "sourcePage": "https://prts.wiki/w/%E5%A5%87%E6%B8%8A%E9%9D%A2%E5%85%B7",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_65.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_65.png",
+      "sha256": "dcab6977d17bb54327c9d72f20c2faa78c30c5441785e19700f812a2bec903b2"
+    },
+    {
+      "id": "R122",
+      "title": "教母的信物",
+      "path": "assets/curios/R122.png",
+      "sourcePage": "https://prts.wiki/w/%E6%95%99%E6%AF%8D%E7%9A%84%E4%BF%A1%E7%89%A9",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_66.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_66.png",
+      "sha256": "88893f615c033441be8ac8f3480afd28278a16cdbb58ea68043628cf6d495701"
+    },
+    {
+      "id": "R123",
+      "title": "作者的喉舌",
+      "path": "assets/curios/R123.png",
+      "sourcePage": "https://prts.wiki/w/%E4%BD%9C%E8%80%85%E7%9A%84%E5%96%89%E8%88%8C",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_1_relic_a06.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_1_relic_a06.png",
+      "sha256": "e3ec337ca4236b9374afaa172dd28959b1bc3cb7aeb7bdd511a344c29561e629"
+    },
+    {
+      "id": "R124",
+      "title": "迷迭香之拥",
+      "path": "assets/curios/R124.png",
+      "sourcePage": "https://prts.wiki/w/%E8%BF%B7%E8%BF%AD%E9%A6%99%E4%B9%8B%E6%8B%A5",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_69.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_69.png",
+      "sha256": "7654110ee70f7703929f01002fbe58ce9ce0bab7e3b65c8c66bbcba524e8588c"
+    },
+    {
+      "id": "R125",
+      "title": "镶金骨骰",
+      "path": "assets/curios/R125.png",
+      "sourcePage": "https://prts.wiki/w/%E9%95%B6%E9%87%91%E9%AA%A8%E9%AA%B0",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_70.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_70.png",
+      "sha256": "41a924c63917ffa4015d814e6feca117061ff3a09216f1c340b880b843ed1bd5"
+    },
+    {
+      "id": "R126",
+      "title": "“黑夜呢喃”",
+      "path": "assets/curios/R126.png",
+      "sourcePage": "https://prts.wiki/w/%E2%80%9C%E9%BB%91%E5%A4%9C%E5%91%A2%E5%96%83%E2%80%9D",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_71.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_71.png",
+      "sha256": "8a73fc74c84aa2a4e429141305b03df9de65c92b7018a62acc86156ae12ee931"
+    },
+    {
+      "id": "R127",
+      "title": "《大静谧》",
+      "path": "assets/curios/R127.png",
+      "sourcePage": "https://prts.wiki/w/%E3%80%8A%E5%A4%A7%E9%9D%99%E8%B0%A7%E3%80%8B",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_72.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_72.png",
+      "sha256": "feb4f93af594f1776bedc20bdd220aec7d516f1590c47a352f6f8c0193c055a0"
+    },
+    {
+      "id": "R128",
+      "title": "贵族刺剑",
+      "path": "assets/curios/R128.png",
+      "sourcePage": "https://prts.wiki/w/%E8%B4%B5%E6%97%8F%E5%88%BA%E5%89%91",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_77.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_77.png",
+      "sha256": "3966f1f389483ed00a2d761922b4328919f4458a70d65a37dff24ad5821cc627"
+    },
+    {
+      "id": "R129",
+      "title": "显圣吊坠",
+      "path": "assets/curios/R129.png",
+      "sourcePage": "https://prts.wiki/w/%E6%98%BE%E5%9C%A3%E5%90%8A%E5%9D%A0",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_79.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_79.png",
+      "sha256": "e55115f8cad4db7b5572a3c81ed7526bc060af8d7adf28a2df66eeb8f75c552e"
+    },
+    {
+      "id": "R130",
+      "title": "银餐叉",
+      "path": "assets/curios/R130.png",
+      "sourcePage": "https://prts.wiki/w/%E9%93%B6%E9%A4%90%E5%8F%89",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_80.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_80.png",
+      "sha256": "269a5595865e4eac827d1aebe470402398924d91eb8a7a55655ce06a86a0513a"
+    },
+    {
+      "id": "R131",
+      "title": "损坏的左轮弹巢",
+      "path": "assets/curios/R131.png",
+      "sourcePage": "https://prts.wiki/w/%E6%8D%9F%E5%9D%8F%E7%9A%84%E5%B7%A6%E8%BD%AE%E5%BC%B9%E5%B7%A2",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_81.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_81.png",
+      "sha256": "950fe038bf931c7912378adc09560b244f97db5f5bedaa5c4ab8adf9c0d6033a"
+    },
+    {
+      "id": "R132",
+      "title": "“复仇者”",
+      "path": "assets/curios/R132.png",
+      "sourcePage": "https://prts.wiki/w/%E2%80%9C%E5%A4%8D%E4%BB%87%E8%80%85%E2%80%9D",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_87.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_87.png",
+      "sha256": "ccc527164a40cf6e44cf286da904eb9a5140a3679d9b39dcc5e2680fa6f4a030"
+    },
+    {
+      "id": "R133",
+      "title": "“璀璨悲泣”",
+      "path": "assets/curios/R133.png",
+      "sourcePage": "https://prts.wiki/w/%E2%80%9C%E7%92%80%E7%92%A8%E6%82%B2%E6%B3%A3%E2%80%9D",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_90.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_90.png",
+      "sha256": "91e731c757635209c87e2a1bbc8a3c53de8fe5ef6197e84981bc87bd2a6101f5"
+    },
+    {
+      "id": "R134",
+      "title": "活玫瑰",
+      "path": "assets/curios/R134.png",
+      "sourcePage": "https://prts.wiki/w/%E6%B4%BB%E7%8E%AB%E7%91%B0",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_91.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_91.png",
+      "sha256": "3fadf1ce48aa68b0bc3d43724424959f013da68cc190e8def75bf469a32d0920"
+    },
+    {
+      "id": "R135",
+      "title": "苍白花冠",
+      "path": "assets/curios/R135.png",
+      "sourcePage": "https://prts.wiki/w/%E8%8B%8D%E7%99%BD%E8%8A%B1%E5%86%A0",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_92.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_92.png",
+      "sha256": "b5ed4f2970d9eebfc48fb2f43663a0625d0cd6aba60e20076dc9565eeb45ea7e"
+    },
+    {
+      "id": "R136",
+      "title": "演出用香水",
+      "path": "assets/curios/R136.png",
+      "sourcePage": "https://prts.wiki/w/%E6%BC%94%E5%87%BA%E7%94%A8%E9%A6%99%E6%B0%B4",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_93.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_93.png",
+      "sha256": "6034d915bba298333df92f331c8b9124d2ad95d683528d669fb0fa0e1824cb03"
+    },
+    {
+      "id": "R137",
+      "title": "舞者手链",
+      "path": "assets/curios/R137.png",
+      "sourcePage": "https://prts.wiki/w/%E8%88%9E%E8%80%85%E6%89%8B%E9%93%BE",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_96.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_96.png",
+      "sha256": "82e683dba6823b4c61b420025aef08d2aa435cc3fe8fbc314795f7c08c78da0a"
+    },
+    {
+      "id": "R138",
+      "title": "《坎德之花》",
+      "path": "assets/curios/R138.png",
+      "sourcePage": "https://prts.wiki/w/%E3%80%8A%E5%9D%8E%E5%BE%B7%E4%B9%8B%E8%8A%B1%E3%80%8B",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_1_relic_m13.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_1_relic_m13.png",
+      "sha256": "363c3eeffcac209473ca3687fe8713f4f167bdbf57514e9d8d7e767488570f1e"
+    },
+    {
+      "id": "R139",
+      "title": "《麻木与庸俗》",
+      "path": "assets/curios/R139.png",
+      "sourcePage": "https://prts.wiki/w/%E3%80%8A%E9%BA%BB%E6%9C%A8%E4%B8%8E%E5%BA%B8%E4%BF%97%E3%80%8B",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_1_relic_m14.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_1_relic_m14.png",
+      "sha256": "db4301c41dcb1ea4992f73f8ed7b6cdd0ac48be2d7476d97335218db20969f3e"
+    },
+    {
+      "id": "R140",
+      "title": "替补演员",
+      "path": "assets/curios/R140.png",
+      "sourcePage": "https://prts.wiki/w/%E6%9B%BF%E8%A1%A5%E6%BC%94%E5%91%98",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_1_relic_m20.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_1_relic_m20.png",
+      "sha256": "0d20659e6af0ddf86b3c7fc5040f011ad6db9e0b214d5f4ff673b550ed1cc336"
+    },
+    {
+      "id": "R141",
+      "title": "钝爪-突破",
+      "path": "assets/curios/R141.png",
+      "sourcePage": "https://prts.wiki/w/%E9%92%9D%E7%88%AA-%E7%AA%81%E7%A0%B4",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_102.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_102.png",
+      "sha256": "4406e18d97faec196b88b3fa62a87e0cd74a1d0feff00466686781e7ed4e094a"
+    },
+    {
+      "id": "R142",
+      "title": "钝爪-爆发",
+      "path": "assets/curios/R142.png",
+      "sourcePage": "https://prts.wiki/w/%E9%92%9D%E7%88%AA-%E7%88%86%E5%8F%91",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_103.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_103.png",
+      "sha256": "ba89c03a85da368543619e8c4faeddefb7ceec583a9a28a368457961e0411e81"
+    },
+    {
+      "id": "R143",
+      "title": "钝爪-百战",
+      "path": "assets/curios/R143.png",
+      "sourcePage": "https://prts.wiki/w/%E9%92%9D%E7%88%AA-%E7%99%BE%E6%88%98",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_105.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_105.png",
+      "sha256": "bf52ba85788cc62f97dc459d89ae191f37de74be47c675600e0428d90e8f0896"
+    },
+    {
+      "id": "R144",
+      "title": "折戟-破釜沉舟",
+      "path": "assets/curios/R144.png",
+      "sourcePage": "https://prts.wiki/w/%E6%8A%98%E6%88%9F-%E7%A0%B4%E9%87%9C%E6%B2%89%E8%88%9F",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_109.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_109.png",
+      "sha256": "be8333a21c15f54502a08e494761579348edd23556dc0fe0b80d90e8622d5ae4"
+    },
+    {
+      "id": "R145",
+      "title": "铁卫-突破",
+      "path": "assets/curios/R145.png",
+      "sourcePage": "https://prts.wiki/w/%E9%93%81%E5%8D%AB-%E7%AA%81%E7%A0%B4",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_110.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_110.png",
+      "sha256": "a17064ba0bceddfcd9a43e924675b3d65e39bbd31e459c68f5f8ddc026d7fcca"
+    },
+    {
+      "id": "R146",
+      "title": "铁卫-不动",
+      "path": "assets/curios/R146.png",
+      "sourcePage": "https://prts.wiki/w/%E9%93%81%E5%8D%AB-%E4%B8%8D%E5%8A%A8",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_1_relic_p13.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_1_relic_p13.png",
+      "sha256": "fa7faca7b4e060aa830c8530800bc40a2a794c975464ed0c63e54644fb724023"
+    },
+    {
+      "id": "R147",
+      "title": "铁卫-推进",
+      "path": "assets/curios/R147.png",
+      "sourcePage": "https://prts.wiki/w/%E9%93%81%E5%8D%AB-%E6%8E%A8%E8%BF%9B",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_1_relic_p14.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_1_relic_p14.png",
+      "sha256": "6815cefb36673f3dfcb4d9769f194a34efd84737db41d39cbf71968bbede6d04"
+    },
+    {
+      "id": "R148",
+      "title": "残弩-突破",
+      "path": "assets/curios/R148.png",
+      "sourcePage": "https://prts.wiki/w/%E6%AE%8B%E5%BC%A9-%E7%AA%81%E7%A0%B4",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_113.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_113.png",
+      "sha256": "685bd1f8cbff7503131cf7a3c73df5e06f6b78c259e3a6f63782bda962c60166"
+    },
+    {
+      "id": "R149",
+      "title": "残弩-百步穿杨",
+      "path": "assets/curios/R149.png",
+      "sourcePage": "https://prts.wiki/w/%E6%AE%8B%E5%BC%A9-%E7%99%BE%E6%AD%A5%E7%A9%BF%E6%9D%A8",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_114.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_114.png",
+      "sha256": "b5dc334f351568f18798abbb06c72de0a31d53d250c3d8b5701323703d83a13e"
+    },
+    {
+      "id": "R150",
+      "title": "残弩-战场依存",
+      "path": "assets/curios/R150.png",
+      "sourcePage": "https://prts.wiki/w/%E6%AE%8B%E5%BC%A9-%E6%88%98%E5%9C%BA%E4%BE%9D%E5%AD%98",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_1_relic_p18.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_1_relic_p18.png",
+      "sha256": "1de77fd2436f3b3121756cc1ac091066a9de9533ad5a1b70b04bef28e6b3b60a"
+    },
+    {
+      "id": "R151",
+      "title": "断杖-凝神",
+      "path": "assets/curios/R151.png",
+      "sourcePage": "https://prts.wiki/w/%E6%96%AD%E6%9D%96-%E5%87%9D%E7%A5%9E",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_119.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_119.png",
+      "sha256": "a1e66f0af6c8d6528ee4d96599c30597074428939d38425e4782b66723150229"
+    },
+    {
+      "id": "R152",
+      "title": "断杖-苦难巫咒",
+      "path": "assets/curios/R152.png",
+      "sourcePage": "https://prts.wiki/w/%E6%96%AD%E6%9D%96-%E8%8B%A6%E9%9A%BE%E5%B7%AB%E5%92%92",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_120.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_120.png",
+      "sha256": "a05240076da2bc24e567bafb701a3c2ba5aacc206b803fba57d3f2d31f4b585d"
+    },
+    {
+      "id": "R153",
+      "title": "支柱-突破",
+      "path": "assets/curios/R153.png",
+      "sourcePage": "https://prts.wiki/w/%E6%94%AF%E6%9F%B1-%E7%AA%81%E7%A0%B4",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_121.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_121.png",
+      "sha256": "2eab8d438caa577067202fcebf6033bc6c63ca727ac63bd6d8d2a23144da47e5"
+    },
+    {
+      "id": "R154",
+      "title": "支柱-枯法",
+      "path": "assets/curios/R154.png",
+      "sourcePage": "https://prts.wiki/w/%E6%94%AF%E6%9F%B1-%E6%9E%AF%E6%B3%95",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_124.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_124.png",
+      "sha256": "ff162934661a55cbd919c26eaf26adcf55f8b49d7e0ec03b78cc292c438daeb1"
+    },
+    {
+      "id": "R155",
+      "title": "医者-突破",
+      "path": "assets/curios/R155.png",
+      "sourcePage": "https://prts.wiki/w/%E5%8C%BB%E8%80%85-%E7%AA%81%E7%A0%B4",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_125.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_125.png",
+      "sha256": "0d01e0828a7eff6a9f2b1964e2e930b938b94120aac00bdadce9a42c9478d36a"
+    },
+    {
+      "id": "R156",
+      "title": "医者-自医",
+      "path": "assets/curios/R156.png",
+      "sourcePage": "https://prts.wiki/w/%E5%8C%BB%E8%80%85-%E8%87%AA%E5%8C%BB",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_126.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_126.png",
+      "sha256": "6cbc6030bc0223f746b7a02ed0acee7b54fe6595a6ca8e9eb161120441801fdb"
+    },
+    {
+      "id": "R157",
+      "title": "锈刃-突破",
+      "path": "assets/curios/R157.png",
+      "sourcePage": "https://prts.wiki/w/%E9%94%88%E5%88%83-%E7%AA%81%E7%A0%B4",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_129.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_129.png",
+      "sha256": "5277cdd73a9052e1fcb81b37ff703fcb977035523349323a237bc39d6cfea1ee"
+    },
+    {
+      "id": "R158",
+      "title": "锈刃-单兵",
+      "path": "assets/curios/R158.png",
+      "sourcePage": "https://prts.wiki/w/%E9%94%88%E5%88%83-%E5%8D%95%E5%85%B5",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_1_relic_p38.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_1_relic_p38.png",
+      "sha256": "4973cb4372b2ca574164f4af7a0f4290869ed653a470fe34b4ea12e9c4ac07fa"
+    },
+    {
+      "id": "R159",
+      "title": "爱丽舍钱袋",
+      "path": "assets/curios/R159.png",
+      "sourcePage": "https://prts.wiki/w/%E7%88%B1%E4%B8%BD%E8%88%8D%E9%92%B1%E8%A2%8B",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_1_relic_q11.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_1_relic_q11.png",
+      "sha256": "fd803e1218379ef7a4f530a89ef8997abde8421a2d07d9815915920bc32efb9b"
+    },
+    {
+      "id": "R160",
+      "title": "高卢银行支票",
+      "path": "assets/curios/R160.png",
+      "sourcePage": "https://prts.wiki/w/%E9%AB%98%E5%8D%A2%E9%93%B6%E8%A1%8C%E6%94%AF%E7%A5%A8",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_139.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_139.png",
+      "sha256": "96b350feebea7d20220a480f0478cc68f99a98bfd819319b6be3e5960b4cb646"
+    },
+    {
+      "id": "R161",
+      "title": "《第二经济改革法》",
+      "path": "assets/curios/R161.png",
+      "sourcePage": "https://prts.wiki/w/%E3%80%8A%E7%AC%AC%E4%BA%8C%E7%BB%8F%E6%B5%8E%E6%94%B9%E9%9D%A9%E6%B3%95%E3%80%8B",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_140.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_140.png",
+      "sha256": "248857ddf52725d02e489a4e38e33c67883b9db7385ce0918fba3500abb48fc7"
+    },
+    {
+      "id": "R162",
+      "title": "香草沙士汽水",
+      "path": "assets/curios/R162.png",
+      "sourcePage": "https://prts.wiki/w/%E9%A6%99%E8%8D%89%E6%B2%99%E5%A3%AB%E6%B1%BD%E6%B0%B4",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_141.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_141.png",
+      "sha256": "085e4fa3e3bebc2c0b4dc44af5767a62a463729bdd7bd6d83349ea7968239cab"
+    },
+    {
+      "id": "R163",
+      "title": "“当红歌手”",
+      "path": "assets/curios/R163.png",
+      "sourcePage": "https://prts.wiki/w/%E2%80%9C%E5%BD%93%E7%BA%A2%E6%AD%8C%E6%89%8B%E2%80%9D",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_1_relic_q23.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_1_relic_q23.png",
+      "sha256": "e8c581ceb1ea5601f4d82bec27cb31fb157870544dee360de412af1ed971a68a"
+    },
+    {
+      "id": "R164",
+      "title": "悬丝傀儡",
+      "path": "assets/curios/R164.png",
+      "sourcePage": "https://prts.wiki/w/%E6%82%AC%E4%B8%9D%E5%82%80%E5%84%A1",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_147.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_147.png",
+      "sha256": "f61c66e35823d474cb8b179a012e15a665ded527a0bd728978fc80f45519a30a"
+    },
+    {
+      "id": "R165",
+      "title": "“童趣玩偶”",
+      "path": "assets/curios/R165.png",
+      "sourcePage": "https://prts.wiki/w/%E2%80%9C%E7%AB%A5%E8%B6%A3%E7%8E%A9%E5%81%B6%E2%80%9D",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_148.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_148.png",
+      "sha256": "2be75b3b3c08d64e47c3585b7bf8090687002568091b7e114e9057b2f5f876b3"
+    },
+    {
+      "id": "R166",
+      "title": "“文明的存续”",
+      "path": "assets/curios/R166.png",
+      "sourcePage": "https://prts.wiki/w/%E2%80%9C%E6%96%87%E6%98%8E%E7%9A%84%E5%AD%98%E7%BB%AD%E2%80%9D",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_161.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_161.png",
+      "sha256": "cfa88aa9fd283c2e41eeb1f972eedb304e287896255f92801c5c132a0497633a"
+    },
+    {
+      "id": "R167",
+      "title": "演员的首饰盒",
+      "path": "assets/curios/R167.png",
+      "sourcePage": "https://prts.wiki/w/%E6%BC%94%E5%91%98%E7%9A%84%E9%A6%96%E9%A5%B0%E7%9B%92",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_3_relic_legacy_41.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_3_relic_legacy_41.png",
+      "sha256": "b9da9cfe0d268a135c63938b9c4cb99479af8bc5ecbafcecd0fbea9c7d8cc01c"
+    },
+    {
+      "id": "R168",
+      "title": "女皇之愿",
+      "path": "assets/curios/R168.png",
+      "sourcePage": "https://prts.wiki/w/%E5%A5%B3%E7%9A%87%E4%B9%8B%E6%84%BF",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_1_relic_n05.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_1_relic_n05.png",
+      "sha256": "d2073a34bf2f582860cd13fe7df055c271daa18d04451b30e00ad670df9b3d6d"
+    },
+    {
+      "id": "R169",
+      "title": "今日菜谱",
+      "path": "assets/curios/R169.png",
+      "sourcePage": "https://prts.wiki/w/%E4%BB%8A%E6%97%A5%E8%8F%9C%E8%B0%B1",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_1_relic_n03.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_1_relic_n03.png",
+      "sha256": "b83c676085416d4bf544cb30a4ca208761f3f86db09650de9f762e87360a826c"
+    },
+    {
+      "id": "R170",
+      "title": "“迷醉荷谟伊”",
+      "path": "assets/curios/R170.png",
+      "sourcePage": "https://prts.wiki/w/%E2%80%9C%E8%BF%B7%E9%86%89%E8%8D%B7%E8%B0%9F%E4%BC%8A%E2%80%9D",
+      "assetUrl": "https://torappu.prts.wiki/assets/roguelike_topic_itempic/rogue_1_relic_n04.png",
+      "mirror": "https://raw.githubusercontent.com/fexli/ArknightsResource/main/rogueitem/rogue_1_relic_n04.png",
+      "sha256": "7fc62ef7a86012ceb20086d392bc6fb15816150f463a222663364b31f9219f71"
+    }
+  ],
+  "designs": [
+    {
+      "id": "R121",
+      "name": "奇淵面具",
+      "effect": "開戰時，原有敵人 ATK −6%；不影響後續召喚物。",
+      "mechanics": [
+        {
+          "kind": "enemyStats",
+          "values": {
+            "atk": -0.06
+          }
+        }
+      ],
+      "category": 2,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_65",
+        "name": "奇渊面具",
+        "icon": "rogue_3_relic_legacy_65",
+        "effect": "所有敌方单位的攻击力-12%",
+        "rarity": 3
+      }
+    },
+    {
+      "id": "R122",
+      "name": "教母的信物",
+      "effect": "開戰時，原有敵人 ATK −9%；不影響後續召喚物。",
+      "mechanics": [
+        {
+          "kind": "enemyStats",
+          "values": {
+            "atk": -0.09
+          }
+        }
+      ],
+      "category": 2,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_66",
+        "name": "教母的信物",
+        "icon": "rogue_3_relic_legacy_66",
+        "effect": "所有敌方单位的攻击力-17%",
+        "rarity": 4
+      }
+    },
+    {
+      "id": "R123",
+      "name": "作者的喉舌",
+      "effect": "開戰時，原有敵人 DEF −12%；不影響後續召喚物。",
+      "mechanics": [
+        {
+          "kind": "enemyStats",
+          "values": {
+            "def": -0.12
+          }
+        }
+      ],
+      "category": 0,
+      "original": {
+        "topic": "rogue_1",
+        "id": "rogue_1_relic_a06",
+        "name": "作者的喉舌",
+        "icon": "rogue_1_relic_a06",
+        "effect": "所有敌方单位的防御力-21%",
+        "rarity": 3
+      }
+    },
+    {
+      "id": "R124",
+      "name": "迷迭香之擁",
+      "effect": "開戰時，原有敵人 DEF −16%；不影響後續召喚物。",
+      "mechanics": [
+        {
+          "kind": "enemyStats",
+          "values": {
+            "def": -0.16
+          }
+        }
+      ],
+      "category": 0,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_69",
+        "name": "迷迭香之拥",
+        "icon": "rogue_3_relic_legacy_69",
+        "effect": "所有敌方单位的防御力-30%",
+        "rarity": 4
+      }
+    },
+    {
+      "id": "R125",
+      "name": "鑲金骨骰",
+      "effect": "開戰時，原有敵人當前與最大 HP −6%；不影響後續召喚物。",
+      "mechanics": [
+        {
+          "kind": "enemyStats",
+          "values": {
+            "max": -0.06,
+            "hp": -0.06
+          }
+        }
+      ],
+      "category": 0,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_70",
+        "name": "镶金骨骰",
+        "icon": "rogue_3_relic_legacy_70",
+        "effect": "所有敌方单位的生命-15%",
+        "rarity": 3
+      }
+    },
+    {
+      "id": "R126",
+      "name": "「黑夜呢喃」",
+      "effect": "開戰時，原有敵人當前與最大 HP −4%；不影響後續召喚物。",
+      "mechanics": [
+        {
+          "kind": "enemyStats",
+          "values": {
+            "max": -0.04,
+            "hp": -0.04
+          }
+        }
+      ],
+      "category": 3,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_71",
+        "name": "“黑夜呢喃”",
+        "icon": "rogue_3_relic_legacy_71",
+        "effect": "所有敌方单位的生命-10%",
+        "rarity": 2
+      }
+    },
+    {
+      "id": "R127",
+      "name": "《大靜謐》",
+      "effect": "開戰時，原有敵人當前與最大 HP −10%；不影響後續召喚物。",
+      "mechanics": [
+        {
+          "kind": "enemyStats",
+          "values": {
+            "max": -0.1,
+            "hp": -0.1
+          }
+        }
+      ],
+      "category": 3,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_72",
+        "name": "《大静谧》",
+        "icon": "rogue_3_relic_legacy_72",
+        "effect": "所有敌方单位的生命-20%",
+        "rarity": 4
+      }
+    },
+    {
+      "id": "R128",
+      "name": "貴族刺劍",
+      "effect": "戰鬥中先鋒、近衛、重裝與特種 ATK +10%。",
+      "mechanics": [
+        {
+          "kind": "stats",
+          "values": {
+            "atk": 0.1
+          },
+          "roles": [
+            "PIONEER",
+            "WARRIOR",
+            "TANK",
+            "SPECIAL"
+          ]
+        }
+      ],
+      "category": 0,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_77",
+        "name": "贵族刺剑",
+        "icon": "rogue_3_relic_legacy_77",
+        "effect": "所有我方近战单位的攻击力+25%",
+        "rarity": 3
+      }
+    },
+    {
+      "id": "R129",
+      "name": "顯聖吊墜",
+      "effect": "戰鬥中狙擊、術師、醫療與輔助 ATK +8%。",
+      "mechanics": [
+        {
+          "kind": "stats",
+          "values": {
+            "atk": 0.08
+          },
+          "roles": [
+            "SNIPER",
+            "CASTER",
+            "MEDIC",
+            "SUPPORT"
+          ]
+        }
+      ],
+      "category": 0,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_79",
+        "name": "显圣吊坠",
+        "icon": "rogue_3_relic_legacy_79",
+        "effect": "所有我方远程单位的攻击力+15%",
+        "rarity": 2
+      }
+    },
+    {
+      "id": "R130",
+      "name": "銀餐叉",
+      "effect": "戰鬥中狙擊、術師、醫療與輔助 ATK +12%。",
+      "mechanics": [
+        {
+          "kind": "stats",
+          "values": {
+            "atk": 0.12
+          },
+          "roles": [
+            "SNIPER",
+            "CASTER",
+            "MEDIC",
+            "SUPPORT"
+          ]
+        }
+      ],
+      "category": 0,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_80",
+        "name": "银餐叉",
+        "icon": "rogue_3_relic_legacy_80",
+        "effect": "所有我方远程单位的攻击力+25%",
+        "rarity": 3
+      }
+    },
+    {
+      "id": "R131",
+      "name": "損壞的左輪彈巢",
+      "effect": "戰鬥中狙擊、術師、醫療與輔助 ATK +16%。",
+      "mechanics": [
+        {
+          "kind": "stats",
+          "values": {
+            "atk": 0.16
+          },
+          "roles": [
+            "SNIPER",
+            "CASTER",
+            "MEDIC",
+            "SUPPORT"
+          ]
+        }
+      ],
+      "category": 0,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_81",
+        "name": "损坏的左轮弹巢",
+        "icon": "rogue_3_relic_legacy_81",
+        "effect": "所有我方远程单位的攻击力+35%",
+        "rarity": 4
+      }
+    },
+    {
+      "id": "R132",
+      "name": "「復仇者」",
+      "effect": "我方對敵人造成的物理傷害 +14%。",
+      "mechanics": [
+        {
+          "kind": "damage",
+          "value": 0.14,
+          "filter": "physical"
+        }
+      ],
+      "category": 0,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_87",
+        "name": "“复仇者”",
+        "icon": "rogue_3_relic_legacy_87",
+        "effect": "所有敌方单位受到的物理伤害+35%",
+        "rarity": 4
+      }
+    },
+    {
+      "id": "R133",
+      "name": "「璀璨悲泣」",
+      "effect": "我方對敵人造成的法術傷害 +16%。",
+      "mechanics": [
+        {
+          "kind": "damage",
+          "value": 0.16,
+          "filter": "arts"
+        }
+      ],
+      "category": 3,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_90",
+        "name": "“璀璨悲泣”",
+        "icon": "rogue_3_relic_legacy_90",
+        "effect": "所有敌方单位受到的法术伤害+40%",
+        "rarity": 4
+      }
+    },
+    {
+      "id": "R134",
+      "name": "活玫瑰",
+      "effect": "幹員直接提供的治療與護盾量 +10%；不放大奇物或營地恢復。",
+      "mechanics": [
+        {
+          "kind": "healAmp143",
+          "value": 0.1
+        }
+      ],
+      "category": 4,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_91",
+        "name": "活玫瑰",
+        "icon": "rogue_3_relic_legacy_91",
+        "effect": "所有我方单位受到的治疗和生命回复效果+20%",
+        "rarity": 2
+      }
+    },
+    {
+      "id": "R135",
+      "name": "蒼白花冠",
+      "effect": "幹員直接提供的治療與護盾量 +15%；不放大奇物或營地恢復。",
+      "mechanics": [
+        {
+          "kind": "healAmp143",
+          "value": 0.15
+        }
+      ],
+      "category": 4,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_92",
+        "name": "苍白花冠",
+        "icon": "rogue_3_relic_legacy_92",
+        "effect": "所有我方单位受到的治疗和生命回复效果+30%",
+        "rarity": 3
+      }
+    },
+    {
+      "id": "R136",
+      "name": "演出用香水",
+      "effect": "每回合開始時，存活幹員各恢復最大 HP 的 2%；不觸發其他治療奇物。",
+      "mechanics": [
+        {
+          "kind": "regen143",
+          "ratio": 0.02
+        }
+      ],
+      "category": 4,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_93",
+        "name": "演出用香水",
+        "icon": "rogue_3_relic_legacy_93",
+        "effect": "所有我方单位每秒回复1%的最大生命值",
+        "rarity": 3
+      }
+    },
+    {
+      "id": "R137",
+      "name": "舞者手鏈",
+      "effect": "受到敵方直接物理或法術攻擊時，各有 6% 機率閃避；不閃避真實或持續傷害。",
+      "mechanics": [
+        {
+          "kind": "dodge",
+          "type": "physical",
+          "value": 0.06
+        },
+        {
+          "kind": "dodge",
+          "type": "arts",
+          "value": 0.06
+        }
+      ],
+      "category": 2,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_96",
+        "name": "舞者手链",
+        "icon": "rogue_3_relic_legacy_96",
+        "effect": "所有我方单位获得10%物理与法术闪避",
+        "rarity": 3
+      }
+    },
+    {
+      "id": "R138",
+      "name": "《坎德之花》",
+      "effect": "每回合開始時，存活幹員各恢復 15 HP；不觸發其他治療奇物。",
+      "mechanics": [
+        {
+          "kind": "regen143",
+          "value": 15
+        }
+      ],
+      "category": 4,
+      "original": {
+        "topic": "rogue_1",
+        "id": "rogue_1_relic_m13",
+        "name": "《坎德之花》",
+        "icon": "rogue_1_relic_m13",
+        "effect": "所有我方单位每秒回复10点生命",
+        "rarity": 2
+      }
+    },
+    {
+      "id": "R139",
+      "name": "《麻木與庸俗》",
+      "effect": "戰鬥中全隊 RES +4；仍受法抗上限限制。",
+      "mechanics": [
+        {
+          "kind": "stats",
+          "values": {
+            "resFlat": 4
+          }
+        }
+      ],
+      "category": 2,
+      "original": {
+        "topic": "rogue_1",
+        "id": "rogue_1_relic_m14",
+        "name": "《麻木与庸俗》",
+        "icon": "rogue_1_relic_m14",
+        "effect": "所有我方单位法术抗性+5",
+        "rarity": 2
+      }
+    },
+    {
+      "id": "R140",
+      "name": "替補演員",
+      "effect": "戰鬥中全隊 ATK、DEF 與最大 HP +2%；維持生命比例。",
+      "mechanics": [
+        {
+          "kind": "stats",
+          "values": {
+            "atk": 0.02,
+            "def": 0.02,
+            "max": 0.02
+          }
+        }
+      ],
+      "category": 4,
+      "original": {
+        "topic": "rogue_1",
+        "id": "rogue_1_relic_m20",
+        "name": "替补演员",
+        "icon": "rogue_1_relic_m20",
+        "effect": "所有我方单位的攻击力、防御力、生命+3%",
+        "rarity": 4
+      }
+    },
+    {
+      "id": "R141",
+      "name": "鈍爪－突破",
+      "effect": "戰鬥中先鋒最大 HP +20%；維持生命比例。",
+      "mechanics": [
+        {
+          "kind": "stats",
+          "values": {
+            "max": 0.2
+          },
+          "roles": [
+            "PIONEER"
+          ]
+        }
+      ],
+      "category": 2,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_102",
+        "name": "钝爪-突破",
+        "icon": "rogue_3_relic_legacy_102",
+        "effect": "所有【先锋】干员的部署费用-2，生命+60%",
+        "rarity": 2
+      }
+    },
+    {
+      "id": "R142",
+      "name": "鈍爪－爆發",
+      "effect": "開戰時，先鋒卡牌計數型招牌技能蓄能 +2；不增加專屬資源。",
+      "mechanics": [
+        {
+          "kind": "chargeStart",
+          "roles": [
+            "PIONEER"
+          ],
+          "value": 2
+        }
+      ],
+      "category": 1,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_103",
+        "name": "钝爪-爆发",
+        "icon": "rogue_3_relic_legacy_103",
+        "effect": "所有【先锋】干员的初始技力+15",
+        "rarity": 2
+      }
+    },
+    {
+      "id": "R143",
+      "name": "鈍爪－百戰",
+      "effect": "戰鬥中先鋒 ATK 與 DEF +15%。",
+      "mechanics": [
+        {
+          "kind": "stats",
+          "values": {
+            "atk": 0.15,
+            "def": 0.15
+          },
+          "roles": [
+            "PIONEER"
+          ]
+        }
+      ],
+      "category": 0,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_105",
+        "name": "钝爪-百战",
+        "icon": "rogue_3_relic_legacy_105",
+        "effect": "所有【先锋】干员的攻击力+50%，防御力+50%",
+        "rarity": 4
+      }
+    },
+    {
+      "id": "R144",
+      "name": "折戟－破釜沉舟",
+      "effect": "戰鬥中近衛 ATK +20%、DEF −15%。",
+      "mechanics": [
+        {
+          "kind": "stats",
+          "values": {
+            "atk": 0.2,
+            "def": -0.15
+          },
+          "roles": [
+            "WARRIOR"
+          ]
+        }
+      ],
+      "category": 0,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_109",
+        "name": "折戟-破釜沉舟",
+        "icon": "rogue_3_relic_legacy_109",
+        "effect": "所有【近卫】干员的防御力-40%，但攻击力+40%，攻击速度+30",
+        "rarity": 4
+      }
+    },
+    {
+      "id": "R145",
+      "name": "鐵衛－突破",
+      "effect": "戰鬥中重裝最大 HP +18%；維持生命比例。",
+      "mechanics": [
+        {
+          "kind": "stats",
+          "values": {
+            "max": 0.18
+          },
+          "roles": [
+            "TANK"
+          ]
+        }
+      ],
+      "category": 2,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_110",
+        "name": "铁卫-突破",
+        "icon": "rogue_3_relic_legacy_110",
+        "effect": "所有【重装】干员的部署费用-3，生命+40%",
+        "rarity": 2
+      }
+    },
+    {
+      "id": "R146",
+      "name": "鐵衛－不動",
+      "effect": "戰鬥中重裝 DEF +10%、最大 HP +15%；維持生命比例。",
+      "mechanics": [
+        {
+          "kind": "stats",
+          "values": {
+            "def": 0.1,
+            "max": 0.15
+          },
+          "roles": [
+            "TANK"
+          ]
+        }
+      ],
+      "category": 2,
+      "original": {
+        "topic": "rogue_1",
+        "id": "rogue_1_relic_p13",
+        "name": "铁卫-不动",
+        "icon": "rogue_1_relic_p13",
+        "effect": "所有【重装】干员的防御力+25%，生命+50%",
+        "rarity": 3
+      }
+    },
+    {
+      "id": "R147",
+      "name": "鐵衛－推進",
+      "effect": "戰鬥中重裝 ATK +18%、DEF −8%。",
+      "mechanics": [
+        {
+          "kind": "stats",
+          "values": {
+            "atk": 0.18,
+            "def": -0.08
+          },
+          "roles": [
+            "TANK"
+          ]
+        }
+      ],
+      "category": 0,
+      "original": {
+        "topic": "rogue_1",
+        "id": "rogue_1_relic_p14",
+        "name": "铁卫-推进",
+        "icon": "rogue_1_relic_p14",
+        "effect": "所有【重装】干员阻挡数-1（部署时不会低于1），但攻击力+40%，攻击速度+40",
+        "rarity": 3
+      }
+    },
+    {
+      "id": "R148",
+      "name": "殘弩－突破",
+      "effect": "戰鬥中狙擊最大 HP +20%；維持生命比例。",
+      "mechanics": [
+        {
+          "kind": "stats",
+          "values": {
+            "max": 0.2
+          },
+          "roles": [
+            "SNIPER"
+          ]
+        }
+      ],
+      "category": 2,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_113",
+        "name": "残弩-突破",
+        "icon": "rogue_3_relic_legacy_113",
+        "effect": "所有【狙击】干员的部署费用-2，生命+60%",
+        "rarity": 2
+      }
+    },
+    {
+      "id": "R149",
+      "name": "殘弩－百步穿楊",
+      "effect": "戰鬥中狙擊 ATK +10%。",
+      "mechanics": [
+        {
+          "kind": "stats",
+          "values": {
+            "atk": 0.1
+          },
+          "roles": [
+            "SNIPER"
+          ]
+        }
+      ],
+      "category": 0,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_114",
+        "name": "残弩-百步穿杨",
+        "icon": "rogue_3_relic_legacy_114",
+        "effect": "所有【狙击】干员的攻击力+20%",
+        "rarity": 2
+      }
+    },
+    {
+      "id": "R150",
+      "name": "殘弩－戰場依存",
+      "effect": "每回合開始時，狙擊卡牌計數型招牌技能蓄能 +1；不增加專屬資源。",
+      "mechanics": [
+        {
+          "kind": "chargeTurn",
+          "roles": [
+            "SNIPER"
+          ],
+          "value": 1
+        }
+      ],
+      "category": 1,
+      "original": {
+        "topic": "rogue_1",
+        "id": "rogue_1_relic_p18",
+        "name": "残弩-战场依存",
+        "icon": "rogue_1_relic_p18",
+        "effect": "所有【狙击】干员的自然技力恢复+0.5/秒",
+        "rarity": 3
+      }
+    },
+    {
+      "id": "R151",
+      "name": "斷杖－凝神",
+      "effect": "每回合開始時，術師卡牌計數型招牌技能蓄能 +1；不增加專屬資源。",
+      "mechanics": [
+        {
+          "kind": "chargeTurn",
+          "roles": [
+            "CASTER"
+          ],
+          "value": 1
+        }
+      ],
+      "category": 1,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_119",
+        "name": "断杖-凝神",
+        "icon": "rogue_3_relic_legacy_119",
+        "effect": "所有【术师】干员的技力恢复+0.4/秒",
+        "rarity": 3
+      }
+    },
+    {
+      "id": "R152",
+      "name": "斷杖－苦難巫咒",
+      "effect": "戰鬥中術師 ATK +20%、最大 HP −15%；維持生命比例。",
+      "mechanics": [
+        {
+          "kind": "stats",
+          "values": {
+            "atk": 0.2,
+            "max": -0.15
+          },
+          "roles": [
+            "CASTER"
+          ]
+        }
+      ],
+      "category": 3,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_120",
+        "name": "断杖-苦难巫咒",
+        "icon": "rogue_3_relic_legacy_120",
+        "effect": "所有【术师】干员生命-40%，但造成的法术伤害+70%",
+        "rarity": 4
+      }
+    },
+    {
+      "id": "R153",
+      "name": "支柱－突破",
+      "effect": "戰鬥中輔助最大 HP +20%；維持生命比例。",
+      "mechanics": [
+        {
+          "kind": "stats",
+          "values": {
+            "max": 0.2
+          },
+          "roles": [
+            "SUPPORT"
+          ]
+        }
+      ],
+      "category": 2,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_121",
+        "name": "支柱-突破",
+        "icon": "rogue_3_relic_legacy_121",
+        "effect": "所有【辅助】干员的部署费用-2，生命+60%",
+        "rarity": 2
+      }
+    },
+    {
+      "id": "R154",
+      "name": "支柱－枯法",
+      "effect": "若出戰幹員含輔助，開戰時原有敵人 DEF −8%、RES −4；不影響後續召喚物。",
+      "mechanics": [
+        {
+          "kind": "enemyStats",
+          "requireRole": "SUPPORT",
+          "values": {
+            "def": -0.08,
+            "resFlat": -4
+          }
+        }
+      ],
+      "category": 3,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_124",
+        "name": "支柱-枯法",
+        "icon": "rogue_3_relic_legacy_124",
+        "effect": "所有【辅助】干员攻击范围内的敌方单位防御力-20%，法术抗性-20%",
+        "rarity": 3
+      }
+    },
+    {
+      "id": "R155",
+      "name": "醫者－突破",
+      "effect": "戰鬥中醫療最大 HP +20%；維持生命比例。",
+      "mechanics": [
+        {
+          "kind": "stats",
+          "values": {
+            "max": 0.2
+          },
+          "roles": [
+            "MEDIC"
+          ]
+        }
+      ],
+      "category": 4,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_125",
+        "name": "医者-突破",
+        "icon": "rogue_3_relic_legacy_125",
+        "effect": "所有【医疗】干员的部署费用-2，生命+60%",
+        "rarity": 2
+      }
+    },
+    {
+      "id": "R156",
+      "name": "醫者－自醫",
+      "effect": "每回合開始時，醫療卡牌計數型招牌技能蓄能 +1；不增加專屬資源。",
+      "mechanics": [
+        {
+          "kind": "chargeTurn",
+          "roles": [
+            "MEDIC"
+          ],
+          "value": 1
+        }
+      ],
+      "category": 4,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_126",
+        "name": "医者-自医",
+        "icon": "rogue_3_relic_legacy_126",
+        "effect": "所有【医疗】干员的技力恢复+0.3/秒",
+        "rarity": 2
+      }
+    },
+    {
+      "id": "R157",
+      "name": "鏽刃－突破",
+      "effect": "戰鬥中特種最大 HP +20%；維持生命比例。",
+      "mechanics": [
+        {
+          "kind": "stats",
+          "values": {
+            "max": 0.2
+          },
+          "roles": [
+            "SPECIAL"
+          ]
+        }
+      ],
+      "category": 2,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_129",
+        "name": "锈刃-突破",
+        "icon": "rogue_3_relic_legacy_129",
+        "effect": "所有【特种】干员的部署费用-2，生命+60%",
+        "rarity": 2
+      }
+    },
+    {
+      "id": "R158",
+      "name": "鏽刃－單兵",
+      "effect": "戰鬥中特種 ATK 與 DEF +15%。",
+      "mechanics": [
+        {
+          "kind": "stats",
+          "values": {
+            "atk": 0.15,
+            "def": 0.15
+          },
+          "roles": [
+            "SPECIAL"
+          ]
+        }
+      ],
+      "category": 0,
+      "original": {
+        "topic": "rogue_1",
+        "id": "rogue_1_relic_p38",
+        "name": "锈刃-单兵",
+        "icon": "rogue_1_relic_p38",
+        "effect": "所有【特种】干员的攻击力+40%，防御力+40%",
+        "rarity": 3
+      }
+    },
+    {
+      "id": "R159",
+      "name": "愛麗舍錢袋",
+      "effect": "開戰時，全隊卡牌計數型招牌技能蓄能 +1；不增加專屬資源。",
+      "mechanics": [
+        {
+          "kind": "chargeStart",
+          "value": 1
+        }
+      ],
+      "category": 1,
+      "original": {
+        "topic": "rogue_1",
+        "id": "rogue_1_relic_q11",
+        "name": "爱丽舍钱袋",
+        "icon": "rogue_1_relic_q11",
+        "effect": "所有干员的初始技力+8",
+        "rarity": 2
+      }
+    },
+    {
+      "id": "R160",
+      "name": "高盧銀行支票",
+      "effect": "開戰時，全隊卡牌計數型招牌技能蓄能 +2；不增加專屬資源。",
+      "mechanics": [
+        {
+          "kind": "chargeStart",
+          "value": 2
+        }
+      ],
+      "category": 1,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_139",
+        "name": "高卢银行支票",
+        "icon": "rogue_3_relic_legacy_139",
+        "effect": "所有干员的初始技力+12",
+        "rarity": 3
+      }
+    },
+    {
+      "id": "R161",
+      "name": "《第二經濟改革法》",
+      "effect": "開戰時，全隊卡牌計數型招牌技能蓄能 +3；不增加專屬資源。",
+      "mechanics": [
+        {
+          "kind": "chargeStart",
+          "value": 3
+        }
+      ],
+      "category": 1,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_140",
+        "name": "《第二经济改革法》",
+        "icon": "rogue_3_relic_legacy_140",
+        "effect": "所有干员的初始技力+18",
+        "rarity": 4
+      }
+    },
+    {
+      "id": "R162",
+      "name": "香草沙士汽水",
+      "effect": "開戰時，全隊卡牌計數型招牌技能蓄能 +1；不增加專屬資源。",
+      "mechanics": [
+        {
+          "kind": "chargeFirst143",
+          "value": 1
+        }
+      ],
+      "category": 1,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_141",
+        "name": "香草沙士汽水",
+        "icon": "rogue_3_relic_legacy_141",
+        "effect": "所有自然回复技能的技力恢复+0.2/秒",
+        "rarity": 2
+      }
+    },
+    {
+      "id": "R163",
+      "name": "「當紅歌手」",
+      "effect": "我方傷害命中暈眩、束縛、冰凍或已破招的敵人時，總傷害 +8%。",
+      "mechanics": [
+        {
+          "kind": "damage",
+          "value": 0.08,
+          "filter": "controlled"
+        }
+      ],
+      "category": 3,
+      "original": {
+        "topic": "rogue_1",
+        "id": "rogue_1_relic_q23",
+        "name": "“当红歌手”",
+        "icon": "rogue_1_relic_q23",
+        "effect": "敌人被晕眩、冰冻、束缚时，每秒受到600点法术伤害",
+        "rarity": 3
+      }
+    },
+    {
+      "id": "R164",
+      "name": "懸絲傀儡",
+      "effect": "我方傷害命中暈眩、束縛、冰凍或已破招的敵人時，總傷害 +12%。",
+      "mechanics": [
+        {
+          "kind": "damage",
+          "value": 0.12,
+          "filter": "controlled"
+        }
+      ],
+      "category": 3,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_147",
+        "name": "悬丝傀儡",
+        "icon": "rogue_3_relic_legacy_147",
+        "effect": "敌人被晕眩、冰冻、束缚时，每秒受到700点法术伤害",
+        "rarity": 3
+      }
+    },
+    {
+      "id": "R165",
+      "name": "「童趣玩偶」",
+      "effect": "我方傷害命中暈眩、束縛、冰凍或已破招的敵人時，總傷害 +16%。",
+      "mechanics": [
+        {
+          "kind": "damage",
+          "value": 0.16,
+          "filter": "controlled"
+        }
+      ],
+      "category": 3,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_148",
+        "name": "“童趣玩偶”",
+        "icon": "rogue_3_relic_legacy_148",
+        "effect": "敌人被晕眩、冰冻、束缚时，每秒受到1000点法术伤害",
+        "rarity": 4
+      }
+    },
+    {
+      "id": "R166",
+      "name": "「文明的存續」",
+      "effect": "我方對敵人造成的真實傷害 +12%。",
+      "mechanics": [
+        {
+          "kind": "trueAmp143",
+          "value": 0.12
+        }
+      ],
+      "category": 3,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_161",
+        "name": "“文明的存续”",
+        "icon": "rogue_3_relic_legacy_161",
+        "effect": "所有敌方单位受到的真实伤害+150%",
+        "rarity": 4
+      }
+    },
+    {
+      "id": "R167",
+      "name": "演員的首飾盒",
+      "effect": "取得時獲得 10 源石碇；每局只生效一次。",
+      "mechanics": [
+        {
+          "kind": "coins",
+          "value": 10
+        }
+      ],
+      "category": 5,
+      "original": {
+        "topic": "rogue_3",
+        "id": "rogue_3_relic_legacy_41",
+        "name": "演员的首饰盒",
+        "icon": "rogue_3_relic_legacy_41",
+        "effect": "立即获得源石锭+18",
+        "rarity": 3
+      }
+    },
+    {
+      "id": "R168",
+      "name": "女皇之願",
+      "effect": "受到敵方直接物理或法術攻擊時，各有 9% 機率閃避；不閃避真實或持續傷害。",
+      "mechanics": [
+        {
+          "kind": "dodge",
+          "type": "physical",
+          "value": 0.09
+        },
+        {
+          "kind": "dodge",
+          "type": "arts",
+          "value": 0.09
+        }
+      ],
+      "category": 2,
+      "original": {
+        "topic": "rogue_1",
+        "id": "rogue_1_relic_n05",
+        "name": "女皇之愿",
+        "icon": "rogue_1_relic_n05",
+        "effect": "所有我方单位获得15%物理与法术闪避",
+        "rarity": 4
+      }
+    },
+    {
+      "id": "R169",
+      "name": "今日菜譜",
+      "effect": "幹員直接提供的治療與護盾量 +18%；不放大奇物或營地恢復。",
+      "mechanics": [
+        {
+          "kind": "healAmp143",
+          "value": 0.18
+        }
+      ],
+      "category": 4,
+      "original": {
+        "topic": "rogue_1",
+        "id": "rogue_1_relic_n03",
+        "name": "今日菜谱",
+        "icon": "rogue_1_relic_n03",
+        "effect": "所有我方单位受到的治疗和生命回复效果+40%",
+        "rarity": 4
+      }
+    },
+    {
+      "id": "R170",
+      "name": "「迷醉荷謨伊」",
+      "effect": "每回合開始時，存活幹員各恢復最大 HP 的 3%；不觸發其他治療奇物。",
+      "mechanics": [
+        {
+          "kind": "regen143",
+          "ratio": 0.03
+        }
+      ],
+      "category": 4,
+      "original": {
+        "topic": "rogue_1",
+        "id": "rogue_1_relic_n04",
+        "name": "“迷醉荷谟伊”",
+        "icon": "rogue_1_relic_n04",
+        "effect": "所有我方单位每秒回复2%的最大生命值",
+        "rarity": 4
+      }
+    }
+  ]
+}

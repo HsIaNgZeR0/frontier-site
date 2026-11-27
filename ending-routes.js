@@ -166,8 +166,8 @@ window.FrontierEndings=(()=>{
     for(const enemy of r.battle.enemies){enemy.max=Math.round(enemy.max*1.08);enemy.hp=enemy.max}
     save();render();return;
    }else{
-    const cost=step==='pay'?12:step==='intel'?5:0,field=step==='pay'?'fieldPoints':'intel';
-    if(r[field]<cost){toast('PRTS｜'+(step==='pay'?'源石碇':'情報')+'不足。');return}
+    const cost=step==='pay'?12:0,field='fieldPoints';
+    if(r[field]<cost){toast('PRTS｜'+('源石碇')+'不足。');return}
     r[field]-=cost;finishStage(path);
    }
   }else return;
@@ -220,12 +220,12 @@ window.FrontierEndings=(()=>{
   if(!s||!e||!Object.values(eventIds).includes(e.id))return previousEvent();
   const kind=e.id===eventIds.fate?'fate':e.id===eventIds.exchange?'exchange':'follow';
   const step=kind==='follow'?route(path)?.steps[s.stage]:null;
-  const details={fight:'挑戰強化緊急作戰。勝利後可推進結局；你也可以放棄這條線索。',pay:'支付 12 源石碇，取得下一段線索。',intel:'提交 5 情報，證實這條結局線索。',report:'交付上一步取得的證物，推進結局。'};
+  const details={fight:'挑戰強化緊急作戰。勝利後可推進結局；你也可以放棄這條線索。',pay:'支付 12 源石碇，取得下一段線索。',intel:'比對隨身證物與沿途記錄，證實這條線索；不消耗資源。',report:'交付上一步取得的證物，推進結局。'};
   const button=(text,fn,style='',disabled=false)=>'<button class="'+style+'" '+(disabled?'disabled ':'')+'onclick="'+fn+'">'+text+'</button>';
-  const missing=step==='pay'&&R().fieldPoints<12||step==='intel'&&R().intel<5;
+  const missing=step==='pay'&&R().fieldPoints<12;
   const progressText=step?'第 '+(s.stage+1)+'／'+route(path).steps.length+' 次調查 · '+labels[path]:'';
   const accept=step==='fight'?'進入作戰 · 改變結局':step?'確認線索 · 改變結局':'拿取結局藏品';
-  $('#app').innerHTML=runHeader()+'<section class="panel event-panel">'+(framedAsEncounter(kind)?'<small>不期而遇</small>':'')+'<h2>'+esc(kind==='fate'&&framedAsEncounter(kind)?'旅人托付的證物':title(kind))+'</h2><p>'+esc(step?details[step]:entryDescription(kind))+'</p>'+(progressText?'<p class="tiny muted">'+progressText+(step==='pay'?' · 持有 '+R().fieldPoints+' 源石碇':step==='intel'?' · 持有 '+R().intel+' 情報':'')+'</p>':'')+(kind==='fate'&&framedAsEncounter(kind)?'<p class="tiny muted">只問路會放下這條線索；其他故事仍可能繼續。</p>':'')+'<div class="row">'+
+  $('#app').innerHTML=runHeader()+'<section class="panel event-panel">'+(framedAsEncounter(kind)?'<small>不期而遇</small>':'')+'<h2>'+esc(kind==='fate'&&framedAsEncounter(kind)?'旅人托付的證物':title(kind))+'</h2><p>'+esc(step?details[step]:entryDescription(kind))+'</p>'+(progressText?'<p class="tiny muted">'+progressText+(step==='pay'?' · 持有 '+R().fieldPoints+' 源石碇':step==='intel'?' · 沿途證物核驗':'')+'</p>':'')+(kind==='fate'&&framedAsEncounter(kind)?'<p class="tiny muted">只問路會放下這條線索；其他故事仍可能繼續。</p>':'')+'<div class="row">'+
     (e.exchangeResult?button('繼續前進','FrontierEncounters.finish()','primary'):
     (kind==='exchange'?button('交換收藏品或詞條','FrontierEncounters.openPicker()'):'')+
     button(missing?'資源不足 · '+accept:accept,'FrontierEndings.action(true)','primary',missing)+(kind==='fate'&&framedAsEncounter(kind)&&R().survey16?.surveyIndex<6?button('只向旅人問路 · 勘探點數 +1','FrontierEndings.scoutInstead()'):'')+button(kind==='follow'?'離開 · 放棄這條線索':'離開','FrontierEndings.action(false)')+
