@@ -294,10 +294,11 @@ window.FrontierFieldDock=(()=>{
   const done=()=>{fx.classList.add('out');setTimeout(()=>fx.remove(),220)};fx.querySelector('.fd-rfx-skip').onclick=done;fx.addEventListener('click',e=>{if(e.target===fx)done()});document.body.append(fx);setTimeout(()=>{if(fx.isConnected)done()},2400)}
  let packSyncing=false;
  function packRoster(){if(packSyncing||!window.FrontierPack?.needsRosterSync?.())return;if(FrontierRuntime.busy){setTimeout(packRoster,300);return}packSyncing=true;setTimeout(async()=>{try{await FrontierRuntime.perform('pack-roster-sync',()=>{FrontierPack.syncRoster();save();return true})}finally{packSyncing=false}render()},0)}
- let encounterSeen142=null,encounterOverlay142=null;
+ let encounterSeen142=null,encounterOverlay142=null,encounterBoot147=!!window.FrontierBootReady;
+ window.addEventListener("frontier:boot",()=>{const r=R(),id=r?.battle?.operatorBattleId;encounterSeen142=id?r.number+":"+id:null;encounterBoot147=true},{once:true});
  function encounter142(){
   const r=R(),id=r?.battle?.operatorBattleId,key=id?r.number+':'+id:null;
-  if(!window.FrontierBootReady){encounterSeen142=key;return}
+  if(!window.FrontierBootReady||!encounterBoot147){encounterSeen142=key;return}
   if(!key||page!=='run'){encounterOverlay142?.remove();encounterOverlay142=null;return}
   if(key===encounterSeen142)return;encounterSeen142=key;
   encounterOverlay142?.remove();encounterOverlay142=null;
