@@ -304,12 +304,12 @@ window.FrontierFieldDock=(()=>{
   encounterOverlay142?.remove();encounterOverlay142=null;
   if(window.FrontierMotion?.reduced()||document.hidden)return;
   const esc147=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),region=FrontierExpedition.regions.find(x=>x.id===r.expedition?.regionId)?.name||'邊境區域',type={battle:'作戰',ambush:'遭遇作戰',elite:'緊急作戰',boss:'首領作戰'}[r.battle.type]||'作戰';
-  const el=document.createElement('aside');el.className='encounter142 entry147';el.dataset.duration='1000';el.setAttribute('popover','manual');el.setAttribute('aria-hidden','true');
-  el.innerHTML='<div class="entry147-title"><img src="assets/ui-sami148/node_battle.png" alt=""><small>OPERATION</small><b>'+type+'</b><span>'+esc147(region)+' · 第 '+(r.expedition?.layer||1)+' 層</span><i></i></div>';
+  const el=document.createElement('aside');el.className='encounter142 entry147';el.dataset.duration='2200';el.setAttribute('popover','manual');el.setAttribute('aria-hidden','true');
+  el.innerHTML='<div class="entry147-title"><small>OPERATION</small><b>'+type+'</b><span>'+esc147(region)+' · 第 ' +((r.expedition?.layer||0)+1)+' 層</span><i></i></div>';
   document.body.append(el);try{el.showPopover?.()}catch{}encounterOverlay142=el;
-  const animation=el.animate?.([{opacity:0},{opacity:1,offset:.12},{opacity:1,offset:.68},{opacity:0}],{duration:1000,easing:'linear',fill:'both'});
-  el.firstElementChild.animate?.([{opacity:0,transform:'translateY(10px)'},{opacity:1,transform:'translateY(0)',offset:.22},{opacity:1,transform:'translateY(0)',offset:.72},{opacity:0,transform:'translateY(-5px)'}],{duration:1000,easing:'cubic-bezier(.2,.65,.3,1)',fill:'both'});
-  const remove=()=>{el.remove();if(encounterOverlay142===el)encounterOverlay142=null};if(animation)animation.finished.then(remove,remove);setTimeout(remove,1080);
+  const animation=el.animate?.([{opacity:0},{opacity:1,offset:.06},{opacity:1,offset:.76},{opacity:0}],{duration:2200,easing:'linear',fill:'both'});
+  el.firstElementChild.animate?.([{opacity:0,transform:'translateY(10px)'},{opacity:1,transform:'translateY(0)',offset:.22},{opacity:1,transform:'translateY(0)',offset:.72},{opacity:0,transform:'translateY(-5px)'}],{duration:2200,easing:'cubic-bezier(.2,.65,.3,1)',fill:'both'});
+  const remove=()=>{el.remove();if(encounterOverlay142===el)encounterOverlay142=null};if(animation)animation.finished.then(remove,remove);setTimeout(remove,2300);
  }
  const prior=render;render=function(...args){const out=prior(...args);try{decorate();encounter142();keyHints();merchantLimit();battleMarks();mechTags();packRoster();deckPicker();curioDrops();merchantTicketCard();alertHud();eventAlertNote();campAlertOption();recruitFx();if(R()?.event?.type==='fieldMerchant'){setTimeout(merchantLimit,60);setTimeout(merchantLimit,300)}}catch(error){console.error(error)}return out};
  window.addEventListener('resize',()=>{if(sheet)redraw()});

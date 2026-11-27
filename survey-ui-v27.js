@@ -40,7 +40,9 @@ window.FrontierSurveyV27=(()=>{
   const r=R(),sealed=box?.sealed;
   if(!r||r.result||r.contract?.mode==='simulation'||!sealed||sealed.surveyDrops27)return;
   sealed.surveyDrops27=true;
-  if(box.origin?.at<loadedAt)return;
+  // 搜索現場已鎖定的原始物資不可在開箱重繪時再替換；新箱在快照前完成轉換。
+  const scene=r.event?.searchScene||r.searchGuard174?.searchScene;
+  if(scene?.targets?.some(t=>t.box?.uid===box.uid&&t.search141)||box.origin?.at<loadedAt)return;
   sealed.contents=sealed.contents.map((item,i)=>bonusTicket(item,r.number+':'+box.uid+':'+i+':'+db.rng.seed)||item);
  }
  function sealedDrops(){

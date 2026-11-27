@@ -7,7 +7,7 @@ window.FrontierSearch141=(()=>{
  function goldBox(r,node){const pool=Object.values(D()).filter(d=>d.category==='container'&&d.rarity===6&&!d.retired&&!d.balance?.legacy&&!d.balance?.surveyEquipment);const d=pool[rnd(pool.length)];return C().create(5,'industrial',{source:node.id,run:r.number},d.id)}
  function upgrade(s,node){if(window.FrontierSearch141?.generationEnabled===false)return false;const r=R(),apDie=1+rnd(6),countDie=1+rnd(6),count=[3,3,3,4,5,6][countDie-1];s.version=2;s.focus=-1;s.active=null;s.targets=s.targets.slice(0,count);while(s.targets.length<count)s.targets.push({box:C().drop(Math.max(2,node.containerQuality||2),'industrial',{source:node.id,run:r.number}),structure174:true,status:'waiting'});
   const gold=hard(r)?1+rnd(2):0;for(let i=0;i<gold;i++)if(D()[s.targets[i].box.itemId].rarity<6)s.targets[i].box=goldBox(r,node);
-  let locks=0;for(const t of s.targets){delete t.core;const locked=locks<2&&random()<.25;if(locked)locks++;t.search141={locked,level:Math.max(1,Math.min(4,D()[t.box.itemId].rarity-2)),unlocked:false,first:null,extra:null,mode:null,paused:false,original:clone(t.box.sealed.contents),baseCount:t.box.sealed.contents.length,rounds:[]};}
+  let locks=0;for(const t of s.targets){window.FrontierSurveyV27?.prepareSealedDrop(t.box);delete t.core;const locked=locks<2&&random()<.25;if(locked)locks++;t.search141={locked,level:Math.max(1,Math.min(4,D()[t.box.itemId].rarity-2)),unlocked:false,first:null,extra:null,mode:null,paused:false,original:clone(t.box.sealed.contents),baseCount:t.box.sealed.contents.length,rounds:[]};}
   const ap=Math.max(hard(r)?4:2,apDie*2);s.search141={version:1,apDie,countDie,apMax:ap,ap,rollStep:0,log:[]};r.event.box=s.targets[0].box;
  }
  function record(s,type,index,cost=0){const v=s.search141,before=v.ap;v.ap-=cost;v.log.push({type,index,cost,before,after:v.ap});}
@@ -19,7 +19,7 @@ window.FrontierSearch141=(()=>{
  function cap(t,mode){return mode==='compartment'?Math.max(3,Math.min(Math.ceil(t.search141.baseCount*.7),Math.max(3,t.search141.baseCount-2))):t.search141.baseCount}
  function freshBox(r,t,mode){const old=t.box,n=cap(t,mode),box=C().create(old.sealed.quality,old.sealed.kind,{source:old.origin?.source||'search141',run:r.number},old.itemId),items=box.sealed.contents.slice(0,n);while(items.length<n)items.push(C().reward(old.sealed.tier,old.sealed.kind,r.expedition.regionId));
   if(JSON.stringify(items)===JSON.stringify(t.search141.original)){const d=Object.values(D()).find(d=>d.category==='material'&&!d.retired&&d.rarity===Math.min(6,old.sealed.tier)&&d.id!==items[0].itemId);if(d)items[0]={itemId:d.id,qty:1};else throw Error('無法產生不同的搜索物資，原進度保留。');}
-  box.sealed.tier=old.sealed.tier;box.sealed.contents=items;box.sealed.claimed=items.map(()=>false);box.sealed.revealed=0;delete box.sealed.preview139;return box;
+  box.sealed.tier=old.sealed.tier;box.sealed.contents=items;box.sealed.claimed=items.map(()=>false);box.sealed.revealed=0;delete box.sealed.preview139;window.FrontierSurveyV27?.prepareSealedDrop(box);return box;
  }
  function begin(mode='normal'){const r=R(),s=scene(),t=s?.targets[s.focus],m=t?.search141,v=s?.search141;if(!s?.open||s.active!==null||!m||v.rollStep<2||t.status!=='waiting')return false;
   if(mode==='resume'){if(!m.paused||!m.mode)return false;m.paused=false;s.active=s.focus;r.event.box=t.box;save();render();return true}

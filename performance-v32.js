@@ -44,22 +44,13 @@ window.FrontierRender32=(()=>{
   motion=enter(host,run?.battle?'fixed':'page');
  }
  function showRewardSignal(){
-  const signal=document.createElement('div');
-  signal.className='frontier-battle-clear';
-  signal.setAttribute('aria-hidden','true');
-  const title=document.createElement('strong');title.textContent='作戰完成';
-  signal.append(title);
-  document.body.append(signal);
-  rewardSignal=signal;
+  if(reduced.matches||document.hidden)return;
+  const signal=document.createElement('aside');signal.className='battle150-victory';signal.setAttribute('popover','manual');signal.setAttribute('aria-hidden','true');
+  signal.innerHTML='<div class="battle150-band"><b>任務完成</b><span>MISSION ACCOMPLISHED</span></div>';
+  document.body.append(signal);try{signal.showPopover?.()}catch{}rewardSignal=signal;
   const clear=()=>{signal.remove();if(rewardSignal===signal)rewardSignal=null};
-  if(reduced.matches||typeof signal.animate!=='function'){setTimeout(clear,920);return;}
-  const animation=signal.animate([
-   {opacity:0,transform:'translateY(8px) scale(.96)'},
-   {opacity:1,transform:'translateY(0) scale(1)',offset:.15},
-   {opacity:1,transform:'translateY(0) scale(1)',offset:.76},
-   {opacity:0,transform:'translateY(-7px) scale(1)'}
-  ],{duration:920,easing:'ease-out',fill:'backwards'});
-  animation.onfinish=clear;
+  const animation=signal.firstElementChild.animate?.([{transform:'translateX(-105%)',opacity:0},{transform:'translateX(0)',opacity:1,offset:.16},{transform:'translateX(0)',opacity:1,offset:.72},{transform:'translateX(105%)',opacity:0}],{duration:1900,easing:'ease-in-out',fill:'both'});
+  animation?.finished.then(clear,clear);setTimeout(clear,2050);
  }
  function enter(host,kind='panel'){
   if(!host||document.hidden||typeof host.animate!=='function')return null;
