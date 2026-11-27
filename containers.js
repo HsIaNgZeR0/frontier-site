@@ -47,14 +47,7 @@ window.FrontierContainers=(()=>{
   ['架|貨|堆|分類', 'M8 32l10-12h41l6 12v16H8z'],
   ['櫃|保險|封印', 'M15 18l11-9h26l8 9v31H15z']
  ];
- function roomContainerModel(box,fixture,index,repeated){
-  const key=box.itemId.slice('container_'.length);
-  const [standardShell,detail]=containerModels[key]||containerModels['c'+box.sealed.quality]||containerModels.c1;
-  const shell=repeated?(roomFixtures.find(([pattern])=>new RegExp(pattern).test(fixture))?.[1]||
-    ['M11 26l9-13h42v35H11z','M16 16l9-7h27l10 14-9 26H16z','M8 29h56l-6 18H13z','M17 20l10-9h24l7 9v29H17z'][index%4]):standardShell;
-  const mark=repeated?' transform="translate(11 9) scale(.7)"':'';
-  return '<svg aria-hidden="true" focusable="false" class="search174-container-model crate-grade-'+(box.sealed.quality||1)+'" viewBox="0 0 72 56"><ellipse cx="36" cy="50" rx="28" ry="4"/><path class="search174-model-shell" d="'+shell+'"/><path class="search174-model-detail" d="'+detail+'"'+mark+'/></svg>';
- }
+ function roomContainerModel(box){return FrontierRoomBoxes146.render(box)}
  const highRiskWhite=new Set(['field_bandage','mess_tin']);
  function highRiskTier(base,roll){
   const promoted=Math.min(5,Math.max(3,base)+(roll<.60?1:0));
