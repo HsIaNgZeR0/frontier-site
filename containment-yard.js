@@ -209,7 +209,7 @@ window.FrontierContainmentYard=(()=>{
   for(const m of vis){if(m.v!=='shiny')continue;const b=box(m);for(let q=0;q<4;q++){const p=(clock*.55+m.seed+q*.25)%1,a=Math.sin(p*Math.PI),x=b.cx+Math.sin(m.seed*7+q*2.3)*b.w*.45,y=b.t+b.h*(.1+.75*((q*.37+m.seed)%1))-p*6,sz=(1.6+1.3*a)*Math.max(.6,b.w/30);star(f2,x,y,sz,a)}}
   /* 已命名個體常駐名牌（固定字級，不隨縮放） */
   f2.setTransform(dpr,0,0,dpr,0,0);
-  for(const m of vis){if(!m.i.nickname||focus===m)continue;const b=box(m),p=toScreen(b.cx,b.t);if(p.x<-90||p.x>W+90||p.y<-20||p.y>H+30)continue;tag(f2,p.x,p.y-9,m)}
+  for(const m of vis){if((!m.i.nickname&&!m.i.unread143)||focus===m)continue;const b=box(m),p=toScreen(b.cx,b.t);if(p.x<-90||p.x>W+90||p.y<-20||p.y>H+30)continue;tag(f2,p.x,p.y-9,m)}
  }
  /* 收容設施地板：金屬地磚圖樣＋分區標線＋邊界警示帶，全部在世界座標，會跟著滑動 */
  let tile=null;
@@ -233,17 +233,18 @@ window.FrontierContainmentYard=(()=>{
  }
  function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.lineTo(x+w-r,y);c.quadraticCurveTo(x+w,y,x+w,y+r);c.lineTo(x+w,y+h-r);c.quadraticCurveTo(x+w,y+h,x+w-r,y+h);c.lineTo(x+r,y+h);c.quadraticCurveTo(x,y+h,x,y+h-r);c.lineTo(x,y+r);c.quadraticCurveTo(x,y,x+r,y);c.closePath()}
  function tag(c,x,y,m){
-  const name=(m.i.favorite?'♥ ':'')+m.i.nickname,v=m.v,lab=v?V().label(v):'';
+  const name=(m.i.unread143?'新  ':'')+(m.i.favorite?'♥ ':'')+(m.i.nickname||''),v=m.v,lab=v?V().label(v):'';
   c.font='600 11px system-ui,sans-serif';const nw=c.measureText(name).width;c.font='700 9px system-ui,sans-serif';const lw=lab?c.measureText(lab).width+8:0;
   const w=nw+12+(lab?lw+4:0),h=18,x0=Math.round(x-w/2),y0=Math.round(y-h);
   c.fillStyle='rgba(10,15,19,.82)';rr(c,x0,y0,w,h,3);c.fill();c.strokeStyle=v==='shiny'?'rgba(255,215,106,.8)':v==='color'?'rgba(213,155,255,.8)':'rgba(127,164,182,.6)';c.lineWidth=1;c.stroke();
   c.textBaseline='middle';c.font='600 11px system-ui,sans-serif';c.fillStyle='#fff';c.fillText(name,x0+6,y0+h/2+.5);
-  if(m.i.favorite){c.fillStyle='#ff6f91';c.fillText('♥',x0+6,y0+h/2+.5)}
+  if(m.i.unread143){c.fillStyle='#e8ec98';c.fillText('新',x0+6,y0+h/2+.5)}
+  if(m.i.favorite){c.fillStyle='#ff6f91';c.fillText('♥',x0+6+(m.i.unread143?c.measureText('新  ').width:0),y0+h/2+.5)}
   if(lab){const lx=x0+6+nw+4;c.fillStyle=v==='shiny'?'#ffd76a':'#d59bff';rr(c,lx,y0+3,lw,h-6,2);c.fill();c.fillStyle='#14181c';c.font='700 9px system-ui,sans-serif';c.fillText(lab,lx+4,y0+h/2+.5)}
  }
  function star(c,x,y,s,a){c.save();c.globalAlpha=a;c.fillStyle='#fff6cf';c.shadowColor='rgba(255,210,90,.9)';c.shadowBlur=6;c.beginPath();c.moveTo(x,y-s);c.quadraticCurveTo(x,y,x+s,y);c.quadraticCurveTo(x,y,x,y+s);c.quadraticCurveTo(x,y,x-s,y);c.quadraticCurveTo(x,y,x,y-s);c.fill();c.restore()}
  /* ---------- 資料泡泡 ---------- */
- function show(m){focus=m;editing=false;bubble?.remove();bubble=document.createElement('div');bubble.className='yard-bubble';bubble.setAttribute('role','dialog');fill();yard.querySelector('.yard-layer').append(bubble);aim()}
+ function show(m){if(m.i.unread143){FrontierRuntime.perform("yard143-read",()=>{const i=db.capture?.instances.find(x=>x.uid===m.i.uid);if(i){i.unread143=false;save();window.FrontierNewCaptures143?.refresh()}return true})}focus=m;editing=false;bubble?.remove();bubble=document.createElement('div');bubble.className='yard-bubble';bubble.setAttribute('role','dialog');fill();yard.querySelector('.yard-layer').append(bubble);aim()}
  function fill(){
   const i=focus.i,u=FrontierCapture.units[i.species],v=variantOf(i);
   bubble.innerHTML=(editing?'<form class="yard-rename"><input maxlength="'+NAME_MAX+'" value="'+esc(i.nickname||'')+'" placeholder="'+esc(u.name)+'" aria-label="自訂名稱"><button type="submit">確定</button></form>':'<div class="yard-name"><button class="yard-heart'+(i.favorite?' is-on':'')+'" data-yard-heart aria-pressed="'+!!i.favorite+'" aria-label="喜愛"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7.5-4.6-9-9.2C2 7.4 4.3 4.5 7.4 4.5c2 0 3.6 1.1 4.6 2.7 1-1.6 2.6-2.7 4.6-2.7 3.1 0 5.4 2.9 4.4 6.3-1.5 4.6-9 9.2-9 9.2z"/></svg></button><b>'+esc(nameOf(i))+'</b><button class="yard-pen" data-yard-pen aria-label="自訂名稱"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4"/></svg></button></div>')+(i.nickname?'<small class="yard-species">'+esc(u.name+(V()?.suffix(v)||''))+'</small>':'')+'<dl><dt>收容時間</dt><dd>'+when(i.capturedAt)+'</dd><dt>收容難度</dt><dd>'+difficulty(i)+'</dd><dt>收容地區</dt><dd>'+esc(region(i))+'</dd></dl><div class="yard-affinity" aria-label="好感度 '+FrontierBaseEngine.affinityOf(i)+'" title="好感度">'+affinityIcon+'<b>'+FrontierBaseEngine.affinityOf(i)+'</b></div>';
