@@ -1,0 +1,3 @@
+#app .equipment148-window>.equipment60-instance{height:var(--equipment148-height)!important;min-height:var(--equipment148-height)!important;max-height:var(--equipment148-height)!important;contain:layout paint}
+.equipment148-spacer{grid-column:1/-1;min-width:0;pointer-events:none;visibility:hidden}
+.visual-storage-content{backface-visibility:hidden}

@@ -4,7 +4,8 @@ window.FrontierVisualUI=(()=>{
  const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const wallets={'wallet:green':['綠資格憑證','每日商店兌換素材與補給。','每日委託、敵人研究與收藏委託。',()=>db.wallet.green],'wallet:yellow':['黃資格憑證','高級商店兌換稀有物資與定向招募。','每週委託、重複招募與指定收藏委託。',()=>db.wallet.yellow],'wallet:synth':['合成玉','幹員尋訪使用，每次600合成玉。','每週委託、遊戲內獎勵與源石轉換。',()=>db.wallet.synth],'wallet:exp':['博士經驗','提升博士等級，最高120級。','完成每日委託、遠征及其他行動。',()=>db.doctor.total],'wallet:ticket':['尋訪憑證','進行幹員尋訪，優先於合成玉消耗。','每週高級商店及指定獎勵。',()=>FrontierRecruitment.ensure().tickets]};
  function walletTile(id,n){return '<span class="visual-wallet-tile" data-item-id="'+id+'" role="img" aria-label="'+wallets[id][0]+' ×'+n+'">'+(id==='wallet:ticket'?FrontierIcons.html(id):(window.FrontierCurrencyIcons?.html(id)||'<i>'+wallets[id][0]+'</i>'))+'<b>'+n+'</b></span>'}
- function quantity(id){const d=catalog[id];if(!d)return 0;return d.category==='legacyRelic'?db.stock[id]||0:FrontierMobile.count(id)}
+ let storageCounts149=null;
+ function quantity(id){if(storageCounts149?.has(id))return storageCounts149.get(id);const d=catalog[id];if(!d)return 0;return d.category==='legacyRelic'?db.stock[id]||0:FrontierMobile.count(id)}
  function total(id){let n=quantity(id);const r=R();if(r&&!r.result){n+=(r.field?.materials?.[id]||0)+(r.bag||[]).filter(x=>x===id).length;for(const item of [...r.equipment?.items||[],...r.itemCargo||[]])if(item.itemId===id)n+=item.qty||1;for(const item of r.secureGrid?.items||[])if(item.id===id)n+=item.qty||1}return n}
  function tile(id,n=quantity(id),click=true){const d=catalog[id];return '<button class="visual-item rarity-'+(d?.rarity||2)+'" data-visual-item="'+esc(id)+'" aria-label="'+esc(d?.name||id)+' ×'+n+'" '+(click?'onclick="FrontierVisualUI.details(\''+esc(id)+'\')"':'')+'>'+FrontierIcons.html(id)+'<span class="visual-item-count">'+n.toLocaleString()+'</span></button>'}
  function related(id){const match=id.match(/^(mat_.+_t|med_.+_t)(\d)$/);return match?Object.values(catalog).filter(d=>d.id.startsWith(match[1])&&/^\d$/.test(d.id.slice(match[1].length))).sort((a,b)=>a.rarity-b.rarity):[]}
@@ -26,11 +27,19 @@ window.FrontierVisualUI=(()=>{
  function searchStorage(value){storageSearch=value;const q=value.trim().toLocaleLowerCase();let count=0;for(const node of document.querySelectorAll('.ui-stock-item')){const d=catalog[node.dataset.stockId],yes=!q||(d.name+' '+d.description).toLocaleLowerCase().includes(q);node.hidden=!yes;if(yes)count++}const label=document.querySelector('.ui-stock-count');if(label)label.textContent=count+'種持有物品'}
  function preciousTiles(){if(!['all','other'].includes(storageFilter))return '';const q=FrontierSurveyEngineV27.ensure(db),cards=[['wallet:ticket','尋訪憑證',db.recruitment?.tickets||0,"go('recruitment')"],...['silver','blue'].map(k=>['survey_pack_'+k,(k==='silver'?'銀':'藍')+'色材料自選包',q.packs[k],"FrontierSurveyV27.choosePack('"+k+"')"])];return '<div class="visual-item-grid ui-stock-grid precious-grid">'+cards.filter(x=>x[2]>0&&(!storageSearch||x[1].includes(storageSearch))).map(([id,name,n,click])=>'<button class="visual-item rarity-'+(id.includes('silver')?5:id.includes('blue')?4:6)+'" data-visual-item="'+id+'" aria-label="'+name+' ×'+n+'" onclick="'+click.replaceAll('"','&quot;')+'">'+FrontierIcons.html(id)+'<span class="visual-item-count">'+n+'</span></button>').join('')+'</div>'}
  const windowPage=()=>page;
- function storage(body,page=windowPage(),preview=false){const sequence=order(),positions=new Map(sequence.map((id,i)=>[id,i]));let html='<div class="visual-storage-head"><h2>'+tabs.find(([p])=>p===page)[1]+'</h2>'+(page==='warehouse'?'<button onclick="FrontierVisualUI.sort()">'+(sorted?'入庫順序':'快速整理')+'</button>':'')+'</div><nav class="visual-storage-tabs">'+tabs.map(([p,name])=>'<button class="'+(page===p?'active':'')+'" onclick="go(\''+p+'\')">'+name+'</button>').join('')+'</nav>';
+ function storage(body,page=windowPage(),preview=false){
+  const prior=storageCounts149,counts=new Map();
+  for(const item of db.inventory.items)counts.set(item.itemId,(counts.get(item.itemId)||0)+(item.qty||1));
+  for(const d of Object.values(catalog))if(!['material','record','medicine','captureDevice','legacyRelic'].includes(d.category)&&!counts.has(d.id))counts.set(d.id,0);
+  storageCounts149=counts;
+  try{return buildStorage149(body,page,preview)}finally{storageCounts149=prior}
+ }
+ function buildStorage149(body,page,preview){const sequence=order(),positions=new Map(sequence.map((id,i)=>[id,i]));let html='<div class="visual-storage-head"><h2>'+tabs.find(([p])=>p===page)[1]+'</h2>'+(page==='warehouse'?'<button onclick="FrontierVisualUI.sort()">'+(sorted?'入庫順序':'快速整理')+'</button>':'')+'</div><nav class="visual-storage-tabs">'+tabs.map(([p,name])=>'<button class="'+(page===p?'active':'')+'" onclick="go(\''+p+'\')">'+name+'</button>').join('')+'</nav>';
  if(page==='warehouse'){let rows=Object.values(catalog).filter(d=>!d.balance?.legacy&&!d.retired139&&!['container','collection','legacyRelic','equipment','runModule'].includes(d.category)&&quantity(d.id)>0&&(storageFilter==='all'||storageFilter==='material'&&['material','record'].includes(d.category)||storageFilter==='other'&&!['material','record','equipment','medicine','device'].includes(d.category)||d.category===storageFilter));rows.sort((a,b)=>sorted?b.rarity-a.rarity||group(a.id).localeCompare(group(b.id))||a.id.localeCompare(b.id):(positions.get(a.id)??-1)-(positions.get(b.id)??-1));html+='<label class="ui-stock-search">搜尋名稱或用途<input type="search" aria-label="搜尋持有物品" value="'+esc(storageSearch)+'" oninput="FrontierVisualUI.searchStorage(this.value)"></label><nav class="ui-stock-filters" aria-label="庫存品類">'+[['all','全部'],['material','材料和 EXP'],['medicine','戰術補給'],['other','珍貴物品']].map(([id,name])=>'<button class="'+(storageFilter===id?'active':'')+'" aria-pressed="'+(storageFilter===id)+'" onclick="FrontierVisualUI.filterStorage(\''+id+'\')">'+name+'</button>').join('')+'</nav><p class="ui-stock-count">'+rows.length+'種持有物品</p><div class="visual-item-grid ui-stock-grid">'+rows.flatMap(d=>d.category==='searchTool'?db.inventory.items.filter(item=>item.itemId===d.id).map(item=>'<div class="ui-stock-item" data-stock-id="'+d.id+'" data-access-instance="'+esc(item.uid)+'"><button class="visual-item rarity-'+d.rarity+'" data-visual-item="'+d.id+'" aria-label="'+esc(d.name)+'" onclick="FrontierVisualUI.accessDetails(&quot;'+esc(item.uid)+'&quot;)">'+FrontierIcons.access(item)+'</button></div>'):['<div class="ui-stock-item" data-stock-id="'+d.id+'">'+tile(d.id)+'</div>']).join('')+'</div>'+(rows.length?'':'<p class="visual-empty">安全帶回的物資會顯示在這裡。</p>')+preciousTiles()}
  if(page==='containers'){const boxes=db.inventory.items.filter(i=>catalog[i.itemId]?.category==='container');html+='<div class="visual-item-grid">'+boxes.map(i=>'<button class="visual-item rarity-'+catalog[i.itemId].rarity+'" data-visual-item="'+i.itemId+'" aria-label="'+esc(catalog[i.itemId].name)+'" onclick="FrontierContainers.openBase(\''+i.uid+'\')">'+FrontierIcons.html(i.itemId)+'<span class="visual-item-count">1</span></button>').join('')+'</div>'+(boxes.length?'':'<p class="visual-empty">目前沒有待開封存箱。</p>')}
  if(page==='collections'){const c=FrontierCollections.scan();html+='<p class="ui-stock-count">收藏需安全帶回才登錄。展開地區可查稀有度、大小和掉落來源。</p>'+FrontierExpedition.regions.map(region=>{const rows=FrontierCollections.entries.filter(d=>d.region===region.id);return '<section class="visual-collection-shelf"><button class="visual-shelf-heading" aria-expanded="'+expanded.has(region.id)+'" onclick="FrontierVisualUI.shelf(\''+region.id+'\')"><b>'+esc(region.name)+'</b><span>'+rows.filter(d=>c.archive[d.id]).length+' / '+rows.length+'　'+(expanded.has(region.id)?'−':'+')+'</span></button>'+(expanded.has(region.id)?'<div class="visual-item-grid">'+rows.map(d=>c.archive[d.id]?tile(d.id):'<div style="opacity:.55">'+tile(d.id,0)+'</div>').join('')+'</div>':'')+'</section>'}).join('')}
  if(page==='collection')html+=FrontierEquipmentUI139.shelf60();body.innerHTML=html;body.classList.add('visual-scroll-page','visual-storage');if(page==='warehouse'&&!preview)searchStorage(storageSearch);if(page==='containers'&&db.containers.activeBox){body.innerHTML='<nav class="visual-storage-tabs">'+tabs.map(([p,name])=>'<button onclick="go(\''+p+'\')">'+name+'</button>').join('')+'</nav>'+FrontierContainers.boxView(db.inventory.items.find(i=>i.uid===db.containers.activeBox))}
+ window.FrontierStorageViewport148?.prepare(body);
  const nav=body.querySelector('.visual-storage-tabs'),content=document.createElement('div');
  content.className='visual-storage-content';
  while(nav.nextSibling)content.append(nav.nextSibling);
@@ -85,13 +94,20 @@ window.FrontierVisualUI=(()=>{
  const storagePreviews=new WeakMap();
  function prepareStorage(body,section){
   const previews=storagePreviews.get(body)||new Map();
-  previews.delete(section);
+  previews.delete(section);const generation={};body.__storageGeneration148=generation;
   storagePreviews.set(body,previews);
   const index=tabs.findIndex(([id])=>id===section);
   for(const adjacent of [tabs[index-1],tabs[index+1]])if(adjacent){
-   const build=()=>{if(body.isConnected&&body.closest('#app')&&windowPage()===section&&!swipe&&!FrontierRuntime.busy)storagePreview(body,adjacent[0])};
-   if(window.requestIdleCallback)requestIdleCallback(build);
-   else setTimeout(build,90);
+   const build=()=>{if(body.__storageGeneration148===generation&&body.isConnected&&body.closest('#app')&&windowPage()===section&&!swipe&&!FrontierRuntime.busy)storagePreview(body,adjacent[0])};
+   const ready=()=>{
+    if(body.__storageGeneration148!==generation||!body.isConnected)return;
+    if(swipe||FrontierRuntime.busy){setTimeout(ready,80);return}
+    build();
+   };
+   if(!previews.has(adjacent[0])){
+    if(window.requestIdleCallback)requestIdleCallback(ready,{timeout:180});
+    else setTimeout(ready,30);
+   }
   }
  }
  function storagePreview(body,id){
@@ -112,12 +128,12 @@ window.FrontierVisualUI=(()=>{
   content.style.removeProperty('translate');
   page=next;
   selected=null;
-  body.scrollTop=0;
+  body.scrollTop=0;window.FrontierStorageViewport148?.refresh();
   const head=body.querySelector('.visual-storage-head');
   if(head)head.innerHTML='<h2>'+tab[1]+'</h2>'+(next==='warehouse'?'<button onclick="FrontierVisualUI.sort()">'+(sorted?'入庫順序':'快速整理')+'</button>':'');
   for(const [i,button]of [...bar.querySelectorAll('button')].entries())button.classList.toggle('active',tabs[i][0]===next);
-  prepareStorage(body,next);
   storagePreviews.get(body).set(current,gesture.content);
+  prepareStorage(body,next);
   return true;
  }
  let swipe=null;
@@ -175,7 +191,7 @@ window.FrontierVisualUI=(()=>{
    if(Math.abs(dx)<12||Math.abs(dx)<Math.abs(dy)*1.25)return;
    gesture.shell.classList.add('visual-storage-sliding');
    gesture.bounds=gesture.content.getBoundingClientRect();
-   gesture.content.style.willChange='transform';
+   gesture.content.style.willChange='translate';
   }
   e.preventDefault();
   const step=dx>0?-1:1;
@@ -191,7 +207,7 @@ window.FrontierVisualUI=(()=>{
     frame.inert=true;
     frame.setAttribute('aria-hidden','true');
     Object.assign(frame.style,{left:rect.left+'px',top:top+'px',width:rect.width+'px',height:Math.max(0,gesture.body.getBoundingClientRect().bottom-top)+'px'});
-    preview.style.willChange='transform';
+    preview.style.willChange='translate';
     preview.style.translate=gesture.step*gesture.width+'px 0';
     frame.append(preview);
     gesture.shell.append(frame);
