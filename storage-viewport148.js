@@ -3,9 +3,10 @@
 window.FrontierStorageViewport148=(()=>{
  const views=new WeakMap();let frame=0;
  const metrics={mounts:0,updates:0};
- const dimensions=()=>({columns:innerWidth<359?1:2,height:innerWidth<359?104:132,gap:8});
+ let viewportWidth=innerWidth,viewportHeight=innerHeight;
+ const dimensions=()=>({columns:viewportWidth<359?1:2,height:viewportWidth<359?104:132,gap:8});
  function paint(grid,state,first=0){
-  const d=dimensions(),rows=Math.ceil(state.items.length/d.columns),count=Math.ceil(innerHeight/(d.height+d.gap))+6;
+  const d=dimensions(),rows=Math.ceil(state.items.length/d.columns),count=Math.ceil(viewportHeight/(d.height+d.gap))+6;
   first=Math.max(0,Math.min(Math.max(0,rows-count),first));
   const end=Math.min(rows,first+count),key=[d.columns,d.height,first,end].join(':');if(key===state.key)return;
   state.key=key;state.first=first;state.columns=d.columns;state.height=d.height;
@@ -38,6 +39,6 @@ window.FrontierStorageViewport148=(()=>{
  }}
  function schedule(){if(!frame)frame=requestAnimationFrame(update)}
  document.addEventListener('scroll',e=>{if(e.target?.classList?.contains('visual-storage'))schedule()},{capture:true,passive:true});
- window.addEventListener('resize',schedule,{passive:true});
+ window.addEventListener('resize',()=>{viewportWidth=innerWidth;viewportHeight=innerHeight;schedule()},{passive:true});
  return{prepare,refresh:schedule,info:()=>({...metrics}),all:grid=>views.get(grid)?.items||[...grid.children]};
 })();

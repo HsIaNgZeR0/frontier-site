@@ -19,7 +19,7 @@ window.FrontierVisualUI=(()=>{
  }
  function details(id){if(id.startsWith('survey_pack_')){FrontierSurveyV27.choosePack(id.replace('survey_pack_',''));return}const d=catalog[id];if(!d){if(window.FrontierAdventure?.relics[id])modal(FrontierAdventure.relics[id].name,info(id),'');return}const items=db.inventory.items.filter(i=>i.itemId===id);modal(d.name,info(id)+(d.category==='equipment'?items.map(i=>'<section class="panel"><div class="visual-button-wrap">'+Object.keys(FrontierCombat.operators).map(op=>'<button onclick="FrontierEquipment.equip(\''+i.uid+'\',\''+op+'\');FrontierVisualUI.details(\''+id+'\')">給'+esc(FrontierCapture.units[op].name)+'</button>').join('')+'</div></section>').join(''):'')+(d.category==='collection'?items.map(i=>'<div class="visual-button-wrap"><button onclick="FrontierCollections.exhibit(\''+i.uid+'\');FrontierVisualUI.details(\''+id+'\')">'+(db.collections.display.includes(i.uid)?'撤下展示':'放入展示櫃')+'</button><button onclick="FrontierCollections.unlock(\''+i.uid+'\');FrontierVisualUI.details(\''+id+'\')">'+(i.locked?'解除鎖定':'鎖定收藏')+'</button>'+(d.kind==='貿'?'<button onclick="FrontierCollections.trade(\''+i.uid+'\')">收藏委託</button>':'')+'</div>').join(''):'')+(false?'<p>'+esc(relics.find(r=>r.id===id)?.story||'')+'</p>'+(relicEffects[id]?'<button '+(id!=='compass'&&!db.stock[id]?'disabled':'')+' onclick="equip(\''+id+'\')">'+(db.equipped===id?'已選為攜帶遺物':'選為下次攜帶遺物')+'</button>':''):'')+'<button onclick="FrontierInventory.describe(\''+id+'\')">完整物品與配方資料</button>','')}
  let orderInput=null,orderList=null,orderLength=0,orderCounter=null,orderCatalogSize=0;
- function order(){db.visualInventory??={version:1,order:[]};const list=db.visualInventory.order,size=Object.keys(catalog).length,input=JSON.stringify([db.progress?.materials,db.progress?.records,db.medicine?.stock,db.capture?.devices,db.stock,db.survey27?.tickets,(db.inventory?.items||[]).map(i=>[i.itemId,i.qty])]);if(input===orderInput&&orderList===list&&orderLength===list.length&&orderCounter===FrontierMobile.count&&orderCatalogSize===size)return list;const known=new Set(list);for(const d of Object.values(catalog))if(quantity(d.id)>0&&!known.has(d.id)){list.push(d.id);known.add(d.id)}orderInput=input;orderList=list;orderLength=list.length;orderCounter=FrontierMobile.count;orderCatalogSize=size;return list}
+ function order(){db.visualInventory??={version:1,order:[]};const list=db.visualInventory.order,size=Object.keys(catalog).length,input=JSON.stringify([db.progress?.materials,db.progress?.records,db.medicine?.stock,db.capture?.devices,db.stock,db.survey27?.tickets,(db.inventory?.items||[]).map(i=>[i.itemId,i.qty])]);if(input===orderInput&&orderList===list&&orderLength===list.length&&orderCounter===FrontierMobile.count&&orderCatalogSize===size)return list;const known=new Set(list),physical=new Map();for(const item of db.inventory.items)physical.set(item.itemId,(physical.get(item.itemId)||0)+(item.qty||0));for(const d of Object.values(catalog)){const n=['material','record','medicine','captureDevice','feed','legacyRelic'].includes(d.category)?quantity(d.id):(physical.get(d.id)||0);if(n>0&&!known.has(d.id)){list.push(d.id);known.add(d.id)}}orderInput=input;orderList=list;orderLength=list.length;orderCounter=FrontierMobile.count;orderCatalogSize=size;return list}
  function sort(){sorted=!sorted;render()}
  function group(id){const match=id.match(/^(mat_.+)_t\d$/)||id.match(/^(med_.+)_t\d$/);return match?.[1]||catalog[id]?.slot||catalog[id]?.category||id}
  function shelf(region){expanded.has(region)?expanded.delete(region):expanded.add(region);render()}
@@ -154,7 +154,7 @@ window.FrontierVisualUI=(()=>{
   cancelAnimationFrame(gesture.paint);
   const panels=[gesture.content,gesture.preview].filter(Boolean);
   gesture.tabs.style.setProperty('--storage-slide',gesture.index-(destination?target/gesture.width:0));
-  const duration=FrontierMotion.reduced()?0:155;
+  const duration=document.hidden||FrontierMotion.reduced()?0:155;
   const animationOptions={duration,easing:'cubic-bezier(.2,.7,.25,1)',fill:'forwards'};
   const animations=panels.map((panel,index)=>{
    const adjacent=index?gesture.step*gesture.width:0;
@@ -171,6 +171,7 @@ window.FrontierVisualUI=(()=>{
     gesture.frame?.remove();
     gesture.shell.classList.remove('visual-storage-sliding');
     swipe=null;
+    try{if(gesture.body.hasPointerCapture(gesture.pointer))gesture.body.releasePointerCapture(gesture.pointer)}catch{}
    }
   });
  }
@@ -192,6 +193,7 @@ window.FrontierVisualUI=(()=>{
    gesture.shell.classList.add('visual-storage-sliding');
    gesture.bounds=gesture.content.getBoundingClientRect();
    gesture.content.style.willChange='translate';
+   try{gesture.body.setPointerCapture(e.pointerId)}catch{}
   }
   e.preventDefault();
   const step=dx>0?-1:1;
@@ -225,6 +227,10 @@ window.FrontierVisualUI=(()=>{
  }
  document.addEventListener('pointerup',releaseStorage,true);
  document.addEventListener('pointercancel',releaseStorage,true);
+ document.addEventListener('lostpointercapture',e=>{if(swipe?.pointer===e.pointerId&&!swipe.settling)releaseStorage({type:'pointercancel',pointerId:e.pointerId})},true);
+ const cancelStorage151=()=>{if(swipe&&!swipe.settling)releaseStorage({type:'pointercancel',pointerId:swipe.pointer})};
+ window.addEventListener('blur',cancelStorage151);
+ document.addEventListener('visibilitychange',()=>{if(document.hidden)cancelStorage151()});
  function clear(){if(hold?.shown)suppress=performance.now()+600;if(hold)clearTimeout(hold.timer);hold=null;tip?.remove();tip=null}
  document.addEventListener('pointerdown',e=>{const el=e.target.closest?.('[data-visual-item],[data-item-id]'),id=el?.dataset.visualItem||el?.dataset.itemId;if(!catalog[id]&&!wallets[id]&&!id?.startsWith('survey_pack_')&&!relics.some(x=>x.id===id)&&!window.FrontierAdventure?.relics[id])return;clear();hold={x:e.clientX,y:e.clientY};hold.timer=setTimeout(()=>{if(!hold)return;suppress=performance.now()+10000;tip=document.createElement('aside');tip.className='visual-held-item';tip.setAttribute('role','tooltip');tip.innerHTML=info(id,el.closest('[data-equipment-uid]')?.dataset.equipmentUid);FrontierInspector.attach(tip);hold.shown=true},380)},true);
  document.addEventListener('pointermove',e=>{if(hold&&Math.hypot(e.clientX-hold.x,e.clientY-hold.y)>15){if(hold.shown)suppress=performance.now()+600;clear()}},true);document.addEventListener('pointerup',()=>{if(hold?.shown)suppress=performance.now()+600;clear()},true);document.addEventListener('pointercancel',clear,true);window.addEventListener('blur',clear);

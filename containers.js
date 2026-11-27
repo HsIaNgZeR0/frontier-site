@@ -635,7 +635,7 @@ window.FrontierContainers=(()=>{
   FrontierGrid.sync();save();render();
  }
  function specialContainmentReady(run,scene){
-  return scene.open&&!scene.outerOnly174&&scene.shinyRoll!=null&&scene.targets[3].core?.open&&!run.battle&&scene.active===null&&
+  return scene.open&&!scene.outerOnly174&&scene.shinyRoll!=null&&scene.targets[3]?.core?.open&&!run.battle&&scene.active===null&&
     scene.targets.every(t=>t.status==='waiting')&&!run.specialContainment174?.includes(run.expedition.layer);
  }
  function specialContainment(){
