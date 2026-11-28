@@ -21,3 +21,8 @@ body.gray156-active.in-battle #app:has(.v113-battle-board){top:82px!important;he
 .gray156-active .gray156-dock>button{min-height:48px!important}
 .gray156-active .fd-ticket-col:nth-child(2),.gray156-active .fd-synth{display:none}
 .gray156-active .fd-ticket-layout{grid-template-columns:minmax(0,1fr)}
+.gray158-week{margin:8px 0 16px;padding:10px 0;border-bottom:1px solid #667d7544}
+.gray158-week>small{display:block;margin-bottom:7px;color:#c5d3c9}
+.gray158-week>div{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px}
+.gray158-week progress{display:block;width:100%;height:8px;accent-color:#d4e995}
+.gray158-week span{font-size:13px;white-space:nowrap;font-variant-numeric:tabular-nums}

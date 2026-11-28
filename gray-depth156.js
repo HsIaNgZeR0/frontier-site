@@ -1,6 +1,6 @@
 'use strict';
 window.FrontierGrayDepth156 = (() => {
-  const style=document.createElement('link');style.rel='stylesheet';style.href='gray-depth156.css?v=codex157graydepth';document.head.append(style);
+  const style=document.createElement('link');style.rel='stylesheet';style.href='gray-depth156.css?v=codex159grayisolation';document.head.append(style);
   const rules = FrontierGrayDepthRules156;
   const eliteSpecies=new Set(Object.values(FrontierRegionalEnemies.roster).flatMap(roster=>roster.elite));
   const active = () => !!R()?.grayDepth156 && !R().result;
@@ -8,12 +8,16 @@ window.FrontierGrayDepth156 = (() => {
   const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const action = (name, fn) => FrontierRuntime.perform('gray156-' + name, () => {fn();save();render();});
   const data = () => FrontierCurioData.forRun(R());
+  function weeklyView(){
+    const week=rules.week(Date.now()),paid=Math.min(3000,Math.max(0,db.grayDepth156?.weeks?.[week]||0));
+    return '<section class="gray158-week"><small>本週合成玉</small><div><progress max="3000" value="'+paid+'" aria-label="本週合成玉進度"></progress><span>'+paid+'／3000</span></div></section>';
+  }
   function entry(){
     const records=db.grayDepth156?.records||{};
     if(db.grayDepth156?.slot&&!db.grayDepth156.slot.result){
-      modal('灰域縱深','<p>已暫停於第 '+db.grayDepth156.slot.grayDepth156.wave+' 波</p>','<button onclick="FrontierGrayDepth156.resume()">繼續灰域縱深</button><button onclick="closeModal()">返回</button>');return;
+      modal('灰域縱深',weeklyView()+'<p>已暫停於第 '+db.grayDepth156.slot.grayDepth156.wave+' 波</p>','<button onclick="FrontierGrayDepth156.resume()">繼續灰域縱深</button><button onclick="closeModal()">返回</button>');return;
     }
-    modal('灰域縱深','<p>三張招募券 · 12 希望 · 持續作戰直到全隊倒下</p><div class="gray156-difficulties">'+[['normal','普通','第 3 波開始獲得合成玉'],['torment','磨難','首波 4 合成玉，逐波翻倍']].map(([id,name,text])=>'<button onclick="FrontierGrayDepth156.launch(\''+id+'\')"><b>'+name+'</b><span>'+text+'</span><small>最高通關 '+(records[id]||0)+' 波</small></button>').join('')+'</div>','<button onclick="closeModal()">返回首頁</button>');
+    modal('灰域縱深',weeklyView()+'<p>三張招募券 · 12 希望 · 持續作戰直到全隊倒下</p><div class="gray156-difficulties">'+[['normal','普通','第 3 波開始獲得合成玉'],['torment','磨難','首波 4 合成玉，逐波翻倍']].map(([id,name,text])=>'<button onclick="FrontierGrayDepth156.launch(\''+id+'\')"><b>'+name+'</b><span>'+text+'</span><small>最高通關 '+(records[id]||0)+' 波</small></button>').join('')+'</div>','<button onclick="closeModal()">返回首頁</button>');
   }
   const selectEnemy=FrontierRegionalEnemies.select;
   FrontierRegionalEnemies.select=function(region,type,index,path,picker,mid){
@@ -41,6 +45,8 @@ window.FrontierGrayDepth156 = (() => {
       delete db.grayDepth156.slot;delete db.grayDepth156.slotRandom;
       db.grayDepth156.mainRun=structuredClone(db.run);
       db.grayDepth156.mainRandom=structuredClone(db.rng);
+      db.grayDepth156.mainSeen=structuredClone(db.world.seen);
+      db.world.seen=structuredClone(db.grayDepth156.seen||{});
       const seed=new Uint32Array(1);crypto.getRandomValues(seed);
       db.rng={version:1,seed:seed[0],counter:0,records:[]};
       const regionsBefore=structuredClone(db.regions);
@@ -99,9 +105,11 @@ window.FrontierGrayDepth156 = (() => {
       else {s.choices=0;afterChoices();}
     }
   }
-  function choose(id) {
+  function choiceKey(){const s=state();return 'gray156:'+s.cleared+':choice:'+s.choiceIndex;}
+  function shopKey(){const s=state();return s.cleared+':'+Number(s.refreshed);}
+  function choose(id,expected=choiceKey()) {
     return action('choose',()=>{
-      if(!active()||state().phase!=='choice')return;
+      if(!active()||state().phase!=='choice'||expected!==choiceKey())return;
       const s=state(),key='gray156:'+s.cleared+':choice:'+s.choiceIndex;
       if(!R().curios.offers.find(o=>o.key===key)?.ids.includes(id))return;
       FrontierCurios.claim(key,id);
@@ -133,12 +141,12 @@ window.FrontierGrayDepth156 = (() => {
       const name=item.kind==='ticket'?'一般招募券':item.kind==='curio'?data()[item.id]?.name:FrontierEquipmentRegistry139.E.defs[item.id]?.name;
       const art=item.kind==='curio'?FrontierCurios.icon(item.id):item.kind==='module'?FrontierIcons.html(item.id):FrontierRecruit152.art(item.ticket);
       const disabled=item.sold||r.fieldPoints<item.price||!item.id;
-      return '<article class="store-card '+(item.sold?'sold154':disabled?'unaffordable154':'')+'" data-style154><b>'+esc(name)+'</b><div class="store-picture">'+art+'</div><small class="quantity154">×1</small><button '+(disabled?'disabled':'')+' onclick="FrontierGrayDepth156.buy('+i+')"><span class="price-label154">'+(item.sold?'已售罄':'價格')+'</span><span class="price-value154">'+FrontierCurrencyIcons.html('ingot')+'<strong>'+item.price+'</strong></span></button>'+(item.sold?'<span class="sold-tag154">已售罄</span>':'')+'</article>';
+      return '<article class="store-card '+(item.sold?'sold154':disabled?'unaffordable154':'')+'" data-style154><b>'+esc(name)+'</b><div class="store-picture">'+art+'</div><small class="quantity154">×1</small><button '+(disabled?'disabled':'')+' onclick="FrontierGrayDepth156.buy('+i+',&quot;'+shopKey()+'&quot;)"><span class="price-label154">'+(item.sold?'已售罄':'價格')+'</span><span class="price-value154">'+FrontierCurrencyIcons.html('ingot')+'<strong>'+item.price+'</strong></span></button>'+(item.sold?'<span class="sold-tag154">已售罄</span>':'')+'</article>';
     }).join('');
-    return '<section class="gray156-stage gray156-shop field-store merchant154"><div class="store-heading"><h2>詭異行商</h2><span>'+FrontierCurrencyIcons.html('ingot')+r.fieldPoints+'</span></div><button class="talent-refresh43" '+(s.refreshed?'disabled':'')+' onclick="FrontierGrayDepth156.refresh()">'+(s.refreshed?'已刷新':'免費刷新一次')+'</button><div class="store-grid">'+cards+'</div><button class="store-leave" onclick="FrontierGrayDepth156.leave()">離開行商</button></section>';
+    return '<section class="gray156-stage gray156-shop field-store merchant154"><div class="store-heading"><h2>詭異行商</h2><span>'+FrontierCurrencyIcons.html('ingot')+r.fieldPoints+'</span></div><button class="talent-refresh43" '+(s.refreshed?'disabled':'')+' onclick="FrontierGrayDepth156.refresh(&quot;'+shopKey()+'&quot;)">'+(s.refreshed?'已刷新':'免費刷新一次')+'</button><div class="store-grid">'+cards+'</div><button class="store-leave" onclick="FrontierGrayDepth156.leave()">離開行商</button></section>';
   }
-  function buy(index){return action('buy',()=>{
-    if(!active()||state().phase!=='merchant')return;
+  function buy(index,expected=shopKey()){return action('buy',()=>{
+    if(!active()||state().phase!=='merchant'||expected!==shopKey())return;
     const r=R(),s=state(),item=s.shop[index];if(!item||item.sold||!item.id||r.fieldPoints<item.price)return;
     if(item.kind==='ticket'){
       const g=r.recruitment144;FrontierExpeditionRecruit144.grayTicket156(g,'shop:'+s.cleared+':'+Number(s.refreshed)+':'+index);
@@ -152,7 +160,7 @@ window.FrontierGrayDepth156 = (() => {
     }
     r.fieldPoints-=item.price;item.sold=true;
   });}
-  function refresh(){return action('refresh',()=>{const s=state();if(s.phase!=='merchant'||s.refreshed)return;s.shop=shop(1);s.refreshed=true;});}
+  function refresh(expected=shopKey()){return action('refresh',()=>{const s=state();if(!active()||s.phase!=='merchant'||s.refreshed||expected!==shopKey())return;s.shop=shop(1);s.refreshed=true;});}
   function leave(){return action('leave-shop',()=>{if(state().phase==='merchant')state().phase='prepare';});}
   function killRewards(){
     if(!active()||!R().battle)return;
@@ -175,6 +183,7 @@ window.FrontierGrayDepth156 = (() => {
     if(b.enemies.some(e=>e.hp>0))return false;
     const s=state(),wave=s.wave,d=rules.drops(wave),n=node(wave);
     FrontierCurios.emit('battleEnd',{won:true,noDowned:r.team.every(a=>a.hp>0)});
+    FrontierOperatorGameV113.restoreActors(b);
     r.battle=null;selected=null;r.event=null;r.reward=null;
     FrontierExpeditionRecruit144.awardBattle(r.recruitment144,n,n.type,false);
     r.expedition.visited.push(n.id);r.expedition.current=null;r.expedition.row=0;
@@ -192,23 +201,42 @@ window.FrontierGrayDepth156 = (() => {
   function finish(){return action('finish',()=>{if(active())endRun('loss');});}
   function resume(){return action('resume',()=>{
     const storage=db.grayDepth156;if(!storage?.slot||storage.slot.result)return;
-    storage.mainRun=structuredClone(db.run);db.run=storage.slot;delete storage.slot;
+    selected=null;storage.mainRun=structuredClone(db.run);db.run=storage.slot;delete storage.slot;
     storage.mainRandom=structuredClone(db.rng);db.rng=storage.slotRandom;delete storage.slotRandom;
+    storage.mainSeen=structuredClone(db.world.seen);db.world.seen=structuredClone(storage.seen||{});
+    preserveLegacyGear(db.run,storage.mainRun);
     db.session.paused=false;page='run';closeModal();
   });}
   function park(){return action('park',()=>{
     if(!R()?.grayDepth156)return;
+    selected=null;preserveLegacyGear(db.run,db.grayDepth156.mainRun);
     db.grayDepth156.slot=db.run;db.run=db.grayDepth156.mainRun||null;
     db.grayDepth156.slotRandom=db.rng;db.rng=db.grayDepth156.mainRandom;
     delete db.grayDepth156.mainRandom;
+    db.grayDepth156.seen=structuredClone(db.world.seen);
+    if(db.grayDepth156.mainSeen)db.world.seen=db.grayDepth156.mainSeen;
+    delete db.grayDepth156.mainSeen;
     delete db.grayDepth156.mainRun;db.session.paused=false;page='home';closeModal();
   });}
+  function preserveLegacyGear(run,mainRun){
+    if(run.recruitment144?.snapshot.gearItems158||run.grayDepth156.gearCopies158)return;
+    const known=new Set([...(db.inventory?.items||[]),...(mainRun?.equipment?.items||[])].map(item=>item.uid));
+    for(const original of run.borrowedEquipment144||[]){
+      if(known.has(original.uid))continue;
+      const item=structuredClone(original);delete item.owner;delete item.equipped;delete item.recruitSlot144;
+      db.inventory.items.push(item);known.add(item.uid);
+    }
+    run.grayDepth156.gearItems158??=structuredClone([...(db.inventory?.items||[]),...(run.borrowedEquipment144||[])]);
+    run.grayDepth156.stats158??=Object.fromEntries(Object.keys(run.recruitment144.snapshot.presets).map(id=>[id,[0,1,2].map(elite=>structuredClone(FrontierGrowth.stats(id,elite)))]));
+    run.grayDepth156.gearCopies158=true;
+  }
   const goBefore=go;
   go=function(destination){if(R()?.grayDepth156&&destination!=='run')return park();return goBefore(destination);};
   const end=endRun;
   endRun=function(...args){
     const r=R(),s=r?.grayDepth156;
-    if(!s||r.result)return end(...args);
+    if(!s)return end(...args);
+    if(r.result)return;
     r.result='loss';r.battle=null;r.event=null;r.reward=null;selected=null;
     r.settled={kept:[],credits:0,intel:0,lost:0,gearLost:false};
     FrontierExpeditionRecruit144.finish(r.recruitment144);
@@ -233,7 +261,7 @@ window.FrontierGrayDepth156 = (() => {
   }
   function cardsView(){
     const o=R().curios.offers.find(o=>o.key==='gray156:'+state().cleared+':choice:'+state().choiceIndex);
-    return '<section class="gray156-choice" role="dialog" aria-label="選擇收藏品"><p>選擇收藏品 · '+(state().choiceIndex+1)+'／3</p><div>'+ (o?.ids||[]).map(id=>'<button data-gray-curio="'+id+'" onclick="FrontierGrayDepth156.choose(\''+id+'\')">'+FrontierCurios.icon(id)+'<b>'+esc(data()[id].name)+'</b><small>長按查看效果</small></button>').join('')+'</div></section>';
+    return '<section class="gray156-choice" role="dialog" aria-label="選擇收藏品"><p>選擇收藏品 · '+(state().choiceIndex+1)+'／3</p><div>'+ (o?.ids||[]).map(id=>'<button data-gray-curio="'+id+'" onclick="FrontierGrayDepth156.choose(\''+id+'\',&quot;'+o.key+'&quot;)">'+FrontierCurios.icon(id)+'<b>'+esc(data()[id].name)+'</b><small>長按查看效果</small></button>').join('')+'</div></section>';
   }
   function commandDetails(){
     const g=R()?.recruitment144;if(!g)return;

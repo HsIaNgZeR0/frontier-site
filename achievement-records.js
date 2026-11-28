@@ -18,14 +18,14 @@ globalThis.FrontierAchievementRecords=(()=>{
  function update(before,after){
   const entry=structuredClone(walletHistory(before));
   for(const key of walletKeys)entry.earned[key]+=Math.max(0,amount(after.wallet?.[key])-amount(before.wallet?.[key]));
-  if(before.run?.contract?.mode!=='simulation')mergeBest(entry.best,before.run?.telemetry18);
-  if(after.run?.contract?.mode!=='simulation')mergeBest(entry.best,after.run?.telemetry18);
+  if(!before.run?.grayDepth156&&before.run?.contract?.mode!=='simulation')mergeBest(entry.best,before.run?.telemetry18);
+  if(!after.run?.grayDepth156&&after.run?.contract?.mode!=='simulation')mergeBest(entry.best,after.run?.telemetry18);
   after.achievementsV1=entry;
  }
  function combat(state){
   const best={...walletHistory(state).best};
   for(const raid of state.statistics?.raids||[])if(raid.contractMode!=='simulation')mergeBest(best,raid.combatStats);
-  if(state.run?.contract?.mode!=='simulation')mergeBest(best,state.run?.telemetry18);
+  if(!state.run?.grayDepth156&&state.run?.contract?.mode!=='simulation')mergeBest(best,state.run?.telemetry18);
   return best;
  }
  function explore(state,regions){
