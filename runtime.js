@@ -16,7 +16,7 @@ window.FrontierRuntime = (()=>{
       const expected=window.FrontierStorage?.info().revision;
       beforeRaw=JSON.stringify(db);before=JSON.parse(beforeRaw);
       if(id&&db.meta?.receipts?.includes(id))return false;
-      const acquisitionContext=window.FrontierAcquisition140?.context();const from=balance();window.FrontierRandom?.setContext(label);active=true;window.FrontierOperatorGameV113?.freezeGrowth();batched=window.FrontierRender32?.begin()||false;const result=await action();active=false;
+      const acquisitionContext=window.FrontierAcquisition140?.context();const from=balance();window.FrontierRandom?.setContext(label);active=true;window.FrontierOperatorGameV113?.freezeGrowth();batched=window.FrontierRender32?.begin()||false;const result=await action();window.FrontierLootGrid?.reconcile(db);active=false;
       globalThis.FrontierCombatMetricsV18?.reconcile(before.run,db.run,db);if(db.run)globalThis.FrontierCombatMetricsV18?.commit(db,db.run,db.run.battle);window.FrontierStatistics?.finalize?.();
       if(beforeRaw===JSON.stringify(db)){
         window.FrontierRender32?.end(batched,true);batched=false;
