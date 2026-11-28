@@ -245,6 +245,7 @@ function validateTransition(before,next){
   if(def&&item.searchPoints604!=null&&(!Number.isInteger(item.searchPoints604)||item.searchPoints604<0||item.searchPoints604>maxPoints(item.itemId.slice(10))))throw Error('房卡／開鎖裝置剩餘點數不符。');
  }
 }
+const dLow=(d,id)=>(d.key||Object.hasOwn(tools,id))&&[3,4].includes(d.rarity);
 function rollAccess(tier, ordinaryCount, random){
  const candidates=Object.entries(catalog).filter(([,d])=>(d.key?Math.min(6,d.rarity+1):d.rarity)===tier);
  if(!candidates.length)return null;
@@ -252,7 +253,9 @@ function rollAccess(tier, ordinaryCount, random){
  let roll=random()*(ordinaryCount+candidates.reduce((sum,[,d])=>sum+weight(d),0));
  for(const [id,d] of candidates){
   roll-=weight(d);
-  if(roll<0)return 'search174_'+id;
+  // Reserve 20% of green/blue card and lockpick intervals for ordinary loot.
+  // Keep the existing random draw and all higher-tier intervals unchanged.
+  if(roll<0)return (dLow(catalog[id],id)&&roll>=-weight(catalog[id])*.2)?null:'search174_'+id;
  }
  return null;
 }
