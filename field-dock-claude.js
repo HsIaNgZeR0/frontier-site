@@ -8,7 +8,7 @@ window.FrontierFieldDock=(()=>{
  const units=()=>FrontierCapture.units,g=()=>R()?.recruitment144;
  const lock='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2" fill="currentColor"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2"/></svg>';
  let sheet=null,synth=false,curioFocus=null;const picked=new Set();
- const exploring=()=>page==='run'&&R()&&!R().result&&!R().battle;
+ const exploring=()=>page==='run'&&R()&&!R().result&&(!R().battle||!!R().grayDepth156);
 
  function key(b){
   if(b.dataset.fdKey)return b.dataset.fdKey;
@@ -24,18 +24,18 @@ window.FrontierFieldDock=(()=>{
  function portrait(u){return window.FrontierAppearance80?.src(u.id,'portrait',u.form)||'assets/'+units()[u.id].image+'.png'}
 
  function decorate(){
-  const dock=document.querySelector('.screen-combat-actions');
-  if(!dock||!exploring()||![...dock.children].some(b=>/^紀錄/.test(b.textContent.trim()))){if(!exploring())close(true);return}
+  const dock=document.querySelector(R()?.grayDepth156?'.gray156-dock':'.screen-combat-actions');
+  if(!dock||!exploring()||!R()?.grayDepth156&&![...dock.children].some(b=>/^紀錄/.test(b.textContent.trim()))){if(!exploring())close(true);return}
   const st=g(),buttons=[...dock.children].filter(b=>b.matches('button'));
   for(const b of buttons){
    const k=key(b);if(!k)continue;b.dataset.fdKey=k;
    if(k==='team'){if(!st){continue}b.textContent='編隊';b.removeAttribute('onclick');b.onclick=()=>toggle('team')}
    if(k==='module')b.textContent='詞條 '+(R().equipment139?.modules?.length||0);
-   if(k==='curio'){b.textContent='奇物 '+(R().curios?.owned?.length||0);b.removeAttribute('onclick');b.onclick=()=>toggle('curio')}
-   if(k==='ticket'&&st){b.innerHTML='招募券 <small>'+st.tickets.filter(t=>!t.used).length+'/'+st.fragments.length+'</small>';b.onclick=()=>toggle('ticket')}
+   if(k==='curio'){b.textContent=(R()?.grayDepth156?'收藏品 ':'奇物 ')+(R().curios?.owned?.length||0);b.removeAttribute('onclick');b.onclick=()=>toggle('curio')}
+   if(k==='ticket'&&st){b.innerHTML='招募券 <small>'+st.tickets.filter(t=>!t.used).length+(R()?.grayDepth156?'':'/'+st.fragments.length)+'</small>';b.onclick=()=>toggle('ticket')}
    b.setAttribute('aria-expanded',String(sheet===k));
   }
-  for(const k of order){const b=buttons.find(x=>x.dataset.fdKey===k);if(b)dock.append(b)}
+  for(const k of (R()?.grayDepth156?['team','ticket','curio','module']:order)){const b=buttons.find(x=>x.dataset.fdKey===k);if(b)dock.append(b)}
   dock.classList.add('fd-dock');
   mount(dock);
  }
@@ -113,7 +113,7 @@ window.FrontierFieldDock=(()=>{
   return '<div class="fd-ticket-layout"><div class="fd-ticket-col"><b>完整券 '+tickets.length+'</b><div class="fd-ticket-list">'+(tickets.map(t=>'<button type="button" data-fd-ticket="'+t.id+'">'+FrontierRecruit152.art(t)+'<span>'+esc(t.name||(t.kind==='universal'||t.roles.length>=8?'通用招募券':t.roles.map(r=>roleName[r]||r).join('／')))+'</span></button>').join('')||'<p class="fd-empty">無</p>')+'</div></div>'+
    '<div class="fd-ticket-col"><b>殘頁 '+frags.length+(picked.size?' · 已選 '+picked.size+'/2':'')+'</b><div class="fd-ticket-list">'+(frags.map(f=>'<button type="button" class="fd-frag" data-fd-frag="'+f.id+'" aria-pressed="'+picked.has(f.id)+'">'+FrontierRecruit152.art(f,true)+'<span>'+f.roles.map(r=>roleName[r]||r).join('')+'</span></button>').join('')||'<p class="fd-empty">無</p>')+'</div></div>'+
    '<div class="fd-synth">'+synth+'</div></div>'+
-   '<p class="fd-hint">'+(picked.size?'選兩張殘頁，合成兩張共同職業的招募券。':'點完整券直接招募；點殘頁開始合成。')+'</p>';
+   '<p class="fd-hint">'+(R()?.grayDepth156?'點完整券查看職業；波次之間可招募。':picked.size?'選兩張殘頁，合成兩張共同職業的招募券。':'點完整券直接招募；點殘頁開始合成。')+'</p>';
  }
  async function onTicket(e){
   const t=e.target.closest('[data-fd-ticket]');if(t){picked.clear();close(true);decorate();FrontierRecruitUI144.ticket(t.dataset.fdTicket);return}
@@ -270,7 +270,7 @@ window.FrontierFieldDock=(()=>{
  const alertOf=r=>r.alert??(r.expedition?.mode==='highrisk'?20:0);
  function addAlert(r,key,amount,reason){if(!r?.expedition||!amount)return false;r.alertLedger??=[];if(r.alertLedger.some(x=>x.key===key))return false;const before=alertOf(r);r.alert=Math.min(100,Math.max(0,before+amount));r.alertLedger.push({key,before,after:r.alert,reason});return true}
  const alertBands=[[25,'靜默'],[50,'注意'],[75,'戒備'],[90,'追緝'],[101,'封鎖']];
- function alertHud(){const r=R();if(!r?.expedition||r.result)return;const box=document.querySelector('.command148-hud');if(!box)return;document.querySelectorAll('.fd-alert').forEach(n=>n.remove());const v=alertOf(r),label=alertBands.find(([m])=>v<m)[1];
+ function alertHud(){const r=R();if(!r?.expedition||r.result||r.grayDepth156)return;const box=document.querySelector('.command148-hud');if(!box)return;document.querySelectorAll('.fd-alert').forEach(n=>n.remove());const v=alertOf(r),label=alertBands.find(([m])=>v<m)[1];
   const el=document.createElement('div');el.className='fd-alert'+(v>=75?' is-high':'');el.dataset.battleStatus='警戒 '+v+'/100（'+label+'）。來源：搜索房間行動為主、交戰少量、每消耗 1 點勘察 +3、部分事件選項。75 以上離開搜索房間會遭到追擊。可在安全的角落選擇「隱蔽休整」降低。';el.setAttribute('aria-label',el.dataset.battleStatus);el.innerHTML='<span class="fd-alert-bar"><i style="width:'+v+'%"></i></span><small>警戒 '+v+'</small>';box.append(el)}
  // 交戰：普通 +1、緊急 +2、首領 +3
  if(typeof startBattle==='function'){const sb=startBattle;startBattle=function(type,...rest){const out=sb(type,...rest);const r=R();if(r?.battle&&r.expedition){addAlert(r,(r.expedition.current||'start')+':battle:'+(r.number||0),{battle:1,ambush:1,elite:2,boss:3}[type]||1,'交戰')}return out}}
@@ -303,9 +303,9 @@ window.FrontierFieldDock=(()=>{
   if(key===encounterSeen142)return;encounterSeen142=key;
   encounterOverlay142?.remove();encounterOverlay142=null;
   if(window.FrontierMotion?.reduced()||document.hidden)return;
-  const esc147=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),region=FrontierExpedition.regions.find(x=>x.id===r.expedition?.regionId)?.name||'邊境區域',type={battle:'作戰',ambush:'遭遇作戰',elite:'緊急作戰',boss:'首領作戰'}[r.battle.type]||'作戰';
+  const esc147=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),region=r.grayDepth156?'灰域縱深':FrontierExpedition.regions.find(x=>x.id===r.expedition?.regionId)?.name||'邊境區域',type={battle:'作戰',ambush:'遭遇作戰',elite:'緊急作戰',boss:'首領作戰'}[r.battle.type]||'作戰';
   const el=document.createElement('aside');el.className='encounter142 entry147';el.dataset.duration='2200';el.setAttribute('popover','manual');el.setAttribute('aria-hidden','true');
-  el.innerHTML='<div class="entry147-title"><small>OPERATION</small><b>'+type+'</b><span>'+esc147(region)+' · 第 ' +((r.expedition?.layer||0)+1)+' 層</span><i></i></div>';
+  el.innerHTML='<div class="entry147-title"><small>OPERATION</small><b>'+type+'</b><span>'+esc147(region)+' · 第 ' +(r.grayDepth156?r.grayDepth156.wave:(r.expedition?.layer||0)+1)+(r.grayDepth156?' 波':' 層')+'</span><i></i></div>';
   document.body.append(el);try{el.showPopover?.()}catch{}encounterOverlay142=el;
   const animation=el.animate?.([{opacity:0},{opacity:1,offset:.06},{opacity:1,offset:.76},{opacity:0}],{duration:2200,easing:'linear',fill:'both'});
   el.firstElementChild.animate?.([{opacity:0,transform:'translateY(10px)'},{opacity:1,transform:'translateY(0)',offset:.22},{opacity:1,transform:'translateY(0)',offset:.72},{opacity:0,transform:'translateY(-5px)'}],{duration:2200,easing:'cubic-bezier(.2,.65,.3,1)',fill:'both'});

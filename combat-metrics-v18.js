@@ -17,7 +17,7 @@ globalThis.FrontierCombatMetricsV18=(()=>{
   const delta=s.operatorMetricsDelta;
   delete s.operatorMetricsDelta;
   if(!delta||r.contract?.mode==='simulation')return;
-  const totals=account.operatorMetricsV1??={};
+  const totals=r.grayDepth156?(account.grayDepth156.operatorMetrics??={}):(account.operatorMetricsV1??={});
   for(const [id,values] of Object.entries(delta)){
    const row=Object.hasOwn(totals,id)?totals[id]:Object.defineProperty(totals,id,{value:{},enumerable:true,writable:true})[id];
    for(const [key,n] of Object.entries(values))add(row,key,n);
