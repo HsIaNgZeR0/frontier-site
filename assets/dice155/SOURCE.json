@@ -1,0 +1,24 @@
+{
+  "reference": "User supplied NumFont reference, 2026-11-28",
+  "styleReference": "https://prts.wiki/w/水月与深蓝之树",
+  "assets": [
+    {
+      "file": "NumFont.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets/cn/assets/torappu/arts/ui/roguelike/topics/rogue_2/dice/NumFont.png",
+      "sha256": "c1cf6add359c160b9f3a56bc06273840e71173b1077e3ed76b779034be4e9692"
+    },
+    {
+      "file": "dice_bg.png",
+      "url": "https://raw.githubusercontent.com/ArknightsAssets/ArknightsAssets/cn/assets/torappu/arts/ui/roguelike/topics/rogue_2/dice/bg/dice_bg.png",
+      "sha256": "405d8a699af1e277e18738cc2e63567bbc0c1a4804b2ac18f5edd61cd4cd1a46"
+    }
+  ],
+  "implementation": "Numeral contours extracted into a code-native triangular mesh. Original aspect ratios and holes retained. Blue rounded die geometry is an adaptation, not an official game 3D model. No AI-generated artwork.",
+  "rights": "Original game assets belong to their respective rightsholders. The public mirror does not itself grant a new license.",
+  "interfaceReferences": {
+    "publicRecruitmentScreenshot": "https://media.9game.cn/gamebase/ieu-gdc-pre-process/images/20230224/8/24/8bcb605ca91376974008d498f75068c5.jpg",
+    "publicRecruitmentRules": "https://prts.wiki/w/公开招募",
+    "navigationVideo": "https://www.bilibili.com/video/BV1sFGZzQEED/",
+    "navigationTiming": "38–40 seconds, actual hub-to-map fade. Mobile layout and geometry recreated in CSS; original 4/6h and forge rules retained."
+  }
+}

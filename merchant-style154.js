@@ -8,7 +8,7 @@ window.FrontierMerchantStyle154=(()=>{
   shop.classList.add('merchant154');
   for(const card of shop.querySelectorAll('.store-card:not([data-style154])')){
    const b=card.querySelector(':scope>button'),small=card.querySelector(':scope>small');if(!b||!small)continue;
-   const match=small.textContent.match(/([\d,]+)\s*源石碇/);if(!match)continue;
+   const match=small.textContent.match(/([\d,]+)\s*源石碇/);if(!match){card.dataset.style154='other';continue;}
    const price=match[1],label=b.textContent.trim(),sold=/已購|已售|已持有|停售/.test(label);
    card.dataset.style154='';card.classList.toggle('sold154',sold);card.classList.toggle('unaffordable154',b.disabled&&!sold);
    const quantity=small.textContent.match(/×\s*(\d+)/)?.[1]||'1';
@@ -21,7 +21,7 @@ window.FrontierMerchantStyle154=(()=>{
   }
  }
  const prior=render;render=function(...a){const out=prior.apply(this,a);mount();return out};
- let scheduled=false;const observer=new MutationObserver(()=>{if(scheduled||!document.querySelector('.field-store:not(.merchant154),.merchant154 .store-card:not([data-style154])'))return;scheduled=true;queueMicrotask(()=>{scheduled=false;mount()})});observer.observe(document.getElementById('app'),{childList:true,subtree:true});
+ let scheduled=false;const observer=new MutationObserver(()=>{if(page!=='run'||R()?.event?.type!=='fieldMerchant'||scheduled||!document.querySelector('.field-store:not(.merchant154),.merchant154 .store-card:not([data-style154])'))return;scheduled=true;queueMicrotask(()=>{scheduled=false;mount()})});observer.observe(document.getElementById('app'),{childList:true,subtree:true});
  const style=document.createElement('style');style.textContent=`
  .field-store.merchant154{padding:10px;box-sizing:border-box;background:linear-gradient(#101916bb,#101916dd),url('assets/shop154/shop-bg.png') center/cover;border:0}
  .merchant154 .store-heading{margin-bottom:6px}.merchant154>.tiny,.merchant154>.merchant143-policy{font-size:11px;line-height:1.4;margin:5px 0 10px}
