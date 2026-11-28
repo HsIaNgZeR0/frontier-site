@@ -511,6 +511,7 @@ window.FrontierOperatorUIV113=(()=>{
    setTimeout(()=>{node.remove();if(ordinaryCueNode===node)ordinaryCueNode=null},550);
   },'ordinary-cue');
  }
+ const ordinaryClipURLs162=new WeakMap();
  let ordinaryOverlay=null,ordinarySequence=0;
  function ordinaryAnimation(actor){
   if(!actor||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
@@ -530,7 +531,7 @@ window.FrontierOperatorUIV113=(()=>{
    },({anchor,size})=>{
    if(seq!==ordinarySequence||R()?.battle?.operatorBattleId!==battle)return;
    const node=document.createElement('span'),image=document.createElement('img');
-   const url=URL.createObjectURL(blob);
+   let url=ordinaryClipURLs162.get(blob);if(!url){url=URL.createObjectURL(blob);ordinaryClipURLs162.set(blob,url)}
    node.className='v113-ordinary-cast';
    node.dataset.effect=actor.profession==='醫療'?'heal':actor.profession==='術師'?'arts':'strike';
    node.setAttribute('aria-hidden','true');
@@ -539,7 +540,7 @@ window.FrontierOperatorUIV113=(()=>{
    node.style.width=node.style.height=size+'px';
    image.alt='';image.draggable=false;image.src=url;node.append(image);
    ordinaryOverlay=node;document.body.append(node);
-   setTimeout(()=>{node.remove();URL.revokeObjectURL(url);if(ordinaryOverlay===node)ordinaryOverlay=null},455);
+   setTimeout(()=>{node.remove();if(ordinaryOverlay===node)ordinaryOverlay=null},455);
    },'ordinary-clip');
   });
  }

@@ -27,6 +27,7 @@ window.FrontierVisualUI=(()=>{
  function searchStorage(value){storageSearch=value;const q=value.trim().toLocaleLowerCase();let count=0;for(const node of document.querySelectorAll('.ui-stock-item')){const d=catalog[node.dataset.stockId],yes=!q||(d.name+' '+d.description).toLocaleLowerCase().includes(q);node.hidden=!yes;if(yes)count++}const label=document.querySelector('.ui-stock-count');if(label)label.textContent=count+'種持有物品'}
  function preciousTiles(){if(!['all','other'].includes(storageFilter))return '';const q=FrontierSurveyEngineV27.ensure(db),cards=[['wallet:ticket','尋訪憑證',db.recruitment?.tickets||0,"go('recruitment')"],...['silver','blue'].map(k=>['survey_pack_'+k,(k==='silver'?'銀':'藍')+'色材料自選包',q.packs[k],"FrontierSurveyV27.choosePack('"+k+"')"])];return '<div class="visual-item-grid ui-stock-grid precious-grid">'+cards.filter(x=>x[2]>0&&(!storageSearch||x[1].includes(storageSearch))).map(([id,name,n,click])=>'<button class="visual-item rarity-'+(id.includes('silver')?5:id.includes('blue')?4:6)+'" data-visual-item="'+id+'" aria-label="'+name+' ×'+n+'" onclick="'+click.replaceAll('"','&quot;')+'">'+FrontierIcons.html(id)+'<span class="visual-item-count">'+n+'</span></button>').join('')+'</div>'}
  const windowPage=()=>page;
+ function commitStoragePage162(next){page=next;selected=null}
  function storage(body,page=windowPage(),preview=false){
   const prior=storageCounts149,counts=new Map();
   for(const item of db.inventory.items)counts.set(item.itemId,(counts.get(item.itemId)||0)+(item.qty||1));
@@ -44,7 +45,7 @@ window.FrontierVisualUI=(()=>{
  content.className='visual-storage-content';
  while(nav.nextSibling)content.append(nav.nextSibling);
  nav.after(content);
- if(!preview){storagePreviews.delete(body);prepareStorage(body,page);}
+ if(!preview){if(window.FrontierStorageCarousel162?.mount(body,page,tabs,id=>{const view=document.createElement('div');storage(view,id,true);return view.querySelector('.visual-storage-content')},next=>{commitStoragePage162(next);const tab=tabs.find(t=>t[0]===next),head=body.querySelector('.visual-storage-head');if(head)head.innerHTML='<h2>'+tab[1]+'</h2>'+(next==='warehouse'?'<button onclick="FrontierVisualUI.sort()">'+(sorted?'入庫順序':'快速整理')+'</button>':'');for(const [i,b]of [...nav.querySelectorAll('button')].entries())b.classList.toggle('active',tabs[i][0]===next);FrontierStorageViewport148?.refresh()}))return;storagePreviews.delete(body);prepareStorage(body,page);}
  }
  function equipment(){modal('裝備整備',FrontierEquipment.view(),'')}
  let dispatchType=null;
@@ -120,6 +121,7 @@ window.FrontierVisualUI=(()=>{
   return content;
  }
  function settleStorage(next){
+  if(window.FrontierStorageCarousel162?.settle(next))return true;
   const gesture=swipe,body=gesture?.body,content=gesture?.preview;
   const tab=tabs.find(([id])=>id===next);
   if(!gesture?.settling||!tab||gesture.destination!==next||!content||!body.isConnected||next==='containers'&&db.containers.activeBox)return false;
@@ -177,7 +179,7 @@ window.FrontierVisualUI=(()=>{
  }
  document.addEventListener('pointerdown',e=>{
   const body=e.target.closest?.('.visual-storage');
-  if(swipe||!e.isPrimary||e.button!==0||!body||e.target.closest('input,select,textarea')||document.querySelector('#modal')?.open)return;
+  if(body?.classList.contains('storage162-body')||swipe||!e.isPrimary||e.button!==0||!body||e.target.closest('input,select,textarea')||document.querySelector('#modal')?.open)return;
   const content=body.querySelector('.visual-storage-content'),tabsBar=body.querySelector('.visual-storage-tabs');
   if(!content||!tabsBar)return;
   swipe={body,content,tabs:tabsBar,shell:body.parentElement,pointer:e.pointerId,x:e.clientX,y:e.clientY,index:tabs.findIndex(([id])=>id===page),width:content.clientWidth};

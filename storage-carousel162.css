@@ -1,0 +1,10 @@
+.screen-workspace-body.storage162-body{display:flex!important;flex-direction:column!important;overflow:hidden!important;min-height:0;gap:0}
+.storage162-body>.visual-storage-head,.storage162-body>.visual-storage-tabs{flex:none!important;position:relative!important;top:auto!important}
+.storage162-track{display:flex;flex:1 1 auto;min-height:0;min-width:0;width:100%;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;scrollbar-width:none;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y;isolation:isolate}
+.storage162-track::-webkit-scrollbar{display:none}
+.storage162-pane{flex:0 0 100%;width:100%;min-width:0;height:100%;min-height:0;overflow-x:hidden;overflow-y:auto;scroll-snap-align:start;scroll-snap-stop:always;box-sizing:border-box;overscroll-behavior-y:contain;position:relative;contain:layout paint style}
+.storage162-pane>.visual-storage-content{min-height:100%;box-sizing:border-box}
+.storage162-placeholder{height:120px;background:linear-gradient(110deg,#182a33,#213640,#182a33);opacity:.4}
+
+.storage162-body,.storage162-shell,.storage162-track,.storage162-pane{touch-action:pan-x pan-y!important}
+.storage162-pane .visual-item,.storage162-pane .item-icon,.storage162-pane .item-source-image,.storage162-pane .ui-stock-item{touch-action:pan-x pan-y!important}

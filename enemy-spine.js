@@ -3,7 +3,7 @@
    只播待機動作、鎖定根骨骼位置，模型原地動、不左右移動。素材 © Hypergryph。
    沒有素材或 WebGL 不可用時回傳 false，由呼叫端退回 webp／靜態圖。 */
 window.FrontierEnemySpine=(()=>{
- const base='assets/enemy-spine/',failed=new Set(),live=new Set(),byKey=new Map();let raf=0,last=0;const cost={n:0,ms:0};
+ const base='assets/enemy-spine/',failed=new Set(),live=new Set(),byKey=new Map();let raf=0,last=0;const cost={n:0,ms:0,created:0,reused:0};
  /* 播放程式庫（約 420KB）在第一次需要時才載入；載入前先用原本的圖片，載完再重繪一次。 */
  let loading=null;
  function ensure(){if(window.spine?.webgl)return true;if(!loading){loading=new Promise((res,rej)=>{const s=document.createElement('script');s.src='vendor/spine-webgl-3.8.js';s.onload=res;s.onerror=rej;document.head.append(s)}).then(()=>{if(typeof render==='function')render()}).catch(()=>{loading=null})}return false}
@@ -23,11 +23,11 @@ window.FrontierEnemySpine=(()=>{
  function mount(host,id,key,stage='A'){
   if(!ok()||!has(id)||!host)return false;id=resolve(id);
   /* 同一個敵人重繪時沿用原畫布，不重建 WebGL、不重新載入。 */
-  const k=key?id+'|'+key:null,old=k&&byKey.get(k);if(old&&live.has(old)){old.host=host;if(old.canvas.parentNode!==host)host.replaceChildren(old.canvas);return true}
-  const canvas=document.createElement('canvas');canvas.className='enemy-art enemy-spine-model';canvas.setAttribute('aria-hidden','true');
+  const k=key?id+'|'+key:null,old=k&&byKey.get(k);if(old&&live.has(old)){cost.reused++;old.detachedAt=0;old.host=host;if(old.canvas.parentNode!==host)host.replaceChildren(old.canvas);return true}
+  cost.created++;const canvas=document.createElement('canvas');canvas.className='enemy-art enemy-spine-model';canvas.setAttribute('aria-hidden','true');
   const gl=canvas.getContext('webgl',{alpha:true,premultipliedAlpha:false,antialias:false});if(!gl)return false;
   const ctx=new spine.webgl.ManagedWebGLRenderingContext(gl),renderer=new spine.webgl.SceneRenderer(canvas,ctx,true),assets=new spine.webgl.AssetManager(ctx,base+id+'/');
-  const st={id,canvas,ctx,renderer,assets,ready:false,host,stage};
+  const st={id,canvas,ctx,renderer,assets,ready:false,host,stage,width:0,height:0};const size=()=>{const dpr=Math.min(1.5,devicePixelRatio||1);st.width=Math.round(canvas.clientWidth*dpr);st.height=Math.round(canvas.clientHeight*dpr)};size();if(window.ResizeObserver){st.sizeObserver=new ResizeObserver(entries=>{const r=entries[0]?.contentRect;if(r){const dpr=Math.min(1.5,devicePixelRatio||1);st.width=Math.round(r.width*dpr);st.height=Math.round(r.height*dpr)}});st.sizeObserver.observe(canvas)}
   assets.loadBinary(id+'.skel');assets.loadTextureAtlas(id+'.atlas');
   host.replaceChildren(canvas);live.add(st);if(k){st.key=k;byKey.set(k,st)}loop();return true}
  function setup(st){
@@ -42,9 +42,9 @@ window.FrontierEnemySpine=(()=>{
  function applyMotion(st,want){const name=want==='move'?moveName(st.data)||pickIdle(st.data,'A'):pickIdle(st.data,'A');if(name&&st.current!==name){st.current=name;st.state.setAnimation(0,name,true)}}
  function motion(id,key,want){const r=resolve(id),st=r&&byKey.get(r+'|'+key);if(!st)return;st.want=want;if(st.ready)applyMotion(st,want)}
  function draw(st,dt){
-  if(!st.canvas.isConnected){st.ctx.gl.getExtension('WEBGL_lose_context')?.loseContext();live.delete(st);if(st.key)byKey.delete(st.key);return}
+  if(!st.canvas.isConnected){if(!st.detachedAt)st.detachedAt=performance.now();if(performance.now()-st.detachedAt<500)return;st.sizeObserver?.disconnect();st.ctx.gl.getExtension('WEBGL_lose_context')?.loseContext();live.delete(st);if(st.key)byKey.delete(st.key);return}
   if(!st.ready){if(st.assets.isLoadingComplete()){try{setup(st)}catch(e){console.warn('spine',st.id,e);live.delete(st);(failed.add(st.id),st.host.dispatchEvent(new CustomEvent('spine-failed')));return}}else{if(st.assets.hasErrors()){live.delete(st);(failed.add(st.id),st.host.dispatchEvent(new CustomEvent('spine-failed')))}return}}
-  const c=st.canvas,dpr=Math.min(2,devicePixelRatio||1),w=Math.round(c.clientWidth*dpr),h=Math.round(c.clientHeight*dpr);if(!w||!h)return;if(c.width!==w||c.height!==h){c.width=w;c.height=h}
+  const c=st.canvas,w=st.width,h=st.height;if(!w||!h)return;if(c.width!==w||c.height!==h){c.width=w;c.height=h}
   st.state.update(dt);st.state.apply(st.sk);const root=st.sk.getRootBone();root.x=0;root.y=0;st.sk.x=0;st.sk.y=0;st.sk.updateWorldTransform();
   const b=st.bounds,r=st.renderer,cam=r.camera,pad=1.08,scale=Math.max(b.w/w,b.h/h)*pad;
   cam.position.x=b.x+b.w/2;cam.position.y=b.y+b.h/2;cam.viewportWidth=w*scale;cam.viewportHeight=h*scale;cam.update();
@@ -65,5 +65,5 @@ window.FrontierEnemySpine=(()=>{
  function lock(ms,label){let el=document.querySelector('.fd-phase-lock');if(!el){el=document.createElement('div');el.className='fd-phase-lock';el.setAttribute('role','status');document.body.append(el);for(const ev of ['pointerdown','pointerup','click','touchstart','touchend','keydown','contextmenu'])el.addEventListener(ev,e=>{e.preventDefault();e.stopPropagation()},{capture:true,passive:false})}
   el.innerHTML='<b>'+label+'</b>';el.classList.add('is-on');document.documentElement.classList.add('fd-phase-locked');clearTimeout(lockTimer);lockTimer=setTimeout(()=>{el.classList.remove('is-on');document.documentElement.classList.remove('fd-phase-locked')},Math.max(800,ms))}
  document.addEventListener('keydown',e=>{if(document.documentElement.classList.contains('fd-phase-locked')){e.preventDefault();e.stopPropagation()}},true);
- return{mount,motion,transition,lifeOf,lastLife,lock,has,live:()=>live.size,cost:()=>({frames:cost.n,avgMs:cost.n?+(cost.ms/cost.n).toFixed(2):0})};
+ return{mount,motion,transition,lifeOf,lastLife,lock,has,live:()=>live.size,cost:()=>({created:cost.created,reused:cost.reused,frames:cost.n,avgMs:cost.n?+(cost.ms/cost.n).toFixed(2):0})};
 })();

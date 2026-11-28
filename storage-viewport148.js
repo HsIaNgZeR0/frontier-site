@@ -34,11 +34,11 @@ window.FrontierStorageViewport148=(()=>{
  }schedule()}
  function update(){frame=0;for(const grid of document.querySelectorAll('#app .equipment148-window')){
   const state=views.get(grid);if(!state)continue;
-  const scroller=grid.closest('.screen-workspace-body'),top=scroller?.getBoundingClientRect().top||0,rect=grid.getBoundingClientRect(),d=dimensions();
+  const scroller=grid.closest('.storage162-pane,.screen-workspace-body'),top=scroller?.getBoundingClientRect().top||0,rect=grid.getBoundingClientRect(),d=dimensions();
   paint(grid,state,Math.floor(Math.max(0,top-rect.top)/(d.height+d.gap))-2);
  }}
  function schedule(){if(!frame)frame=requestAnimationFrame(update)}
- document.addEventListener('scroll',e=>{if(e.target?.classList?.contains('visual-storage'))schedule()},{capture:true,passive:true});
+ document.addEventListener('scroll',e=>{if(e.target?.classList?.contains('visual-storage')||e.target?.classList?.contains('storage162-pane'))schedule()},{capture:true,passive:true});
  window.addEventListener('resize',()=>{viewportWidth=innerWidth;viewportHeight=innerHeight;schedule()},{passive:true});
  return{prepare,refresh:schedule,info:()=>({...metrics}),all:grid=>views.get(grid)?.items||[...grid.children]};
 })();
